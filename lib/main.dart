@@ -1,13 +1,91 @@
+// Import dart:convert for using JSON object and its operation
+import 'dart:async';
+import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+// Import HTTP package as http (variable name from the package)
+import 'package:http/http.dart' as http;
+
 void main() => runApp(MyApp());
+
+//region Methods to convert response into List<Meal>
+
+/// Method ini berguna untuk convert response body ke List<Meal>
+List<Meal> parseMeals(String responseBody) {
+  final responseJson = json.decode(responseBody);
+
+  final mealsResponse = new MealResponse.fromJson(responseJson);
+
+  return mealsResponse.meals;
+}
+
+/// Method ini berguna untuk menjalankan network request dengan menggunakan
+/// http.get() method
+Future<List<Meal>> fetchMeals(http.Client client) async {
+  // Dapatkan hasil dari HTTP.get method berupa Response object
+  final response = await client.get(
+      'https://www.food2fork.com/api/search?key=c660336ae2882acf2a9f2d983015e908');
+
+  // Use the compute function to run parseMeals in a separate isolate, which is
+  // to preventing the app freezes when parsing and convert into JSON,
+  // esp when running fetchMeals function in slower phone; to get rid of jank
+  return compute(parseMeals, response.body);
+}
+
+//endregion
+
+//region Model class untuk convert JSON ke object
+
+/// Model class untuk retrieve response as well as adding object into array
+class MealResponse {
+  List<Meal> meals;
+
+  MealResponse(this.meals);
+
+  MealResponse.fromJson(Map<String, dynamic> json) {
+    if (json['recipes'] != null) {
+      meals = new List<Meal>();
+      json['recipes'].forEach((v) {
+        meals.add(new Meal.fromJson(v));
+      });
+    }
+  }
+}
+
+/// Model class yg berisi data tentang meal
+class Meal {
+  final String id;
+  final String mealTitle;
+  final String mealImageUrl;
+
+  /// Constructor yang berisi variables dari Class
+  Meal({this.id, this.mealTitle, this.mealImageUrl});
+
+  /// Named constructor yang berguna untuk convert JSON menjadi
+  /// object dari Model class
+  factory Meal.fromJson(Map<String, dynamic> json) {
+    return Meal(
+      id: json['recipe_id'] as String,
+      mealTitle: json['title'] as String,
+      mealImageUrl: json['image_url'] as String,
+    );
+  }
+}
+
+//endregion
+
+//region Widget view
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
+    // Variable appTitle for setting up the toolbar , as well as app title
+    final appTitle = 'Meals Catalogue';
+    return new MaterialApp(
+      title: appTitle,
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -20,92 +98,102 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: HomePage(title: appTitle),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
+/// Kelas untuk home page di Flutter
+class HomePage extends StatelessWidget {
   final String title;
 
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
+  HomePage({Key key, this.title}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
+    /**
+     * return Scaffold that represents basic material design
+     * visual layout structure
+     */
     return Scaffold(
       appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        // Set app bar title
+        title: Text(title),
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.display1,
-            ),
-          ],
-        ),
+      // todo: bikin comment mengenai futurebuilder
+      body: FutureBuilder<List<Meal>>(
+        future: fetchMeals(http.Client()),
+        builder: (context, snapshot) {
+          /**
+           * Cek jika snapshot ada yang error.
+           * Jika iya, maka print error message
+           */
+          if (snapshot.hasError) print(snapshot.error);
+
+          /**
+           * Cek jika snapshot mempunyai data.
+           * Jika iya maka return list of data dengan widget
+           * {@link MealsList}, else programnya itu display progress bar
+           */
+          return snapshot.hasData
+              ? MealsList(
+                  meals: snapshot
+                      .data) // snapshot.data = data dari Async task, merupakan value dari meals di {@link MealsList}
+              : Center(child: CircularProgressIndicator());
+        },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
+
+/// Kelas ini berguna untuk menampilkan data yang terdiri dari GridView items
+class MealsList extends StatelessWidget {
+  final List<Meal> meals;
+
+  // Constructor untuk MealsList
+  MealsList({Key key, this.meals}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    // Create a new GridView object dengan GridView.builder
+    return GridView.builder(
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        // Buat grid dengan 2 rows
+        crossAxisCount: 2,
+      ),
+      itemCount: meals.length,
+      // itemBuilder ini berguna untuk membuat isi dari GridView item
+      itemBuilder: (context, index) {
+        return new Card(
+            // Atur elevation dari Card item
+            elevation: 2.0,
+            child: new Column(
+              children: <Widget>[
+                // Create new Image into Card item
+                new Image.network(
+                  meals[index].mealImageUrl,
+                  width: 125,
+                  height: 125,
+                  fit: BoxFit.fill,
+                ),
+                new Padding(
+                  padding: EdgeInsets.all(4.0),
+                  child: new Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      new Text(
+                        meals[index].mealTitle,
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ));
+      },
+    );
+  }
+}
+
+//endregion
