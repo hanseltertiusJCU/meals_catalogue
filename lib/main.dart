@@ -29,14 +29,20 @@ List<Meal> parseMeals(String responseBody) {
 Future<List<Meal>> fetchMeals(http.Client client) async {
   // Dapatkan hasil dari HTTP.get method berupa Response object
   final response = await client.get(
-      'https://www.food2fork.com/api/search?key=928babc1357b10d76aaa14c4890ba293');
+      'https://www.food2fork.com/api/search?key=c660336ae2882acf2a9f2d983015e908');
 
-  /**
-   * Use the compute function to run parseMeals in a separate isolate, which is
-   * to preventing the app freezes when parsing and convert into JSON,
-   * esp when running fetchMeals function in slower phone; to get rid of jank
-   */
-  return compute(parseMeals, response.body);
+  // Check if response is successfully loaded
+  if (response.statusCode == 200) {
+    /**
+     * Use the compute function to run parseMeals in a separate isolate, which is
+     * to preventing the app freezes when parsing and convert into JSON,
+     * esp when running fetchMeals function in slower phone; to get rid of jank
+     */
+    return compute(parseMeals, response.body);
+  } else {
+    // throw Exception that shows the data loading has failed
+    throw Exception("Failed to load meals");
+  }
 }
 
 //endregion
@@ -61,15 +67,20 @@ Future<DetailedMeal> fetchDetailedMeal(
     http.Client client, String recipeId) async {
   // Dapatkan hasil dari HTTP.get method berupa Response object
   final response = await client.get(
-      'https://www.food2fork.com/api/get?key=928babc1357b10d76aaa14c4890ba293&rId=' +
-          recipeId);
+      'https://www.food2fork.com/api/get?key=c660336ae2882acf2a9f2d983015e908&rId=$recipeId');
 
-  /**
-   * Use the compute function to run parseDetailedMeal in a separate isolate, which is
-   * to preventing the app freezes when parsing and convert into JSON,
-   * esp when running fetchMeals function in slower phone; to get rid of jank
-   */
-  return compute(parseDetailedMeal, response.body);
+  // Check if response is successfully loaded
+  if (response.statusCode == 200) {
+    /**
+     * Use the compute function to run parseDetailedMeal in a separate isolate, which is
+     * to preventing the app freezes when parsing and convert into JSON,
+     * esp when running fetchMeals function in slower phone; to get rid of jank
+     */
+    return compute(parseDetailedMeal, response.body);
+  } else {
+    // throw Exception that shows the data loading has failed
+    throw Exception('Failed to load detailed meal object');
+  }
 }
 
 //endregion
@@ -131,12 +142,19 @@ class DetailedMealResponse {
   // Constructor untuk DetailedMealResponse
   DetailedMealResponse({this.detailedMeal});
 
-
   factory DetailedMealResponse.fromJson(Map<String, dynamic> json) {
-    return DetailedMealResponse(
-      // value dari object DetailedMeal terdiri dari isi dari json object 'recipe'
-      detailedMeal: DetailedMeal.fromJson(json['recipe']),
-    );
+    // Check if the value in json object from 'recipe' attribute is not null
+    if (json['recipe'] != null) {
+      // call DetailedMealResponse constructor
+      return DetailedMealResponse(
+        // set value dari variable DetailedMeal object yang terdiri
+        // dari isi dari json object 'recipe'
+        detailedMeal: DetailedMeal.fromJson(json['recipe']),
+      );
+    } else {
+      // return nothing jika tidak ada value in json object
+      return null;
+    }
   }
 }
 
@@ -162,12 +180,20 @@ class DetailedMeal {
   factory DetailedMeal.fromJson(Map<String, dynamic> json) {
     // Parse json array 'ingredients' into List<dynamic> object
     var ingredientsFromJson = json['ingredients'];
-    /**
-     * This line is useful to convert List<dynamic> into List<String>.
-     * Alternatively, we can use:
-     * List<String> ingredientsList = ingredientsFromJson.cast<String>();
-     */
-    List<String> ingredientsList = new List<String>.from(ingredientsFromJson);
+
+    // Initialize List<String> variable
+    List<String> ingredientsList;
+
+    // Check if the json value in attribute 'ingredients' exists
+    if (ingredientsFromJson != null) {
+      /**
+       * This line is useful to convert List<dynamic> into List<String>.
+       * Alternatively, we can use:
+       * List<String> ingredientsList = ingredientsFromJson.cast<String>();
+       */
+      ingredientsList = new List<String>.from(ingredientsFromJson);
+    }
+
     // return DetailedMeal object by calling the above mentioned constructor
     return DetailedMeal(
       detailedMealId: json['recipe_id'] as String,
