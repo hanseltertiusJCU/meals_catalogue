@@ -304,71 +304,84 @@ class MealsList extends StatelessWidget {
         itemCount: meals.length,
         // itemBuilder ini berguna untuk membuat isi dari GridView item
         itemBuilder: (context, index) {
-          // Return Stack object untuk
-          return new Stack(
-            children: <Widget>[
-              // Card object untuk menampung isi item dari GridView
-              new Card(
-                // Elevation to make the card float
-                elevation: 2.0,
-                /**
-                 * Column to align the object vertically,
-                 * like vertical LinearLayout
-                 */
-                child: new Column(
-                  children: <Widget>[
-                    // Padding object to enable padding in Image
-                    new Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Image.network(
-                        // Image source from web
-                        meals[index].mealImageUrl,
-                        // Width of image
-                        width: 125.0,
-                        height: 125.0,
-                        fit: BoxFit.fill,
-                      ),
-                    ),
-                    // Padding object untuk enable padding into text
-                    new Padding(
-                      padding: EdgeInsets.all(4.0),
-                      child: Align(
-                        alignment: Alignment(0.0, 0.0),
-                        child: Text(
-                          meals[index].mealTitle,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontWeight: FontWeight.bold),
+          /*
+          Return Hero object sebagai source hero dengan membawa
+          mealTitle di Meal object (setiap item unique), jadi dia
+          muncul animation
+           */
+          return new Hero(
+              tag: meals[index].mealTitle,
+              child:
+              // Stack object untuk tumupuk InkWell ke Card
+              new Stack(
+                children: <Widget>[
+                  // Card object untuk menampung isi item dari GridView
+                  new Card(
+                    // Elevation to make the card float
+                    elevation: 2.0,
+                    /**
+                     * Column to align the object vertically,
+                     * like vertical LinearLayout
+                     */
+                    child: new Column(
+                      children: <Widget>[
+                        // Padding object to enable padding in Image
+                        new Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Image.network(
+                            // Image source from web
+                            meals[index].mealImageUrl,
+                            // Width of image
+                            width: 125.0,
+                            height: 125.0,
+                            fit: BoxFit.fill,
+                          ),
                         ),
-                      ),
+                        // Padding object untuk enable padding into text
+                        new Padding(
+                          padding: EdgeInsets.all(4.0),
+                          child: Align(
+                            alignment: Alignment(0.0, 0.0),
+                            child: Text(
+                              meals[index].mealTitle,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
-              // Object ini berguna untuk fill the previous stack
-              new Positioned.fill(
-                  child: new Material(
-                      color: Colors.transparent,
-                      /**
-                       * Object InkWell ini berguna untuk muncul ripple effect
-                       * ketika item card di click
-                       */
-                      child: new InkWell(
-                        // Method ini di call pada saat item di GridView di click
-                        onTap: () =>
+                  ),
+                  // Object ini berguna untuk fill the previous stack
+                  new Positioned.fill(
+                      child: new Material(
+                          color: Colors.transparent,
+                          /**
+                           * Object InkWell ini berguna untuk muncul ripple effect
+                           * ketika item card di click
+                           */
+                          child: new InkWell(
+                            // Method ini di call pada saat item di GridView di click
+                            onTap: () =>
                             /**
-                         * Call Navigator.push untuk navigate ke screen
-                         * atau widget berikutnya dengan membawa object Meal
-                         */
+                             * Call Navigator.push untuk navigate ke screen
+                             * atau widget berikutnya dengan membawa object Meal
+                             */
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) =>
                                       DetailedPage(meal: meals[index]),
-                                )),
-                      ))),
-            ],
+                                )
+                            ),
+                          )
+                      )
+                  ),
+                ],
+              )
           );
-        });
+        }
+        );
   }
 }
 
@@ -390,12 +403,17 @@ class DetailedPage extends StatelessWidget {
         // Set app bar title based on variable mealTitle from {@link Meal} object
         title: Text(meal.mealTitle),
       ),
-      /**
-       * Mengatur isi dari Scaffold object, scr spesifik itu
-       * adalah widget yang berinteraksi dgn Future object
-       */
-      body: FutureBuilder<DetailedMeal>(
-          /**
+        /**
+         * Return Hero object sebagai destination hero dengan
+         * membawa mealTitle di Meal object, jadi dy muncul animation
+         */
+      body: Hero(tag: meal.mealTitle,
+        /**
+         * Mengatur isi dari Scaffold object, scr spesifik itu
+         * adalah widget yang berinteraksi dgn Future object
+         */
+        child: FutureBuilder<DetailedMeal>(
+        /**
          * Future attribute dari future builder,
          * valuenya itu hasil dari calling method that return Future object
          */
@@ -407,7 +425,10 @@ class DetailedPage extends StatelessWidget {
             return snapshot.hasData
                 ? DetailedMealInfo(detailedMeal: snapshot.data)
                 : Center(child: CircularProgressIndicator());
-          }),
+          }
+          ),
+      )
+
     );
   }
 }
@@ -422,6 +443,7 @@ class DetailedMealInfo extends StatelessWidget {
   /// Method ini berguna untuk menampilkan isi dari widget
   @override
   Widget build(BuildContext context) {
+    // Return new Scaffold object
     return new Scaffold(
       resizeToAvoidBottomPadding: false,
       // Create ListView object sebagai isi dari Scaffold agar scrollable
