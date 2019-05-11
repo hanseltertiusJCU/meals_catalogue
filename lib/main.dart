@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 // Final variable value for API key in order for easier modification
-final String apiKey = "c660336ae2882acf2a9f2d983015e908";
+final String apiKey = "928babc1357b10d76aaa14c4890ba293";
 
 void main() => runApp(MyApp());
 
@@ -332,8 +332,6 @@ class DataWidget extends StatefulWidget {
 
   final String keyword;
 
-
-
   // Create state in StatefulWidget
   @override
   _DataWidgetState createState() => _DataWidgetState();
@@ -342,13 +340,22 @@ class DataWidget extends StatefulWidget {
 // State untuk membangun widget dan juga menampung variable yang akan berubah
 class _DataWidgetState extends State<DataWidget> {
 
+  // todo : modify the future part by using initstate
+  Future<List<Meal>> _mealslist;
+  
+  @override
+  void initState() {
+    _mealslist = fetchMeals(http.Client(), widget.keyword);
+    super.initState();
+  }
+  
   // Build the widget
   @override
   Widget build(BuildContext context) {
     // Return FutureBuilder object that brings List of Meal as input data type
     return FutureBuilder<List<Meal>>(
       // Call method fetchMeals that takes keyword by calling the StatefulWidget
-      future: fetchMeals(http.Client(), widget.keyword),
+      future: _mealslist,
       // Build the Future from FutureBuilder
       builder: (context, snapshot) {
         // Print error message in snapshot (interaction yang berkaitan dengan async computation)
@@ -377,6 +384,13 @@ class _DataWidgetState extends State<DataWidget> {
         }
       },
     );
+  }
+
+@override
+  void setState(fn) {
+    super.setState(fn);
+    // modify future
+    _mealslist = fetchMeals(http.Client(), widget.keyword);
   }
 }
 
@@ -491,11 +505,6 @@ class _DetailedPageState extends State<DetailedPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          // Leading widget for modify back arrow button
-          leading: new IconButton(
-              icon: Icon(Icons.arrow_back, color: Colors.white),
-              onPressed: () => Navigator.of(context).pop()
-          ),
           // Set app bar title based on variable mealTitle from {@link Meal} object
           title: Text(widget.meal.mealTitle),
           // Text theme to manage fonts
