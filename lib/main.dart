@@ -8,6 +8,9 @@ import 'package:flutter/material.dart';
 // Import HTTP package as http (variable name from the package)
 import 'package:http/http.dart' as http;
 
+// Final variable value for API key in order for easier modification
+final String apiKey = "c660336ae2882acf2a9f2d983015e908";
+
 void main() => runApp(MyApp());
 
 //region Methods to convert response into List<Meal> (bagian GridView items list)
@@ -29,9 +32,8 @@ List<Meal> parseMeals(String responseBody) {
 /// hasil yang berbeda
 Future<List<Meal>> fetchMeals(http.Client client, String keyword) async {
   // Dapatkan hasil dari HTTP.get method berupa Response object
-  final response = await client.get(
-      'https://www.food2fork.com/api/search?key=f417800f38ad2cc89bc362093181853f&q=' +
-          keyword);
+  final response = await client
+      .get('https://www.food2fork.com/api/search?key=$apiKey&q=' + keyword);
 
   // Check if response is successfully loaded
   if (response.statusCode == 200) {
@@ -68,8 +70,8 @@ DetailedMeal parseDetailedMeal(String responseBody) {
 Future<DetailedMeal> fetchDetailedMeal(
     http.Client client, String recipeId) async {
   // Dapatkan hasil dari HTTP.get method berupa Response object
-  final response = await client.get(
-      'https://www.food2fork.com/api/get?key=f417800f38ad2cc89bc362093181853f&rId=$recipeId');
+  final response = await client
+      .get('https://www.food2fork.com/api/get?key=$apiKey&rId=$recipeId');
 
   // Check if response is successfully loaded
   if (response.statusCode == 200) {
@@ -220,17 +222,14 @@ class MyApp extends StatelessWidget {
     return new MaterialApp(
       title: appTitle,
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
-      ),
+          // This is the theme of your application.
+
+          // Attribute primaryColor for the ability to access Colors attribute
+          // instead of having to access MaterialColor
+          primaryColor: Colors.green[600],
+
+          // Set font family
+          fontFamily: 'Nunito'),
       home: Home(title: appTitle),
     );
   }
@@ -269,8 +268,17 @@ class HomeScreen extends State<Home> {
      */
     return Scaffold(
       appBar: AppBar(
-        // Set app bar title by accessing widget variable (Stateful widget)
-        title: Text(widget.title),
+        /*
+        Set app bar title by calling the method to change the
+        app bar title based on _currentIndex
+         */
+        title: setAppBarTitle(_currentIndex),
+        // Text theme to manage fonts
+        textTheme: TextTheme(
+            title: TextStyle(
+                fontSize: 20.0,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Nunito')),
       ),
       // Content of the scaffold, shows the current index of the list
       body: _children[_currentIndex],
@@ -303,6 +311,17 @@ class HomeScreen extends State<Home> {
       _currentIndex = index;
     });
   }
+
+  // Set app bar title in response to current index
+  Widget setAppBarTitle(int index) {
+    if (index == 0) {
+      // Return Text that contains Breakfast that shows the breakfast section
+      return Text("Breakfast");
+    } else {
+      // Return Text that contains Dessert that shows the dessert section
+      return Text("Dessert");
+    }
+  }
 }
 
 /// Class ini menjadi stateful widget agar isi dari widget
@@ -313,6 +332,8 @@ class DataWidget extends StatefulWidget {
 
   final String keyword;
 
+
+
   // Create state in StatefulWidget
   @override
   _DataWidgetState createState() => _DataWidgetState();
@@ -320,6 +341,7 @@ class DataWidget extends StatefulWidget {
 
 // State untuk membangun widget dan juga menampung variable yang akan berubah
 class _DataWidgetState extends State<DataWidget> {
+
   // Build the widget
   @override
   Widget build(BuildContext context) {
@@ -340,7 +362,11 @@ class _DataWidgetState extends State<DataWidget> {
           // State ini represent bahwa app sedang connect ke async computation namun menunggu interaction
           case ConnectionState.waiting:
             // Return progress bar in the center to show that the operation waits for the data to get
-            return Center(child: CircularProgressIndicator());
+            return Center(
+                child: CircularProgressIndicator(
+                    // Set the color of progress bar
+                    valueColor:
+                        AlwaysStoppedAnimation<Color>(Colors.green[600])));
           // State ini represent bahwa app sedang connect ke async computation dan sedang melakukan interaction
           case ConnectionState.active:
             break;
@@ -370,8 +396,12 @@ class MealsList extends StatelessWidget {
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
         ),
+        // Use the padding to respect material design
+        padding: EdgeInsets.all(16.0),
+        // Shows how many data to display
         itemCount: meals.length,
         itemBuilder: (context, index) {
+          // Source hero (tag between source hero and destination must be same)
           return new Hero(
               tag: meals[index].mealId,
               child: new Stack(
@@ -385,27 +415,39 @@ class MealsList extends StatelessWidget {
                      */
                     child: new Column(
                       children: <Widget>[
-                        // Padding object to enable padding in Image
-                        new Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Image.network(
-                            // Image source from web
-                            meals[index].mealImageUrl,
-                            // Width of image
-                            width: 125.0,
-                            height: 125.0,
-                            fit: BoxFit.fill,
+                        // Use layout weight in Expanded class to prevent overflow
+                        new Expanded(
+                          // Layout weight is 3
+                          flex: 3,
+                          child: // Padding object to enable padding in Image
+                              new Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Image.network(
+                              // Image source from web
+                              meals[index].mealImageUrl,
+                              // Width of image
+                              width: 125.0,
+                              // Height of image
+                              height: 125.0,
+                              fit: BoxFit.fill,
+                            ),
                           ),
                         ),
-                        // Padding object for enable padding into text
-                        new Padding(
-                          padding: EdgeInsets.all(4.0),
-                          child: Align(
-                            alignment: Alignment(0.0, 0.0),
-                            child: Text(
-                              meals[index].mealTitle,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                        // Use layout weight in Expanded class to prevent overflow
+                        new Expanded(
+                          // Layout weight is 2
+                          flex: 2,
+                          child: // Padding object for enable padding into text
+                              new Padding(
+                            padding: EdgeInsets.all(4.0),
+                            child: Align(
+                              // Align the text into the center
+                              alignment: Alignment(0.0, 0.0),
+                              child: Text(
+                                meals[index].mealTitle,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
                             ),
                           ),
                         ),
@@ -435,17 +477,33 @@ class MealsList extends StatelessWidget {
 
 /// Kelas ini berguna untuk menerima value dari route di
 /// {@link MaterialPageRoute}
-class DetailedPage extends StatelessWidget {
+class DetailedPage extends StatefulWidget {
   final Meal meal;
 
   DetailedPage({Key key, this.meal}) : super(key: key);
 
   @override
+  _DetailedPageState createState() => _DetailedPageState();
+}
+
+class _DetailedPageState extends State<DetailedPage> {
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          // Leading widget for modify back arrow button
+          leading: new IconButton(
+              icon: Icon(Icons.arrow_back, color: Colors.white),
+              onPressed: () => Navigator.of(context).pop()
+          ),
           // Set app bar title based on variable mealTitle from {@link Meal} object
-          title: Text(meal.mealTitle),
+          title: Text(widget.meal.mealTitle),
+          // Text theme to manage fonts
+          textTheme: TextTheme(
+              title: TextStyle(
+                  fontSize: 20.0,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Nunito')),
         ),
         /**
          * Return Hero object sebagai destination hero dengan
@@ -453,7 +511,7 @@ class DetailedPage extends StatelessWidget {
          */
         body: Hero(
           // Use ID as tag as it is unique and returns String data type too
-          tag: meal.mealId,
+          tag: widget.meal.mealId,
           /**
            * Mengatur isi dari Scaffold object, scr spesifik itu
            * adalah widget yang berinteraksi dgn Future object
@@ -463,14 +521,18 @@ class DetailedPage extends StatelessWidget {
              * Future attribute dari future builder,
              * valuenya itu hasil dari calling method that return Future object
              */
-              future: fetchDetailedMeal(http.Client(), meal.mealId),
+              future: fetchDetailedMeal(http.Client(), widget.meal.mealId),
               // Call the method based on variable mealId from {@link Meal} object
               builder: (context, snapshot) {
                 if (snapshot.hasError) print(snapshot.error);
 
                 return snapshot.hasData
                     ? DetailedMealInfo(detailedMeal: snapshot.data)
-                    : Center(child: CircularProgressIndicator());
+                    : Center(
+                        child: CircularProgressIndicator(
+                            // Set the color of progress bar
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                                Colors.green[600])));
               }),
         ));
   }
@@ -501,7 +563,12 @@ class _DetailedMealInfoState extends State<DetailedMealInfo> {
        */
       Scaffold.of(context).showSnackBar(
         new SnackBar(
-            content: new Text(widget.detailedMeal.detailedMealTitle)),
+            content: new Text(
+          // Content of the Text
+          widget.detailedMeal.detailedMealTitle,
+          // Attribute for setting font family
+          style: TextStyle(fontFamily: 'Nunito'),
+        )),
       );
     });
     super.initState();
