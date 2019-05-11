@@ -25,11 +25,13 @@ List<Meal> parseMeals(String responseBody) {
 }
 
 /// Method ini berguna untuk menjalankan network request dengan menggunakan
-/// http.get() method
-Future<List<Meal>> fetchMeals(http.Client client) async {
+/// http.get() method dan juga menampung keyword untuk mendapatkan
+/// hasil yang berbeda
+Future<List<Meal>> fetchMeals(http.Client client, String keyword) async {
   // Dapatkan hasil dari HTTP.get method berupa Response object
   final response = await client.get(
-      'https://www.food2fork.com/api/search?key=c660336ae2882acf2a9f2d983015e908');
+      'https://www.food2fork.com/api/search?key=f417800f38ad2cc89bc362093181853f&q=' +
+          keyword);
 
   // Check if response is successfully loaded
   if (response.statusCode == 200) {
@@ -67,7 +69,7 @@ Future<DetailedMeal> fetchDetailedMeal(
     http.Client client, String recipeId) async {
   // Dapatkan hasil dari HTTP.get method berupa Response object
   final response = await client.get(
-      'https://www.food2fork.com/api/get?key=c660336ae2882acf2a9f2d983015e908&rId=$recipeId');
+      'https://www.food2fork.com/api/get?key=f417800f38ad2cc89bc362093181853f&rId=$recipeId');
 
   // Check if response is successfully loaded
   if (response.statusCode == 200) {
@@ -229,16 +231,35 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: HomePage(title: appTitle),
+      home: Home(title: appTitle),
     );
   }
 }
 
 /// Kelas untuk home page di Flutter
-class HomePage extends StatelessWidget {
+
+class Home extends StatefulWidget {
   final String title;
 
-  HomePage({Key key, this.title}) : super(key: key);
+  Home({Key key, this.title}) : super(key: key);
+
+  @override
+  HomeScreen createState() => HomeScreen();
+}
+
+class HomeScreen extends State<Home> {
+  // Variable in state for navigating through BottomNavigationBar item
+  int _currentIndex = 0;
+
+  /*
+  Create List of a custom Widget that returns FutureBuilder object
+  that is used for getting the data that contains GridView items
+  when a bottom navigation bar item is selected
+   */
+  final List<Widget> _children = [
+    DataWidget(keyword: "breakfast"),
+    DataWidget(keyword: "dessert")
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -248,34 +269,87 @@ class HomePage extends StatelessWidget {
      */
     return Scaffold(
       appBar: AppBar(
-        // Set app bar title
-        title: Text(title),
+        // Set app bar title by accessing widget variable (Stateful widget)
+        title: Text(widget.title),
       ),
-      /**
-       * Mengatur isi dari Scaffold object, scr spesifik itu
-       * adalah widget yang berinteraksi dgn Future object
-       */
-      body: FutureBuilder<List<Meal>>(
-        future: fetchMeals(http.Client()),
-        builder: (context, snapshot) {
-          /**
-           * Cek jika snapshot ada yang error.
-           * Jika iya, maka print error message
-           */
-          if (snapshot.hasError) print(snapshot.error);
+      // Content of the scaffold, shows the current index of the list
+      body: _children[_currentIndex],
+      bottomNavigationBar: BottomNavigationBar(
+          // Call onItemTapped that takes currentIndex as argument
+          onTap: onItemTapped,
+          // Set the current index for selected item
+          currentIndex: _currentIndex,
+          /*
+        Set the items in BottomNavigationBar class
+        (BottomNavigationBar is the group,
+        BottomNavigationBarItem is the member of the group)
+         */
+          items: [
+            BottomNavigationBarItem(
+                icon: new Icon(Icons.fastfood), title: new Text("Breakfast")),
+            BottomNavigationBarItem(
+                icon: new Icon(Icons.cake), title: new Text("Dessert"))
+          ]),
+    );
+  }
 
-          /**
-           * Cek jika snapshot mempunyai data.
-           * Jika iya maka return list of data dengan widget
-           * {@link MealsList}, else programnya itu display progress bar
-           */
-          return snapshot.hasData
-              // snapshot.data = data dari Async task, merupakan value dari meals di {@link MealsList)
-              ? MealsList(meals: snapshot.data)
-              // Tampilkan progress bar jika belum ada data yg ad di snapshot
-              : Center(child: CircularProgressIndicator());
-        },
-      ),
+  void onItemTapped(int index) {
+    /*
+    Set state to change the selected BottomBarNavigation item
+    as well as changing the body content since it is related to
+    BottomNavigationBar item
+     */
+    setState(() {
+      _currentIndex = index;
+    });
+  }
+}
+
+/// Class ini menjadi stateful widget agar isi dari widget
+/// dapat meresponse perubahan dari state di BottomNavigationBarItem
+class DataWidget extends StatefulWidget {
+  // Create constructor that uses key-value pair
+  DataWidget({Key key, this.keyword}) : super(key: key);
+
+  final String keyword;
+
+  // Create state in StatefulWidget
+  @override
+  _DataWidgetState createState() => _DataWidgetState();
+}
+
+// State untuk membangun widget dan juga menampung variable yang akan berubah
+class _DataWidgetState extends State<DataWidget> {
+  // Build the widget
+  @override
+  Widget build(BuildContext context) {
+    // Return FutureBuilder object that brings List of Meal as input data type
+    return FutureBuilder<List<Meal>>(
+      // Call method fetchMeals that takes keyword by calling the StatefulWidget
+      future: fetchMeals(http.Client(), widget.keyword),
+      // Build the Future from FutureBuilder
+      builder: (context, snapshot) {
+        // Print error message in snapshot (interaction yang berkaitan dengan async computation)
+        if (snapshot.hasError) print(snapshot.error);
+
+        // Check for connection state that relates to async computation
+        switch (snapshot.connectionState) {
+          // State ini represent bahwa app tidak sedang connect ke async computation
+          case ConnectionState.none:
+            break;
+          // State ini represent bahwa app sedang connect ke async computation namun menunggu interaction
+          case ConnectionState.waiting:
+            // Return progress bar in the center to show that the operation waits for the data to get
+            return Center(child: CircularProgressIndicator());
+          // State ini represent bahwa app sedang connect ke async computation dan sedang melakukan interaction
+          case ConnectionState.active:
+            break;
+          // State ini represent bahwa app sudah kelar melakukan interaction dan app connect ke finished async computation
+          case ConnectionState.done:
+            // Return the data, the state shows that the data is already get
+            return MealsList(meals: snapshot.data);
+        }
+      },
     );
   }
 }
@@ -293,29 +367,15 @@ class MealsList extends StatelessWidget {
   Widget build(BuildContext context) {
     // Create a new GridView object dengan GridView.builder
     return GridView.builder(
-        /**
-       * Attribute gridDelegate ini buat atur rows/columns,
-       * tergantung layout orientationnya bagaimana
-       */
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          // Atur berapa rows
           crossAxisCount: 2,
         ),
         itemCount: meals.length,
-        // itemBuilder ini berguna untuk membuat isi dari GridView item
         itemBuilder: (context, index) {
-          /*
-          Return Hero object sebagai source hero dengan membawa
-          mealTitle di Meal object (setiap item unique), jadi dia
-          muncul animation
-           */
           return new Hero(
-              tag: meals[index].mealTitle,
-              child:
-              // Stack object untuk tumupuk InkWell ke Card
-              new Stack(
+              tag: meals[index].mealId,
+              child: new Stack(
                 children: <Widget>[
-                  // Card object untuk menampung isi item dari GridView
                   new Card(
                     // Elevation to make the card float
                     elevation: 2.0,
@@ -337,7 +397,7 @@ class MealsList extends StatelessWidget {
                             fit: BoxFit.fill,
                           ),
                         ),
-                        // Padding object untuk enable padding into text
+                        // Padding object for enable padding into text
                         new Padding(
                           padding: EdgeInsets.all(4.0),
                           child: Align(
@@ -352,36 +412,20 @@ class MealsList extends StatelessWidget {
                       ],
                     ),
                   ),
-                  // Object ini berguna untuk fill the previous stack
                   new Positioned.fill(
                       child: new Material(
                           color: Colors.transparent,
-                          /**
-                           * Object InkWell ini berguna untuk muncul ripple effect
-                           * ketika item card di click
-                           */
                           child: new InkWell(
-                            // Method ini di call pada saat item di GridView di click
-                            onTap: () =>
-                            /**
-                             * Call Navigator.push untuk navigate ke screen
-                             * atau widget berikutnya dengan membawa object Meal
-                             */
-                            Navigator.push(
+                            onTap: () => Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) =>
                                       DetailedPage(meal: meals[index]),
-                                )
-                            ),
-                          )
-                      )
-                  ),
+                                )),
+                          ))),
                 ],
-              )
-          );
-        }
-        );
+              ));
+        });
   }
 }
 
@@ -399,46 +443,69 @@ class DetailedPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        // Set app bar title based on variable mealTitle from {@link Meal} object
-        title: Text(meal.mealTitle),
-      ),
+        appBar: AppBar(
+          // Set app bar title based on variable mealTitle from {@link Meal} object
+          title: Text(meal.mealTitle),
+        ),
         /**
          * Return Hero object sebagai destination hero dengan
          * membawa mealTitle di Meal object, jadi dy muncul animation
          */
-      body: Hero(tag: meal.mealTitle,
-        /**
-         * Mengatur isi dari Scaffold object, scr spesifik itu
-         * adalah widget yang berinteraksi dgn Future object
-         */
-        child: FutureBuilder<DetailedMeal>(
-        /**
-         * Future attribute dari future builder,
-         * valuenya itu hasil dari calling method that return Future object
-         */
-          future: fetchDetailedMeal(http.Client(), meal.mealId),
-          // Call the method based on variable mealId from {@link Meal} object
-          builder: (context, snapshot) {
-            if (snapshot.hasError) print(snapshot.error);
+        body: Hero(
+          // Use ID as tag as it is unique and returns String data type too
+          tag: meal.mealId,
+          /**
+           * Mengatur isi dari Scaffold object, scr spesifik itu
+           * adalah widget yang berinteraksi dgn Future object
+           */
+          child: FutureBuilder<DetailedMeal>(
+              /**
+             * Future attribute dari future builder,
+             * valuenya itu hasil dari calling method that return Future object
+             */
+              future: fetchDetailedMeal(http.Client(), meal.mealId),
+              // Call the method based on variable mealId from {@link Meal} object
+              builder: (context, snapshot) {
+                if (snapshot.hasError) print(snapshot.error);
 
-            return snapshot.hasData
-                ? DetailedMealInfo(detailedMeal: snapshot.data)
-                : Center(child: CircularProgressIndicator());
-          }
-          ),
-      )
-
-    );
+                return snapshot.hasData
+                    ? DetailedMealInfo(detailedMeal: snapshot.data)
+                    : Center(child: CircularProgressIndicator());
+              }),
+        ));
   }
 }
 
 /// Class ini berguna untuk menampilkan isi dari detailed item content
-class DetailedMealInfo extends StatelessWidget {
+class DetailedMealInfo extends StatefulWidget {
   final DetailedMeal detailedMeal;
 
   // Constructor untuk DetailedMealInfo
   DetailedMealInfo({Key key, this.detailedMeal}) : super(key: key);
+
+  @override
+  _DetailedMealInfoState createState() => _DetailedMealInfoState();
+}
+
+class _DetailedMealInfoState extends State<DetailedMealInfo> {
+  @override
+  void initState() {
+    /*
+    Bikin Future object agar ketika tampil SnackBar,
+    menampilkan content dari DetailedMealInfoState tidak terganggu.
+     */
+    new Future<Null>.delayed(Duration.zero, () {
+      /*
+      Show Snackbar that contain title in DetailedMeal and
+      it accesses the Stateful Widget
+       */
+      Scaffold.of(context).showSnackBar(
+        new SnackBar(
+            content: new Text(widget.detailedMeal.detailedMealTitle)),
+      );
+    });
+    super.initState();
+  }
 
   /// Method ini berguna untuk menampilkan isi dari widget
   @override
@@ -471,7 +538,7 @@ class DetailedMealInfo extends StatelessWidget {
                         fit: BoxFit.fill,
                         // Image source from DecorationImage
                         image: new NetworkImage(
-                            detailedMeal.detailedMealImageUrl))),
+                            widget.detailedMeal.detailedMealImageUrl))),
               ),
             ),
           ),
@@ -482,7 +549,7 @@ class DetailedMealInfo extends StatelessWidget {
               padding: EdgeInsets.only(top: 4.0),
               child: Text(
                 // content of the text
-                detailedMeal.detailedMealTitle,
+                widget.detailedMeal.detailedMealTitle,
                 // Make a TextStyle object that changes the visuals of text
                 style: TextStyle(
                   // Atur font style dari text
@@ -501,7 +568,7 @@ class DetailedMealInfo extends StatelessWidget {
             child: Container(
               padding: EdgeInsets.only(top: 4.0),
               child: Text(
-                'Published by : ' + detailedMeal.detailedMealPublisher,
+                'Published by : ' + widget.detailedMeal.detailedMealPublisher,
                 style: TextStyle(
                   // Atur font style dari text
                   fontStyle: FontStyle.italic,
@@ -532,7 +599,8 @@ class DetailedMealInfo extends StatelessWidget {
             // Align the text into the left side
             alignment: Alignment.centerLeft,
             child: new Column(
-              children: createTextList(detailedMeal.detailedMealIngredients),
+              children:
+                  createTextList(widget.detailedMeal.detailedMealIngredients),
             ),
           )
         ],
