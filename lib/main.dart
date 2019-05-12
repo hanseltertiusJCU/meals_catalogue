@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 // Final variable value for API key in order for easier modification
-final String apiKey = "928babc1357b10d76aaa14c4890ba293";
+final String apiKey = "1033805e3ec2776d2032fa90fdfae0bf";
 
 void main() => runApp(MyApp());
 
@@ -256,8 +256,12 @@ class HomeScreen extends State<Home> {
   when a bottom navigation bar item is selected
    */
   final List<Widget> _children = [
-    DataWidget(keyword: "breakfast"),
-    DataWidget(keyword: "dessert")
+    DataWidget(
+      keyword: "breakfast",
+    ),
+    DataWidget(
+      keyword: "dessert",
+    )
   ];
 
   @override
@@ -282,6 +286,7 @@ class HomeScreen extends State<Home> {
       ),
       // Content of the scaffold, shows the current index of the list
       body: _children[_currentIndex],
+      // Set bottomNavigationBar in Scaffold
       bottomNavigationBar: BottomNavigationBar(
           // Call onItemTapped that takes currentIndex as argument
           onTap: onItemTapped,
@@ -330,6 +335,7 @@ class DataWidget extends StatefulWidget {
   // Create constructor that uses key-value pair
   DataWidget({Key key, this.keyword}) : super(key: key);
 
+  // Keyword for search query
   final String keyword;
 
   // Create state in StatefulWidget
@@ -339,58 +345,28 @@ class DataWidget extends StatefulWidget {
 
 // State untuk membangun widget dan juga menampung variable yang akan berubah
 class _DataWidgetState extends State<DataWidget> {
-
-  // todo : modify the future part by using initstate
-  Future<List<Meal>> _mealslist;
-  
-  @override
-  void initState() {
-    _mealslist = fetchMeals(http.Client(), widget.keyword);
-    super.initState();
-  }
-  
   // Build the widget
   @override
   Widget build(BuildContext context) {
     // Return FutureBuilder object that brings List of Meal as input data type
     return FutureBuilder<List<Meal>>(
       // Call method fetchMeals that takes keyword by calling the StatefulWidget
-      future: _mealslist,
+      future: fetchMeals(http.Client(), widget.keyword),
       // Build the Future from FutureBuilder
       builder: (context, snapshot) {
         // Print error message in snapshot (interaction yang berkaitan dengan async computation)
         if (snapshot.hasError) print(snapshot.error);
 
-        // Check for connection state that relates to async computation
-        switch (snapshot.connectionState) {
-          // State ini represent bahwa app tidak sedang connect ke async computation
-          case ConnectionState.none:
-            break;
-          // State ini represent bahwa app sedang connect ke async computation namun menunggu interaction
-          case ConnectionState.waiting:
-            // Return progress bar in the center to show that the operation waits for the data to get
-            return Center(
+        // Check if snapshot has data
+        return snapshot.hasData
+            ? MealsList(meals: snapshot.data) // Return when true
+            : Center(
                 child: CircularProgressIndicator(
                     // Set the color of progress bar
-                    valueColor:
-                        AlwaysStoppedAnimation<Color>(Colors.green[600])));
-          // State ini represent bahwa app sedang connect ke async computation dan sedang melakukan interaction
-          case ConnectionState.active:
-            break;
-          // State ini represent bahwa app sudah kelar melakukan interaction dan app connect ke finished async computation
-          case ConnectionState.done:
-            // Return the data, the state shows that the data is already get
-            return MealsList(meals: snapshot.data);
-        }
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                        Colors.green[600]))); // Return when false
       },
     );
-  }
-
-@override
-  void setState(fn) {
-    super.setState(fn);
-    // modify future
-    _mealslist = fetchMeals(http.Client(), widget.keyword);
   }
 }
 
@@ -415,72 +391,66 @@ class MealsList extends StatelessWidget {
         // Shows how many data to display
         itemCount: meals.length,
         itemBuilder: (context, index) {
-          // Source hero (tag between source hero and destination must be same)
+          // Source hero
           return new Hero(
-              tag: meals[index].mealId,
-              child: new Stack(
-                children: <Widget>[
-                  new Card(
-                    // Elevation to make the card float
-                    elevation: 2.0,
-                    /**
-                     * Column to align the object vertically,
-                     * like vertical LinearLayout
-                     */
-                    child: new Column(
-                      children: <Widget>[
-                        // Use layout weight in Expanded class to prevent overflow
-                        new Expanded(
-                          // Layout weight is 3
-                          flex: 3,
-                          child: // Padding object to enable padding in Image
-                              new Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Image.network(
-                              // Image source from web
-                              meals[index].mealImageUrl,
-                              // Width of image
-                              width: 125.0,
-                              // Height of image
-                              height: 125.0,
-                              fit: BoxFit.fill,
+            // tag in Source hero
+            tag: meals[index].mealId,
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DetailedPage(meal: meals[index]),
+                    )),
+                child: Card(
+                  // Elevation to make the card float
+                  elevation: 2.0,
+                  child: new Column(
+                    children: <Widget>[
+                      // Use layout weight in Expanded class to prevent overflow
+                      new Expanded(
+                        // Layout weight is 1
+                        flex: 1,
+                        child: // Padding object to enable padding in Image
+                            new Padding(
+                          padding: EdgeInsets.all(8.0),
+                          // Set child that contains Image.network
+                          child: Image.network(
+                            // Image source from web
+                            meals[index].mealImageUrl,
+                            // Set width into match_parent (follow parent's)
+                            width: double.infinity,
+                            // Set height into match_parent (follow parent's)
+                            height: double.infinity,
+                            fit: BoxFit.fill,
+                          ),
+                        ),
+                      ),
+                      // Use layout weight in Expanded class to prevent overflow
+                      new Expanded(
+                        // Layout weight is 1
+                        flex: 1,
+                        child: // Padding object for enable padding into text
+                            new Padding(
+                          padding: EdgeInsets.all(4.0),
+                          child: Align(
+                            // Align the text into the center
+                            alignment: Alignment(0.0, 0.0),
+                            child: Text(
+                              meals[index].mealTitle,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                           ),
                         ),
-                        // Use layout weight in Expanded class to prevent overflow
-                        new Expanded(
-                          // Layout weight is 2
-                          flex: 2,
-                          child: // Padding object for enable padding into text
-                              new Padding(
-                            padding: EdgeInsets.all(4.0),
-                            child: Align(
-                              // Align the text into the center
-                              alignment: Alignment(0.0, 0.0),
-                              child: Text(
-                                meals[index].mealTitle,
-                                textAlign: TextAlign.center,
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                  new Positioned.fill(
-                      child: new Material(
-                          color: Colors.transparent,
-                          child: new InkWell(
-                            onTap: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      DetailedPage(meal: meals[index]),
-                                )),
-                          ))),
-                ],
-              ));
+                ),
+              ),
+            ),
+          );
         });
   }
 }
