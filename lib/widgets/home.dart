@@ -22,10 +22,10 @@ class HomeScreen extends State<Home> {
    */
   final List<Widget> _children = [
     DataWidget(
-      keyword: "breakfast",
+      keyword: "desert",
     ),
     DataWidget(
-      keyword: "dessert",
+      keyword: "seafood",
     )
   ];
 
@@ -64,9 +64,9 @@ class HomeScreen extends State<Home> {
          */
           items: [
             BottomNavigationBarItem(
-                icon: new Icon(Icons.fastfood), title: new Text("Breakfast")),
+                icon: new Icon(Icons.fastfood), title: new Text("Desert")),
             BottomNavigationBarItem(
-                icon: new Icon(Icons.cake), title: new Text("Dessert"))
+                icon: new Icon(Icons.cake), title: new Text("Seafood"))
           ]),
     );
   }
@@ -86,10 +86,10 @@ class HomeScreen extends State<Home> {
   Widget setAppBarTitle(int index) {
     if (index == 0) {
       // Return Text that contains Breakfast that shows the breakfast section
-      return Text("Breakfast");
+      return Text("Desert");
     } else {
       // Return Text that contains Dessert that shows the dessert section
-      return Text("Dessert");
+      return Text("Seafood");
     }
   }
 }

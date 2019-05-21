@@ -10,12 +10,12 @@ class DetailedMealResponse {
 
   factory DetailedMealResponse.fromJson(Map<String, dynamic> json) {
     // Check if the value in json object from 'recipe' attribute is not null
-    if (json['recipe'] != null) {
+    if (json['meals'] != null) {
       // call DetailedMealResponse constructor
       return DetailedMealResponse(
         // set value dari variable DetailedMeal object yang terdiri
         // dari isi dari json object 'recipe'
-        detailedMeal: DetailedMeal.fromJson(json['recipe']),
+        detailedMeal: DetailedMeal.fromJson(json['meals']),
       );
     } else {
       // return nothing jika tidak ada value in json object

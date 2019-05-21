@@ -7,8 +7,6 @@ import 'package:meals_catalogue/model/meal.dart';
 import 'package:http/http.dart' as http;
 import 'package:meals_catalogue/response/meals_response.dart';
 
-import '../main.dart';
-
 /// Method ini berguna untuk convert response body ke List<Meal>
 List<Meal> parseMeals(String responseBody) {
   // Decode the String response into JSON response
@@ -27,10 +25,11 @@ List<Meal> parseMeals(String responseBody) {
 Future<List<Meal>> fetchMeals(http.Client client, String keyword) async {
   // Dapatkan hasil dari HTTP.get method berupa Response object
   final response = await client
-      .get('https://www.food2fork.com/api/search?key=$apiKey&q=' + keyword);
+      .get('https://www.themealdb.com/api/json/v1/1/filter.php?c=' + keyword);
 
-  // Check if response is successfully loaded
+  // Check if response is successfully loadedm
   if (response.statusCode == 200) {
+
     /**
      * Use the compute function to run parseMeals in a separate isolate, which is
      * to preventing the app freezes when parsing and convert into JSON,

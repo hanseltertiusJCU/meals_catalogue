@@ -10,11 +10,11 @@ class MealResponse {
   /// {@link Meal} object dengan menambahkan {@link Meal} ke List
   MealResponse.fromJson(Map<String, dynamic> json) {
     // Cek jika 'recipes' di JSON ada isi
-    if (json['recipes'] != null) {
+    if (json['meals'] != null) {
       // Initiate List object that has Meal as generic
       meals = new List<Meal>();
       // Iterate through the content in json['recipes']
-      json['recipes'].forEach((v) {
+      json['meals'].forEach((v) {
         // Add Meal object into List
         meals.add(new Meal.fromJson(v));
       });

@@ -12,9 +12,9 @@ class Meal {
   /// object dari Model class
   factory Meal.fromJson(Map<String, dynamic> json) {
     return Meal(
-      mealId: json['recipe_id'] as String,
-      mealTitle: json['title'] as String,
-      mealImageUrl: json['image_url'] as String,
+      mealId: json['idMeal'] as String,
+      mealTitle: json['strMeal'] as String,
+      mealImageUrl: json['strMealThumb'] as String,
     );
   }
 }
