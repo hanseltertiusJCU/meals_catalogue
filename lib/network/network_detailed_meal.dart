@@ -7,8 +7,6 @@ import 'package:meals_catalogue/response/detailed_meal_response.dart';
 // Import HTTP package as http (variable name from the package)
 import 'package:http/http.dart' as http;
 
-import '../main.dart';
-
 /// Method ini berguna untuk convert response body ke DetailedMeal
 DetailedMeal parseDetailedMeal(String responseBody) {
   // Decode the String response into JSON response
@@ -24,10 +22,10 @@ DetailedMeal parseDetailedMeal(String responseBody) {
 /// Method ini berguna untuk menjalankan network request dengan menggunakan
 /// http.get() method
 Future<DetailedMeal> fetchDetailedMeal(
-    http.Client client, String recipeId) async {
+    http.Client client, String mealId) async {
   // Dapatkan hasil dari HTTP.get method berupa Response object
   final response = await client
-      .get('https://www.food2fork.com/api/get?key=$apiKey&rId=$recipeId');
+      .get('https://www.themealdb.com/api/json/v1/1/lookup.php?i=$mealId');
 
   // Check if response is successfully loaded
   if (response.statusCode == 200) {

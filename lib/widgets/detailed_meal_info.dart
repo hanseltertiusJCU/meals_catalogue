@@ -98,7 +98,7 @@ class _DetailedMealInfoState extends State<DetailedMealInfo> {
             child: Container(
               padding: EdgeInsets.only(top: 4.0),
               child: Text(
-                'Published by : ' + widget.detailedMeal.detailedMealPublisher,
+                'Category : ' + widget.detailedMeal.detailedMealCategory,
                 style: TextStyle(
                   // Atur font style dari text
                   fontStyle: FontStyle.italic,
@@ -130,7 +130,7 @@ class _DetailedMealInfoState extends State<DetailedMealInfo> {
             alignment: Alignment.centerLeft,
             child: new Column(
               children:
-              createTextList(widget.detailedMeal.detailedMealIngredients),
+              createIngredientsList(widget.detailedMeal.detailedMealIngredients),
             ),
           )
         ],
@@ -140,24 +140,31 @@ class _DetailedMealInfoState extends State<DetailedMealInfo> {
 }
 
 /// Method ini berguna untuk retrieve List<Padding> object dari List<String>
-List<Padding> createTextList(List<String> stringList) {
+List<Padding> createIngredientsList(List<String> stringList) {
   List<Padding> childrenTexts = List<Padding>();
-  for (String string in stringList) {
+  for (int i = 0; i < stringList.length; i++) {
+    // todo: make condition ketika value itu ga "", jika iya maka kita akan bikin text (untuk text ingredients)
     /**
      * Add text into padding object.
      * Note : pake padding agar enable Padding di text
      */
-    childrenTexts.add(new Padding(
-      // Atur padding di text, yaitu left, right dan top padding
-        padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 4.0),
-        // Align object untuk enable text alignment
-        child: Align(
-          alignment: Alignment.centerLeft,
-          // Set text based on container
-          child: Container(
-            child: Text('*) ' + string),
-          ),
-        )));
+    print(stringList[i]);
+
+    // Cek jika string value itu ada
+    if(stringList[i] != ""){
+      childrenTexts.add(new Padding(
+        // Atur padding di text, yaitu left, right dan top padding
+          padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 4.0),
+          // Align object untuk enable text alignment
+          child: Align(
+            alignment: Alignment.centerLeft,
+            // Set text based on container
+            child: Container(
+              child: Text('*) ' + stringList[i]),
+            ),
+          )));
+    }
+
   }
   return childrenTexts;
 }

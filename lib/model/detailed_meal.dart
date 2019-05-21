@@ -4,7 +4,7 @@ class DetailedMeal {
   // Variables for DetailedMeal object
   final String detailedMealId;
   final String detailedMealTitle;
-  final String detailedMealPublisher;
+  final String detailedMealCategory;
   final String detailedMealImageUrl;
   final List<String> detailedMealIngredients;
 
@@ -12,33 +12,46 @@ class DetailedMeal {
   DetailedMeal(
       {this.detailedMealId,
         this.detailedMealTitle,
-        this.detailedMealPublisher,
+        this.detailedMealCategory,
         this.detailedMealImageUrl,
         this.detailedMealIngredients});
 
   // Create DetailedMeal object that sets the variable from JSON
   factory DetailedMeal.fromJson(Map<String, dynamic> json) {
-    // Parse json array 'ingredients' into List<dynamic> object
-    var ingredientsFromJson = json['ingredients'];
+
+    // todo : bikin list of String ingredients, sama juga list of instructions
 
     // Initialize List<String> variable
     List<String> ingredientsList;
 
-    // Check if the json value in attribute 'ingredients' exists
-    if (ingredientsFromJson != null) {
-      /**
-       * This line is useful to convert List<dynamic> into List<String>.
-       * Alternatively, we can use:
-       * List<String> ingredientsList = ingredientsFromJson.cast<String>();
-       */
-      ingredientsList = new List<String>.from(ingredientsFromJson);
+    // todo : looping nya itu mesti ditentuin
+    for(int i = 0; i < 20; i++) {
+      var ingredientItemNumber = i + 1;
+      var ingredient = json['strIngredient$ingredientItemNumber'].toString();
+      print(ingredient);
+      ingredientsList.add(ingredient);
     }
+
+//    // Parse json array 'ingredients' into List<dynamic> object
+//    var ingredientsFromJson = json['ingredients'];
+//
+//
+//
+//    // Check if the json value in attribute 'ingredients' exists
+//    if (ingredientsFromJson != null) {
+//      /**
+//       * This line is useful to convert List<dynamic> into List<String>.
+//       * Alternatively, we can use:
+//       * List<String> ingredientsList = ingredientsFromJson.cast<String>();
+//       */
+//      ingredientsList = new List<String>.from(ingredientsFromJson);
+//    }
 
     // return DetailedMeal object by calling the above mentioned constructor
     return DetailedMeal(
-      detailedMealId: json['recipe_id'] as String,
-      detailedMealTitle: json['title'] as String,
-      detailedMealPublisher: json['publisher'] as String,
+      detailedMealId: json['idMeal'] as String,
+      detailedMealTitle: json['strMeal'] as String,
+      detailedMealCategory: json['publisher'] as String,
       detailedMealImageUrl: json['image_url'] as String,
       detailedMealIngredients: ingredientsList,
     );
