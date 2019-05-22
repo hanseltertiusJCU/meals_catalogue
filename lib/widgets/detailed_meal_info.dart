@@ -3,10 +3,10 @@ import 'package:meals_catalogue/model/detailed_meal.dart';
 
 /// Class ini berguna untuk menampilkan isi dari detailed item content
 class DetailedMealInfo extends StatefulWidget {
-  final DetailedMeal detailedMeal;
+  final List<DetailedMeal> detailedMeals;
 
   // Constructor untuk DetailedMealInfo
-  DetailedMealInfo({Key key, this.detailedMeal}) : super(key: key);
+  DetailedMealInfo({Key key, this.detailedMeals}) : super(key: key);
 
   @override
   _DetailedMealInfoState createState() => _DetailedMealInfoState();
@@ -27,11 +27,11 @@ class _DetailedMealInfoState extends State<DetailedMealInfo> {
       Scaffold.of(context).showSnackBar(
         new SnackBar(
             content: new Text(
-              // Content of the Text
-              widget.detailedMeal.detailedMealTitle,
-              // Attribute for setting font family
-              style: TextStyle(fontFamily: 'Nunito'),
-            )),
+          // Content of the Text
+          widget.detailedMeals[0].detailedMealTitle,
+          // Attribute for setting font family
+          style: TextStyle(fontFamily: 'Nunito'),
+        )),
       );
     });
     super.initState();
@@ -60,15 +60,15 @@ class _DetailedMealInfoState extends State<DetailedMealInfo> {
                 height: 125.0,
                 // Decoration to be filled with image
                 decoration: new BoxDecoration(
-                  // Atur decoration shape menjadi circle
+                    // Atur decoration shape menjadi circle
                     shape: BoxShape.circle,
                     // Image from Decoration
                     image: new DecorationImage(
-                      // Sesuaikan image size dengan container size (width + height)
+                        // Sesuaikan image size dengan container size (width + height)
                         fit: BoxFit.fill,
                         // Image source from DecorationImage
                         image: new NetworkImage(
-                            widget.detailedMeal.detailedMealImageUrl))),
+                            widget.detailedMeals[0].detailedMealImageUrl))),
               ),
             ),
           ),
@@ -79,7 +79,7 @@ class _DetailedMealInfoState extends State<DetailedMealInfo> {
               padding: EdgeInsets.only(top: 4.0),
               child: Text(
                 // content of the text
-                widget.detailedMeal.detailedMealTitle,
+                widget.detailedMeals[0].detailedMealTitle,
                 // Make a TextStyle object that changes the visuals of text
                 style: TextStyle(
                   // Atur font style dari text
@@ -98,7 +98,7 @@ class _DetailedMealInfoState extends State<DetailedMealInfo> {
             child: Container(
               padding: EdgeInsets.only(top: 4.0),
               child: Text(
-                'Category : ' + widget.detailedMeal.detailedMealCategory,
+                'Category : ' + widget.detailedMeals[0].detailedMealCategory,
                 style: TextStyle(
                   // Atur font style dari text
                   fontStyle: FontStyle.italic,
@@ -129,9 +129,7 @@ class _DetailedMealInfoState extends State<DetailedMealInfo> {
             // Align the text into the left side
             alignment: Alignment.centerLeft,
             child: new Column(
-              children:
-              createIngredientsList(widget.detailedMeal.detailedMealIngredients),
-            ),
+                children: createIngredientsList(widget.detailedMeals[0].detailedMealIngredients)),
           )
         ],
       ),
@@ -142,27 +140,30 @@ class _DetailedMealInfoState extends State<DetailedMealInfo> {
 /// Method ini berguna untuk retrieve List<Padding> object dari List<String>
 List<Padding> createIngredientsList(List<String> stringList) {
   List<Padding> childrenTexts = List<Padding>();
-  for (int i = 0; i < stringList.length; i++) {
-    // todo: make condition ketika value itu ga "", jika iya maka kita akan bikin text (untuk text ingredients)
-    /**
-     * Add text into padding object.
-     * Note : pake padding agar enable Padding di text
-     */
-    print(stringList[i]);
 
-    // Cek jika string value itu ada
-    if(stringList[i] != ""){
-      childrenTexts.add(new Padding(
-        // Atur padding di text, yaitu left, right dan top padding
+  // Check if member exist in List of String
+  for (String string in stringList) {
+
+    // Cek jika length of String object itu lebih dari 0 alias ada isinya
+    if(string.length > 0){
+      /**
+       * Add text into padding object.
+       * Note : pake padding agar enable Padding di text
+       */
+      childrenTexts.add(
+        new Padding(
+          // Atur padding di text, yaitu left, right dan top padding
           padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 4.0),
           // Align object untuk enable text alignment
           child: Align(
             alignment: Alignment.centerLeft,
             // Set text based on container
             child: Container(
-              child: Text('*) ' + stringList[i]),
+              child: Text('*) ' + string),
             ),
-          )));
+          ),
+        ),
+      );
     }
 
   }

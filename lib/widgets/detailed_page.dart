@@ -43,18 +43,18 @@ class _DetailedPageState extends State<DetailedPage> {
            * Mengatur isi dari Scaffold object, scr spesifik itu
            * adalah widget yang berinteraksi dgn Future object
            */
-          child: FutureBuilder<DetailedMeal>(
+          child: FutureBuilder<List<DetailedMeal>>(
             /**
              * Future attribute dari future builder,
              * valuenya itu hasil dari calling method that return Future object
              */
-              future: fetchDetailedMeal(http.Client(), widget.meal.mealId),
+              future: fetchDetailedMeals(http.Client(), widget.meal.mealId),
               // Call the method based on variable mealId from {@link Meal} object
               builder: (context, snapshot) {
                 if (snapshot.hasError) print(snapshot.error);
 
                 return snapshot.hasData
-                    ? DetailedMealInfo(detailedMeal: snapshot.data)
+                    ? DetailedMealInfo(detailedMeals: snapshot.data)
                     : Center(
                     child: CircularProgressIndicator(
                       // Set the color of progress bar

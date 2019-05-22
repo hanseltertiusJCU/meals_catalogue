@@ -8,20 +8,20 @@ import 'package:meals_catalogue/response/detailed_meal_response.dart';
 import 'package:http/http.dart' as http;
 
 /// Method ini berguna untuk convert response body ke DetailedMeal
-DetailedMeal parseDetailedMeal(String responseBody) {
+List<DetailedMeal> parseDetailedMeals(String responseBody) {
   // Decode the String response into JSON response
   final responseJson = json.decode(responseBody);
 
   // Called the named constructor in order to return DetailedMeal object
-  final detailedMealsResponse = new DetailedMealResponse.fromJson(responseJson);
+  final detailedMealsResponse = new DetailedMealResponse.fromJson(responseJson); // salahnya di sini
 
   // Akses variable datailedMeal dari DetailedMealResponse
-  return detailedMealsResponse.detailedMeal;
+  return detailedMealsResponse.detailedMeals;
 }
 
 /// Method ini berguna untuk menjalankan network request dengan menggunakan
 /// http.get() method
-Future<DetailedMeal> fetchDetailedMeal(
+Future<List<DetailedMeal>> fetchDetailedMeals(
     http.Client client, String mealId) async {
   // Dapatkan hasil dari HTTP.get method berupa Response object
   final response = await client
@@ -34,7 +34,7 @@ Future<DetailedMeal> fetchDetailedMeal(
      * to preventing the app freezes when parsing and convert into JSON,
      * esp when running fetchMeals function in slower phone; to get rid of jank
      */
-    return compute(parseDetailedMeal, response.body);
+    return compute(parseDetailedMeals, response.body);
   } else {
     // throw Exception that shows the data loading has failed
     throw Exception('Failed to load detailed meal object');

@@ -11,49 +11,35 @@ class DetailedMeal {
   // Constructor to initialize variables in a class
   DetailedMeal(
       {this.detailedMealId,
-        this.detailedMealTitle,
-        this.detailedMealCategory,
-        this.detailedMealImageUrl,
-        this.detailedMealIngredients});
+      this.detailedMealTitle,
+      this.detailedMealCategory,
+      this.detailedMealImageUrl,
+      this.detailedMealIngredients
+      });
 
   // Create DetailedMeal object that sets the variable from JSON
   factory DetailedMeal.fromJson(Map<String, dynamic> json) {
+    // Create new List object in order to prevent exception that add on null
+    List<String> ingredients = new List<String>();
 
-    // todo : bikin list of String ingredients, sama juga list of instructions
-
-    // Initialize List<String> variable
-    List<String> ingredientsList;
-
-    // todo : looping nya itu mesti ditentuin
-    for(int i = 0; i < 20; i++) {
-      var ingredientItemNumber = i + 1;
-      var ingredient = json['strIngredient$ingredientItemNumber'].toString();
-      print(ingredient);
-      ingredientsList.add(ingredient);
+    // Loop 20 times based on strIngredients 1 - 20 in JSON
+    for (int i = 1; i <= 20; i++) {
+      String ingredient = json['strIngredient$i'] as String;
+      if (ingredient == null) {
+        // Set default value in order to prevent exception
+        ingredient = "";
+      }
+      // Add String into List<String>
+      ingredients.add(ingredient);
     }
-
-//    // Parse json array 'ingredients' into List<dynamic> object
-//    var ingredientsFromJson = json['ingredients'];
-//
-//
-//
-//    // Check if the json value in attribute 'ingredients' exists
-//    if (ingredientsFromJson != null) {
-//      /**
-//       * This line is useful to convert List<dynamic> into List<String>.
-//       * Alternatively, we can use:
-//       * List<String> ingredientsList = ingredientsFromJson.cast<String>();
-//       */
-//      ingredientsList = new List<String>.from(ingredientsFromJson);
-//    }
 
     // return DetailedMeal object by calling the above mentioned constructor
     return DetailedMeal(
-      detailedMealId: json['idMeal'] as String,
-      detailedMealTitle: json['strMeal'] as String,
-      detailedMealCategory: json['publisher'] as String,
-      detailedMealImageUrl: json['image_url'] as String,
-      detailedMealIngredients: ingredientsList,
-    );
+        detailedMealId: json['idMeal'] as String,
+        detailedMealTitle: json['strMeal'] as String,
+        detailedMealCategory: json['strCategory'] as String,
+        detailedMealImageUrl: json['strMealThumb'] as String,
+        detailedMealIngredients: ingredients
+        );
   }
 }
