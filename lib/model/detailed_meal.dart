@@ -7,6 +7,7 @@ class DetailedMeal {
   final String detailedMealCategory;
   final String detailedMealImageUrl;
   final List<String> detailedMealIngredients;
+  final List<String> detailedMealInstructions;
 
   // Constructor to initialize variables in a class
   DetailedMeal(
@@ -14,8 +15,8 @@ class DetailedMeal {
       this.detailedMealTitle,
       this.detailedMealCategory,
       this.detailedMealImageUrl,
-      this.detailedMealIngredients
-      });
+      this.detailedMealIngredients,
+      this.detailedMealInstructions});
 
   // Create DetailedMeal object that sets the variable from JSON
   factory DetailedMeal.fromJson(Map<String, dynamic> json) {
@@ -33,13 +34,20 @@ class DetailedMeal {
       ingredients.add(ingredient);
     }
 
+    List<String> instructions = new List<String>();
+
+    String fullInstructions = json['strInstructions'] as String;
+
+    // Make String into List of String
+    instructions = fullInstructions.split("\r\n");
+
     // return DetailedMeal object by calling the above mentioned constructor
     return DetailedMeal(
         detailedMealId: json['idMeal'] as String,
         detailedMealTitle: json['strMeal'] as String,
         detailedMealCategory: json['strCategory'] as String,
         detailedMealImageUrl: json['strMealThumb'] as String,
-        detailedMealIngredients: ingredients
-        );
+        detailedMealIngredients: ingredients,
+        detailedMealInstructions: instructions);
   }
 }

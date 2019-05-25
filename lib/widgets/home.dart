@@ -11,23 +11,37 @@ class Home extends StatefulWidget {
   HomeScreen createState() => HomeScreen();
 }
 
-class HomeScreen extends State<Home> {
-  // Variable in state for navigating through BottomNavigationBar item
-  int _currentIndex = 0;
+class HomeScreen extends State<Home> with TickerProviderStateMixin<Home>{
 
-  /*
-  Create List of a custom Widget that returns FutureBuilder object
-  that is used for getting the data that contains GridView items
-  when a bottom navigation bar item is selected
-   */
-  final List<Widget> _children = [
-    DataWidget(
-      keyword: "desert",
-    ),
-    DataWidget(
-      keyword: "seafood",
-    )
+  // List of DataWidget
+  final List<DataWidget> _dataWidgetTabs = [
+    new DataWidget(keyword: "Desert"),
+    new DataWidget(keyword: "Seafood"),
   ];
+
+  DataWidget _dataWidget;
+
+  TabController _tabController;
+
+  @override
+  void initState() {
+    // Initialize state, only run once
+    super.initState();
+    // Initiate TabController
+    _tabController = new TabController(length: 2, vsync: this);
+    // Initialize DataWidget
+    _dataWidget = _dataWidgetTabs[_tabController.index];
+    // Add listener to tabController
+    _tabController.addListener(_handleSelectedTabs);
+  }
+
+  void _handleSelectedTabs(){
+    setState(() {
+      // Change selected DataWidget
+      _dataWidget = _dataWidgetTabs[_tabController.index];
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -35,61 +49,34 @@ class HomeScreen extends State<Home> {
      * Return Scaffold that represents basic material design
      * visual layout structure
      */
+
     return Scaffold(
       appBar: AppBar(
-        /*
-        Set app bar title by calling the method to change the
-        app bar title based on _currentIndex
-         */
-        title: setAppBarTitle(_currentIndex),
+        // Set title based on selected DataWidget
+        title: Text(_dataWidget.keyword),
         // Text theme to manage fonts
         textTheme: TextTheme(
             title: TextStyle(
                 fontSize: 20.0,
                 fontWeight: FontWeight.bold,
                 fontFamily: 'Nunito')),
+        // TabBar ini adalah TabLayout di Android
+        bottom: TabBar(
+          // Set controller into TabBar
+          controller: _tabController,
+          tabs: <Widget>[
+            Tab(icon: new Icon(Icons.cake), text : "Desert"),
+            Tab(icon: new Icon(Icons.restaurant), text: "Seafood"),
+          ],
+        ),
       ),
-      // Content of the scaffold, shows the current index of the list
-      body: _children[_currentIndex],
-      // Set bottomNavigationBar in Scaffold
-      bottomNavigationBar: BottomNavigationBar(
-        // Call onItemTapped that takes currentIndex as argument
-          onTap: onItemTapped,
-          // Set the current index for selected item
-          currentIndex: _currentIndex,
-          /*
-        Set the items in BottomNavigationBar class
-        (BottomNavigationBar is the group,
-        BottomNavigationBarItem is the member of the group)
-         */
-          items: [
-            BottomNavigationBarItem(
-                icon: new Icon(Icons.fastfood), title: new Text("Desert")),
-            BottomNavigationBarItem(
-                icon: new Icon(Icons.cake), title: new Text("Seafood"))
-          ]),
+      // Content of the scaffold, shows the selected tab view based on selected index
+      body: TabBarView(
+        // Set controller
+        controller: _tabController,
+        // Set children, which is the content
+        children: _dataWidgetTabs,
+      ),
     );
-  }
-
-  void onItemTapped(int index) {
-    /*
-    Set state to change the selected BottomBarNavigation item
-    as well as changing the body content since it is related to
-    BottomNavigationBar item
-     */
-    setState(() {
-      _currentIndex = index;
-    });
-  }
-
-  // Set app bar title in response to current index
-  Widget setAppBarTitle(int index) {
-    if (index == 0) {
-      // Return Text that contains Breakfast that shows the breakfast section
-      return Text("Desert");
-    } else {
-      // Return Text that contains Dessert that shows the dessert section
-      return Text("Seafood");
-    }
   }
 }

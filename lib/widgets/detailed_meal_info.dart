@@ -45,31 +45,28 @@ class _DetailedMealInfoState extends State<DetailedMealInfo> {
       resizeToAvoidBottomPadding: false,
       // Create ListView object sebagai isi dari Scaffold agar scrollable
       body: new ListView(
+        padding: EdgeInsets.all(16.0),
         // Atur isi dari ListView
         children: <Widget>[
-          // Padding object agar enable padding di circle image
-          new Padding(
-            padding: EdgeInsets.all(8.0),
-            // Align object agar dapat align circle image
-            child: Align(
-              alignment: Alignment.center,
-              child: Container(
-                // Atur width dari Container
-                width: 125.0,
-                // Atur height dari Container
-                height: 125.0,
-                // Decoration to be filled with image
-                decoration: new BoxDecoration(
-                    // Atur decoration shape menjadi circle
-                    shape: BoxShape.circle,
-                    // Image from Decoration
-                    image: new DecorationImage(
-                        // Sesuaikan image size dengan container size (width + height)
-                        fit: BoxFit.fill,
-                        // Image source from DecorationImage
-                        image: new NetworkImage(
-                            widget.detailedMeals[0].detailedMealImageUrl))),
-              ),
+          // Align object agar adjust image ke center
+          new Align(
+            alignment: Alignment.center,
+            child: Container(
+              // Atur width dari Container
+              width: 125.0,
+              // Atur height dari Container
+              height: 125.0,
+              // Decoration to be filled with image
+              decoration: new BoxDecoration(
+                // Atur decoration shape menjadi circle
+                  shape: BoxShape.circle,
+                  // Image from Decoration
+                  image: new DecorationImage(
+                    // Sesuaikan image size dengan container size (width + height)
+                      fit: BoxFit.fill,
+                      // Image source from DecorationImage
+                      image: new NetworkImage(
+                          widget.detailedMeals[0].detailedMealImageUrl))),
             ),
           ),
           // Align untuk adjust letak dari meal title
@@ -115,7 +112,7 @@ class _DetailedMealInfoState extends State<DetailedMealInfo> {
             // Align the text into the left side
             alignment: Alignment.centerLeft,
             child: Container(
-              padding: EdgeInsets.only(left: 16.0, top: 4.0),
+              padding: EdgeInsets.only(top: 4.0),
               child: Text(
                 // content of the text
                 'Ingredients:',
@@ -129,7 +126,24 @@ class _DetailedMealInfoState extends State<DetailedMealInfo> {
             // Align the text into the left side
             alignment: Alignment.centerLeft,
             child: new Column(
-                children: createIngredientsList(widget.detailedMeals[0].detailedMealIngredients)),
+                children: createIngredientsList(widget.detailedMeals[0].detailedMealIngredients)
+            ),
+          ),
+          new Align(
+            alignment : Alignment.centerLeft,
+            child: Container(
+              padding: EdgeInsets.only(top: 4.0),
+              child: Text(
+                "Instructions:",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+          new Align(
+            alignment: Alignment.centerLeft,
+            child: new Column(
+              children : createInstructionsList(widget.detailedMeals[0].detailedMealInstructions),
+            ),
           )
         ],
       ),
@@ -152,8 +166,8 @@ List<Padding> createIngredientsList(List<String> stringList) {
        */
       childrenTexts.add(
         new Padding(
-          // Atur padding di text, yaitu left, right dan top padding
-          padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 4.0),
+          // Atur padding di text, yaitu top padding
+          padding: EdgeInsets.only(top: 4.0),
           // Align object untuk enable text alignment
           child: Align(
             alignment: Alignment.centerLeft,
@@ -168,4 +182,26 @@ List<Padding> createIngredientsList(List<String> stringList) {
 
   }
   return childrenTexts;
+}
+
+List<Padding> createInstructionsList(List<String> stringList) {
+  List<Padding> instructionTexts = List<Padding>();
+
+  // Check if member exist in List of String
+  for (String string in stringList) {
+    instructionTexts.add(
+      new Padding(
+        padding: EdgeInsets.only(top: 4.0),
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: Container(
+            child: Text('*) ' + string),
+          ),
+        ),
+      ),
+    );
+  }
+
+  return instructionTexts;
+
 }

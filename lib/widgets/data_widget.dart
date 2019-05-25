@@ -21,14 +21,31 @@ class DataWidget extends StatefulWidget {
 }
 
 // State untuk membangun widget dan juga menampung variable yang akan berubah
-class _DataWidgetState extends State<DataWidget> {
+class _DataWidgetState extends State<DataWidget> with AutomaticKeepAliveClientMixin<DataWidget> {
+
+  Future<List<Meal>> meals;
+
+  @override
+  // Make the state keep alive, which is useful when we want to navigate into other selected tabs
+  bool get wantKeepAlive => true;
+
+  // init state
+  @override
+  void initState() {
+    super.initState();
+    // This line of code helps in order to create the future once
+    meals = fetchMeals(http.Client(), widget.keyword);
+  }
+
   // Build the widget
   @override
   Widget build(BuildContext context) {
+    // Use super.build because of using AutomaticKeepAliveMixin
+    super.build(context);
     // Return FutureBuilder object that brings List of Meal as input data type
     return FutureBuilder<List<Meal>>(
-      // Call method fetchMeals that takes keyword by calling the StatefulWidget
-      future: fetchMeals(http.Client(), widget.keyword),
+      // Take meals variable based on initState
+      future: meals,
       // Build the Future from FutureBuilder
       builder: (context, snapshot) {
         // Print error message in snapshot (interaction yang berkaitan dengan async computation)

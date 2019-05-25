@@ -27,9 +27,8 @@ Future<List<Meal>> fetchMeals(http.Client client, String keyword) async {
   final response = await client
       .get('https://www.themealdb.com/api/json/v1/1/filter.php?c=' + keyword);
 
-  // Check if response is successfully loadedm
+  // Check if response is successfully loaded
   if (response.statusCode == 200) {
-
     /**
      * Use the compute function to run parseMeals in a separate isolate, which is
      * to preventing the app freezes when parsing and convert into JSON,

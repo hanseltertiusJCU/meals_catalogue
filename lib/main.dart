@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'widgets/home.dart';
 
 // Final variable value for API key in order for easier modification
@@ -16,14 +15,18 @@ class MyApp extends StatelessWidget {
     return new MaterialApp(
       title: appTitle,
       theme: ThemeData(
-          // This is the theme of your application.
+        // This is the theme of your application.
 
-          // Attribute primaryColor for the ability to access Colors attribute
-          // instead of having to access MaterialColor
-          primaryColor: Colors.green[600],
+        // Attribute primaryColor for the ability to access Colors attribute
+        // instead of having to access MaterialColor
+        primaryColor: Colors.green[600],
 
-          // Set font family
-          fontFamily: 'Nunito'),
+        // Color Accent for tab selected
+        accentColor: Colors.white,
+
+        // Set font family
+        fontFamily: 'Nunito',
+      ),
       home: Home(title: appTitle),
     );
   }

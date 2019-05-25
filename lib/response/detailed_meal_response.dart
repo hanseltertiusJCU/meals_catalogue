@@ -1,10 +1,8 @@
 import 'package:meals_catalogue/model/detailed_meal.dart';
 
-/// Class ini berguna untuk mengakses json object "recipe" attribute
+/// Class ini berguna untuk mengakses json array "meals" attribute
 class DetailedMealResponse {
-  // DetailedMeal object
-
-  // todo: mesti ganti DetailedMeal ke Meal dengan membawa beberapa situation
+  // List of DetailedMeal object
   List<DetailedMeal> detailedMeals;
 
   // Constructor untuk DetailedMealResponse
@@ -19,8 +17,6 @@ class DetailedMealResponse {
       json['meals'].forEach((v){
         detailedMeals.add(new DetailedMeal.fromJson(v));
       });
-
-
 
     }
   }
