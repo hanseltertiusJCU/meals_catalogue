@@ -21,7 +21,7 @@ class DetailedMeal {
   // Create DetailedMeal object that sets the variable from JSON
   factory DetailedMeal.fromJson(Map<String, dynamic> json) {
     // Create new List object in order to prevent exception that add on null
-    List<String> ingredients = new List<String>();
+    List<String> ingredients = List<String>();
 
     // Loop 20 times based on strIngredients 1 - 20 in JSON
     for (int i = 1; i <= 20; i++) {
@@ -34,7 +34,7 @@ class DetailedMeal {
       ingredients.add(ingredient);
     }
 
-    List<String> instructions = new List<String>();
+    List<String> instructions = List<String>();
 
     String fullInstructions = json['strInstructions'] as String;
 

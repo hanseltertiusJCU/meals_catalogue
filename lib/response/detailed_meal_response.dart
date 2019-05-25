@@ -11,13 +11,11 @@ class DetailedMealResponse {
   DetailedMealResponse.fromJson(Map<String, dynamic> json) {
     // Check if the value in json object from 'recipe' attribute is not null
     if (json['meals'] != null) {
+      detailedMeals = List<DetailedMeal>();
 
-      detailedMeals = new List<DetailedMeal>();
-
-      json['meals'].forEach((v){
-        detailedMeals.add(new DetailedMeal.fromJson(v));
+      json['meals'].forEach((v) {
+        detailedMeals.add(DetailedMeal.fromJson(v));
       });
-
     }
   }
 }

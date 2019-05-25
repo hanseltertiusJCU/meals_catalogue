@@ -13,7 +13,7 @@ List<DetailedMeal> parseDetailedMeals(String responseBody) {
   final responseJson = json.decode(responseBody);
 
   // Called the named constructor in order to return DetailedMeal object
-  final detailedMealsResponse = new DetailedMealResponse.fromJson(responseJson); // salahnya di sini
+  final detailedMealsResponse = DetailedMealResponse.fromJson(responseJson);
 
   // Akses variable datailedMeal dari DetailedMealResponse
   return detailedMealsResponse.detailedMeals;

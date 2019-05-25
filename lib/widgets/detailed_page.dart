@@ -44,7 +44,7 @@ class _DetailedPageState extends State<DetailedPage> {
            * adalah widget yang berinteraksi dgn Future object
            */
           child: FutureBuilder<List<DetailedMeal>>(
-            /**
+              /**
              * Future attribute dari future builder,
              * valuenya itu hasil dari calling method that return Future object
              */
@@ -56,10 +56,10 @@ class _DetailedPageState extends State<DetailedPage> {
                 return snapshot.hasData
                     ? DetailedMealInfo(detailedMeals: snapshot.data)
                     : Center(
-                    child: CircularProgressIndicator(
-                      // Set the color of progress bar
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                            Colors.green[600])));
+                        child: CircularProgressIndicator(
+                            // Set the color of progress bar
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                                Colors.green[600])));
               }),
         ));
   }

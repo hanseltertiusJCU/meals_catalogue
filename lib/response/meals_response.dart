@@ -12,11 +12,11 @@ class MealResponse {
     // Cek jika 'recipes' di JSON ada isi
     if (json['meals'] != null) {
       // Initiate List object that has Meal as generic
-      meals = new List<Meal>();
+      meals = List<Meal>();
       // Iterate through the content in json['recipes']
       json['meals'].forEach((v) {
         // Add Meal object into List
-        meals.add(new Meal.fromJson(v));
+        meals.add(Meal.fromJson(v));
       });
     }
   }

@@ -13,10 +13,23 @@ class MealsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Create a new GridView object dengan GridView.builder
+    // Create a  GridView object dengan GridView.builder
     return GridView.builder(
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
+          /*
+           Set how many items are there in a row based on orientation,
+           in order to make the GridView items size reasonable
+            */
+          crossAxisCount:
+              // Check if orientation is potrait
+              MediaQuery.of(context).orientation == Orientation.portrait
+                  ? 2 // Potrait
+                  : 3 // Landscape
+          ,
+          // Margin for row in GridView, follow material design
+          crossAxisSpacing: 16.0,
+          // Margin for column GridView, follow material design
+          mainAxisSpacing: 16.0,
         ),
         // Use the padding to respect material design
         padding: EdgeInsets.all(16.0),
@@ -24,24 +37,26 @@ class MealsList extends StatelessWidget {
         itemCount: meals.length,
         itemBuilder: (context, index) {
           // Source hero
-          return new Hero(
+          return Hero(
               // tag in Source hero
               tag: meals[index].mealId,
-              child: new Stack(
+              child: Stack(
                 children: <Widget>[
-                  new Card(
+                  Card(
                     // Elevation to make the card float
                     elevation: 2.0,
-                    child: new Column(
+                    child: Column(
                       children: <Widget>[
                         // Use layout weight in Expanded class to prevent overflow
-                        new Expanded(
+                        Expanded(
                           // Layout weight is 1
                           flex: 1,
-                          child: // Padding object to enable padding in Image
-                              new Padding(
-                            padding: EdgeInsets.all(8.0),
-                            // Set child that contains Image.network
+                          // Class ClipRRect for creating border radius in Image
+                          child: ClipRRect(
+                            // BorderRadius.only makes the border radius on the top side
+                            borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(5.0),
+                                topRight: Radius.circular(5.0)),
                             child: Image.network(
                               // Image source from web
                               meals[index].mealImageUrl,
@@ -54,11 +69,11 @@ class MealsList extends StatelessWidget {
                           ),
                         ),
                         // Use layout weight in Expanded class to prevent overflow
-                        new Expanded(
+                        Expanded(
                           // Layout weight is 1
                           flex: 1,
                           child: // Padding object for enable padding into text
-                              new Padding(
+                          Padding(
                             padding: EdgeInsets.all(4.0),
                             child: Align(
                               // Align the text into the center
@@ -74,17 +89,25 @@ class MealsList extends StatelessWidget {
                       ],
                     ),
                   ),
-                  new Positioned.fill(
-                      child: new Material(
-                          color: Colors.transparent,
-                          child: new InkWell(
-                            onTap: () => Navigator.push(
+                  // Ripple effect
+                  Positioned.fill(
+                    child: ClipRRect(
+                      // Make the ripple effect follow the shape
+                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: () => Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) =>
                                       DetailedPage(meal: meals[index]),
-                                )),
-                          ))),
+                                ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ));
         });

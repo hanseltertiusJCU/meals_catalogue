@@ -13,7 +13,7 @@ List<Meal> parseMeals(String responseBody) {
   final responseJson = json.decode(responseBody);
 
   // Call the named constructor in order to return List<Meal> object
-  final mealsResponse = new MealResponse.fromJson(responseJson);
+  final mealsResponse = MealResponse.fromJson(responseJson);
 
   // Return variable meals di MealResponse class
   return mealsResponse.meals;

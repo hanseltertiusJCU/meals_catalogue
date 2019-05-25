@@ -19,14 +19,14 @@ class _DetailedMealInfoState extends State<DetailedMealInfo> {
     Bikin Future object agar ketika tampil SnackBar,
     menampilkan content dari DetailedMealInfoState tidak terganggu.
      */
-    new Future<Null>.delayed(Duration.zero, () {
+    Future<Null>.delayed(Duration.zero, () {
       /*
       Show Snackbar that contain title in DetailedMeal and
       it accesses the Stateful Widget
        */
       Scaffold.of(context).showSnackBar(
-        new SnackBar(
-            content: new Text(
+        SnackBar(
+            content: Text(
           // Content of the Text
           widget.detailedMeals[0].detailedMealTitle,
           // Attribute for setting font family
@@ -41,15 +41,15 @@ class _DetailedMealInfoState extends State<DetailedMealInfo> {
   @override
   Widget build(BuildContext context) {
     // Return new Scaffold object
-    return new Scaffold(
+    return Scaffold(
       resizeToAvoidBottomPadding: false,
       // Create ListView object sebagai isi dari Scaffold agar scrollable
-      body: new ListView(
+      body: ListView(
         padding: EdgeInsets.all(16.0),
         // Atur isi dari ListView
         children: <Widget>[
           // Align object agar adjust image ke center
-          new Align(
+          Align(
             alignment: Alignment.center,
             child: Container(
               // Atur width dari Container
@@ -57,20 +57,20 @@ class _DetailedMealInfoState extends State<DetailedMealInfo> {
               // Atur height dari Container
               height: 125.0,
               // Decoration to be filled with image
-              decoration: new BoxDecoration(
-                // Atur decoration shape menjadi circle
+              decoration: BoxDecoration(
+                  // Atur decoration shape menjadi circle
                   shape: BoxShape.circle,
                   // Image from Decoration
-                  image: new DecorationImage(
-                    // Sesuaikan image size dengan container size (width + height)
+                  image: DecorationImage(
+                      // Sesuaikan image size dengan container size (width + height)
                       fit: BoxFit.fill,
                       // Image source from DecorationImage
-                      image: new NetworkImage(
+                      image: NetworkImage(
                           widget.detailedMeals[0].detailedMealImageUrl))),
             ),
           ),
           // Align untuk adjust letak dari meal title
-          new Align(
+          Align(
             alignment: Alignment.center,
             child: Container(
               padding: EdgeInsets.only(top: 4.0),
@@ -90,7 +90,7 @@ class _DetailedMealInfoState extends State<DetailedMealInfo> {
             ),
           ),
           // Align untuk adjust letak dari publisher text
-          new Align(
+          Align(
             alignment: Alignment.center,
             child: Container(
               padding: EdgeInsets.only(top: 4.0),
@@ -108,7 +108,7 @@ class _DetailedMealInfoState extends State<DetailedMealInfo> {
             ),
           ),
           // Align untuk adjust letak dari ingredients list title:
-          new Align(
+          Align(
             // Align the text into the left side
             alignment: Alignment.centerLeft,
             child: Container(
@@ -122,15 +122,15 @@ class _DetailedMealInfoState extends State<DetailedMealInfo> {
             ),
           ),
           // Align untuk adjust letak dari isi ingredients
-          new Align(
+          Align(
             // Align the text into the left side
             alignment: Alignment.centerLeft,
-            child: new Column(
-                children: createIngredientsList(widget.detailedMeals[0].detailedMealIngredients)
-            ),
+            child: Column(
+                children: createIngredientsList(
+                    widget.detailedMeals[0].detailedMealIngredients)),
           ),
-          new Align(
-            alignment : Alignment.centerLeft,
+          Align(
+            alignment: Alignment.centerLeft,
             child: Container(
               padding: EdgeInsets.only(top: 4.0),
               child: Text(
@@ -139,10 +139,11 @@ class _DetailedMealInfoState extends State<DetailedMealInfo> {
               ),
             ),
           ),
-          new Align(
+          Align(
             alignment: Alignment.centerLeft,
-            child: new Column(
-              children : createInstructionsList(widget.detailedMeals[0].detailedMealInstructions),
+            child: Column(
+              children: createInstructionsList(
+                  widget.detailedMeals[0].detailedMealInstructions),
             ),
           )
         ],
@@ -157,15 +158,14 @@ List<Padding> createIngredientsList(List<String> stringList) {
 
   // Check if member exist in List of String
   for (String string in stringList) {
-
     // Cek jika length of String object itu lebih dari 0 alias ada isinya
-    if(string.length > 0){
+    if (string.length > 0) {
       /**
        * Add text into padding object.
        * Note : pake padding agar enable Padding di text
        */
       childrenTexts.add(
-        new Padding(
+        Padding(
           // Atur padding di text, yaitu top padding
           padding: EdgeInsets.only(top: 4.0),
           // Align object untuk enable text alignment
@@ -179,7 +179,6 @@ List<Padding> createIngredientsList(List<String> stringList) {
         ),
       );
     }
-
   }
   return childrenTexts;
 }
@@ -190,7 +189,7 @@ List<Padding> createInstructionsList(List<String> stringList) {
   // Check if member exist in List of String
   for (String string in stringList) {
     instructionTexts.add(
-      new Padding(
+      Padding(
         padding: EdgeInsets.only(top: 4.0),
         child: Align(
           alignment: Alignment.centerLeft,
@@ -203,5 +202,4 @@ List<Padding> createInstructionsList(List<String> stringList) {
   }
 
   return instructionTexts;
-
 }

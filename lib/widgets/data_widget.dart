@@ -21,8 +21,8 @@ class DataWidget extends StatefulWidget {
 }
 
 // State untuk membangun widget dan juga menampung variable yang akan berubah
-class _DataWidgetState extends State<DataWidget> with AutomaticKeepAliveClientMixin<DataWidget> {
-
+class _DataWidgetState extends State<DataWidget>
+    with AutomaticKeepAliveClientMixin<DataWidget> {
   Future<List<Meal>> meals;
 
   @override
@@ -55,10 +55,10 @@ class _DataWidgetState extends State<DataWidget> with AutomaticKeepAliveClientMi
         return snapshot.hasData
             ? MealsList(meals: snapshot.data) // Return when true
             : Center(
-            child: CircularProgressIndicator(
-              // Set the color of progress bar
-                valueColor: AlwaysStoppedAnimation<Color>(
-                    Colors.green[600]))); // Return when false
+                child: CircularProgressIndicator(
+                    // Set the color of progress bar
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                        Colors.green[600]))); // Return when false
       },
     );
   }
