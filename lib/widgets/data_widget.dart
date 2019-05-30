@@ -60,21 +60,28 @@ class _DataWidgetState extends State<DataWidget>
       future: meals,
       // Build the Future from FutureBuilder
       builder: (context, snapshot) {
-        // Print error message in snapshot (interaction yang berkaitan dengan async computation)
-        if (snapshot.hasError) print(snapshot.error);
+        if (snapshot.hasError)
+          print(snapshot.error);
 
-        // Check if snapshot has data
-        return snapshot.hasData
-            ? MealsList(meals: snapshot.data) // Return when true
-            : Center(
-                child: CircularProgressIndicator(
-                    // Set the color of progress bar
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                        Colors.green[600]))); // Return when false
+        switch(snapshot.connectionState){
+          case ConnectionState.none:
+            break;
+          case ConnectionState.waiting:
+            return Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.green[600])));
+          case ConnectionState.active:
+            break;
+          case ConnectionState.done:
+            if(snapshot.data.length > 0) {
+              return MealsList(meals: snapshot.data);
+            } else {
+              return Center(child: Text("There is no data given"));
+            }
+        }
       },
     );
   }
 
+  // load when text input is submitted, which is to change the future
   loadSearchMeals(String keyword) {
     setState(() {
       meals = fetchSearchMeals(http.Client(), keyword);

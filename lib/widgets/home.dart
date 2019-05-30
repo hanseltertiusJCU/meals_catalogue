@@ -31,9 +31,6 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
     color : Colors.white
   );
 
-  // Determine whether we are going to search
-  bool _isSearching;
-
   // Search text
   String _searchText = "";
 
@@ -41,38 +38,32 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
   Widget appBarTitle;
 
   HomeScreen() {
+    // Add listener to TextEditingController, which is useful for keyword in search
     _textEditingController.addListener((){
       if(_textEditingController.text.isEmpty){
         setState(() {
-          _isSearching = false;
           _searchText = "";
         });
       } else {
         setState(() {
-          _isSearching = true;
           _searchText = _textEditingController.text;
         });
       }
     });
   }
 
-  void handleSearchStart(){
-    setState(() {
-      _isSearching = true;
-    });
-  }
-
+  // Method for returning back into search icon in action bar menu
   void handleSearchEnd(){
     setState(() {
       this.searchIcon = new Icon(
         Icons.search,
         color: Colors.white,
       );
+      // todo: mungkin ada gimmick gt, pake boolean jika uda perna search, jika belum kita tinggal pake datawidget keyword
       this.appBarTitle = new Text(
         _dataWidget.keyword
       );
-      _isSearching = false;
-      _textEditingController.clear();
+      _textEditingController.clear(); // Set text value in edit text into empty
     });
   }
 
@@ -87,8 +78,6 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
     // Add listener to tabController
     _tabController.addListener(_handleSelectedTabs);
     appBarTitle = Text(_dataWidget.keyword);
-    // Initiate is searching mode
-    _isSearching = false;
   }
 
   void _handleSelectedTabs() {
@@ -118,7 +107,9 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
           IconButton(
             icon: searchIcon,
             // Call the method when the icon button on pressed
-            onPressed: (){setSearchKeyword(_dataWidget.searchEnabled);},
+            onPressed: () {
+              setSearchKeyword(_dataWidget.searchEnabled);
+            },
           )
         ],
         // todo: atur keyword bs jadi title nya itu dari search, trus panggil set state thing based on keyword
@@ -156,6 +147,7 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
     if(isSearchEnabled){
       setState(() {
         if(this.searchIcon.icon == Icons.search) {
+          // Change icon action bar
           this.searchIcon = new Icon(
             Icons.close,
             color: Colors.white,
@@ -172,12 +164,24 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
             decoration: new InputDecoration(
               prefixIcon: Icon(Icons.search, color: Colors.white),
               hintText: "Search meals",
+              // Activate when we pressed IconButton search
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(
+                  color: Colors.white,
+                ),
+              ),
+              // Activate when we want to input text
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(
+                  color: Colors.white,
+                ),
+              ),
+              // Change text hint color
               hintStyle: TextStyle(color: Colors.white),
             ),
           ); // Change app bar title into edit text
-          handleSearchStart();
         } else {
-          handleSearchEnd();
+          handleSearchEnd(); // Call method to end search
         }
       });
     } else {
