@@ -59,10 +59,7 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
         Icons.search,
         color: Colors.white,
       );
-      // todo: mungkin ada gimmick gt, pake boolean jika uda perna search, jika belum kita tinggal pake datawidget keyword
-      this.appBarTitle = new Text(
-        _dataWidget.keyword
-      );
+      appBarTitle = Text(_dataWidget.keyword);
       _textEditingController.clear(); // Set text value in edit text into empty
     });
   }
@@ -77,6 +74,7 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
     _dataWidget = _dataWidgetTabs[_tabController.index];
     // Add listener to tabController
     _tabController.addListener(_handleSelectedTabs);
+    // Set app bar title
     appBarTitle = Text(_dataWidget.keyword);
   }
 
@@ -84,7 +82,6 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
     setState(() {
       // Change selected DataWidget
       _dataWidget = _dataWidgetTabs[_tabController.index];
-      // Change app bar title
       appBarTitle = Text(_dataWidget.keyword);
       // Call method agar ke search icon when tab changed
       handleSearchEnd();
@@ -102,17 +99,7 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
       appBar: AppBar(
         // Set title based on selected DataWidget
         title: appBarTitle,
-        // todo: atur actions, tar dapatin data widget is search state, klo disable ya tinggal pake onpressed null
-        actions: <Widget>[
-          IconButton(
-            icon: searchIcon,
-            // Call the method when the icon button on pressed
-            onPressed: () {
-              setSearchKeyword(_dataWidget.searchEnabled);
-            },
-          )
-        ],
-        // todo: atur keyword bs jadi title nya itu dari search, trus panggil set state thing based on keyword
+        actions: getMenuIcon(_dataWidget.searchEnabled),
         // Text theme to manage fonts
         textTheme: TextTheme(
           title: TextStyle(
@@ -141,9 +128,25 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
     );
   }
 
-  // Prompt Search toolbar
+  // Method for getting the menu icon based on searchEnabled
+  List<Widget> getMenuIcon(bool isSearchEnabled){
+    List<Widget> menuIcons = List<Widget>();
+    if(isSearchEnabled){
+      // Add into list of widgets
+      menuIcons.add(IconButton(
+          icon: this.searchIcon,
+          onPressed: () {
+            setSearchKeyword(isSearchEnabled);
+          }),
+      );
+      return menuIcons;
+    } else {
+      return null;
+    }
+  }
+
+  // Method for enabling search feature
   setSearchKeyword(bool isSearchEnabled) {
-    // todo: if is searching
     if(isSearchEnabled){
       setState(() {
         if(this.searchIcon.icon == Icons.search) {
