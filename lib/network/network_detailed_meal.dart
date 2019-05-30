@@ -16,7 +16,7 @@ List<DetailedMeal> parseDetailedMeals(String responseBody) {
   final detailedMealsResponse = DetailedMealResponse.fromJson(responseJson);
 
   // Akses variable datailedMeal dari DetailedMealResponse
-  return detailedMealsResponse.detailedMeals;
+  return detailedMealsResponse.detailedMealsList;
 }
 
 /// Method ini berguna untuk menjalankan network request dengan menggunakan

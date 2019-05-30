@@ -16,7 +16,7 @@ List<Meal> parseMeals(String responseBody) {
   final mealsResponse = MealResponse.fromJson(responseJson);
 
   // Return variable meals di MealResponse class
-  return mealsResponse.meals;
+  return mealsResponse.getMealsList();
 }
 
 /// Method ini berguna untuk menjalankan network request dengan menggunakan

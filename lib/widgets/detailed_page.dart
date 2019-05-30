@@ -32,6 +32,7 @@ class _DetailedPageState extends State<DetailedPage> {
                   fontWeight: FontWeight.bold,
                   fontFamily: 'Nunito')),
         ),
+        // todo: action untuk favorite state or not, jika pake mark as favorite gt ya tinggal pasang snackbar
         /**
          * Return Hero object sebagai destination hero dengan
          * membawa mealTitle di Meal object, jadi dy muncul animation

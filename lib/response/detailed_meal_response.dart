@@ -3,7 +3,7 @@ import 'package:meals_catalogue/model/detailed_meal.dart';
 /// Class ini berguna untuk mengakses json array "meals" attribute
 class DetailedMealResponse {
   // List of DetailedMeal object
-  List<DetailedMeal> detailedMeals;
+  List<DetailedMeal> detailedMeals = new List<DetailedMeal>();
 
   // Constructor untuk DetailedMealResponse
   DetailedMealResponse({this.detailedMeals});
@@ -17,5 +17,10 @@ class DetailedMealResponse {
         detailedMeals.add(DetailedMeal.fromJson(v));
       });
     }
+  }
+
+  // Getter to get detailedMeals variable
+  List<DetailedMeal> get detailedMealsList {
+    return detailedMeals;
   }
 }

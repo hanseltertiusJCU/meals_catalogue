@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:meals_catalogue/model/meal.dart';
 import 'package:meals_catalogue/network/network_meals.dart';
+import 'package:meals_catalogue/network/network_search_meals.dart';
 import 'package:meals_catalogue/widgets/meals_list.dart';
 
 // Import HTTP package as http (variable name from the package)
@@ -8,16 +9,27 @@ import 'package:http/http.dart' as http;
 
 /// Class ini menjadi stateful widget agar isi dari widget
 /// dapat meresponse perubahan dari state di BottomNavigationBarItem
+// todo: bikin app bar thing in there
 class DataWidget extends StatefulWidget {
+  // todo: parameter is search mesti pake, soalnya bakal ad atur2 enable dan disable
   // Create constructor that uses key-value pair
-  DataWidget({Key key, this.keyword}) : super(key: key);
+  DataWidget({Key key, this.keyword, this.searchEnabled}) : super(key: key);
 
   // Keyword for search query
   final String keyword;
 
+  // Search mode enabled or not
+  final bool searchEnabled;
+
+  // Create dataWidgetState object to access from another widget
+  _DataWidgetState dataWidgetState;
+
   // Create state in StatefulWidget
   @override
-  _DataWidgetState createState() => _DataWidgetState();
+  _DataWidgetState createState() {
+    dataWidgetState = _DataWidgetState();
+    return dataWidgetState;
+  }
 }
 
 // State untuk membangun widget dan juga menampung variable yang akan berubah
@@ -62,4 +74,12 @@ class _DataWidgetState extends State<DataWidget>
       },
     );
   }
+
+  loadSearchMeals(String keyword) {
+    setState(() {
+      meals = fetchSearchMeals(http.Client(), keyword);
+    });
+  }
+
 }
+
