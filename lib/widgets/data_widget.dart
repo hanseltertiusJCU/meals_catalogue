@@ -37,6 +37,8 @@ class _DataWidgetState extends State<DataWidget>
     with AutomaticKeepAliveClientMixin<DataWidget> {
   Future<List<Meal>> meals;
 
+  // todo: bikin query method jika mode searchablenya false, trus query based on mode (desert or seafood)
+
   @override
   // Make the state keep alive, which is useful when we want to navigate into other selected tabs
   bool get wantKeepAlive => true;
@@ -72,6 +74,7 @@ class _DataWidgetState extends State<DataWidget>
             break;
           case ConnectionState.done:
             if(snapshot.data.length > 0) {
+              // todo: tinggal bikin mode ke parameter thing
               return MealsList(meals: snapshot.data);
             } else {
               return Center(child: Text("There is no data given"));
@@ -82,9 +85,9 @@ class _DataWidgetState extends State<DataWidget>
   }
 
   // load when text input is submitted, which is to change the future
-  loadSearchMeals(String keyword) {
+  loadSearchMeals(String searchKeyword) {
     setState(() {
-      meals = fetchSearchMeals(http.Client(), keyword);
+      meals = fetchSearchMeals(http.Client(), searchKeyword);
     });
   }
 
