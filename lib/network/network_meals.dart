@@ -25,7 +25,6 @@ Future<List<Meal>> fetchMeals(http.Client client, String keyword) async {
     // Use compute to avoid jank and call parseMeals
     return compute(parseMeals, response.body);
   } else {
-    // throw Exception that shows the data loading has failed
     throw Exception("Failed to load meals");
   }
 }

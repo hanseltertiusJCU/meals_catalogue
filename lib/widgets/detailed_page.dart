@@ -21,11 +21,10 @@ class DetailedPage extends StatefulWidget {
 }
 
 class _DetailedPageState extends State<DetailedPage> {
-  // todo: bikin icons, trus ada state false and true untuk menyatakan bahwa id ini termasuk dalam favorite atau tidak
   Icon favoriteIcon = Icon(
     Icons.favorite_border,
     color: Colors.white,
-  ); // todo: emg harus initialize ya, mesti di
+  );
 
   var mealsDatabaseHelper = MealsDBHelper();
 
@@ -45,7 +44,7 @@ class _DetailedPageState extends State<DetailedPage> {
 
   @override
   void initState() {
-    // Prevent loading while
+    // Prevent loading while select mark item as favorite
     futureDetailedMeal = fetchDetailedMeals(http.Client(), widget.meal.mealId);
     if (widget.dataWidget.databaseMode == "desert") {
       checkItemPartOfDesertDb();
@@ -73,8 +72,7 @@ class _DetailedPageState extends State<DetailedPage> {
   }
 
   checkItemPartOfSeafoodDb() async {
-    favoriteSeafoodCheck =
-        await mealsDatabaseHelper.getFavoriteSeafoodDataList();
+    favoriteSeafoodCheck = await mealsDatabaseHelper.getFavoriteSeafoodDataList();
     setState(() {
       for (int i = 0; i < favoriteSeafoodCheck.length; i++) {
         if (favoriteSeafoodCheck[i].mealId == widget.meal.mealId) {
@@ -160,11 +158,12 @@ class _DetailedPageState extends State<DetailedPage> {
         ));
   }
 
+
   // region button pressed
   enableFavoriteButtonPressed(bool isDataLoaded){
     setState(() {
       if(isDataLoaded){
-        setDataFavoriteUnfavorite(_isFavorite);
+        setDataFavoriteState(_isFavorite);
       } else {
         return null;
       }
@@ -172,7 +171,7 @@ class _DetailedPageState extends State<DetailedPage> {
 
   }
 
-  setDataFavoriteUnfavorite(bool modeFavorite) {
+  setDataFavoriteState(bool modeFavorite) {
     setState(() {
       if (modeFavorite) {
         if(widget.dataWidget.databaseMode == "desert"){
@@ -269,4 +268,6 @@ class _DetailedPageState extends State<DetailedPage> {
         .showSnackBar(snackBar); // todo: action undo, then readd or re-remove
   }
   // endregion
+
+  // todo : tinggal pake method untuk undo
 }

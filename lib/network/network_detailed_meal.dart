@@ -19,15 +19,9 @@ List<DetailedMeal> parseDetailedMeals(String responseBody) {
   return detailedMealsResponse.detailedMealsList;
 }
 
-/// Method ini berguna untuk menjalankan network request dengan menggunakan
-/// http.get() method
-Future<List<DetailedMeal>> fetchDetailedMeals(
-    http.Client client, String mealId) async {
-  // Dapatkan hasil dari HTTP.get method berupa Response object
-  final response = await client
-      .get('https://www.themealdb.com/api/json/v1/1/lookup.php?i=$mealId');
+Future<List<DetailedMeal>> fetchDetailedMeals(http.Client client, String mealId) async {
+  final response = await client.get('https://www.themealdb.com/api/json/v1/1/lookup.php?i=$mealId');
 
-  // Check if response is successfully loaded
   if (response.statusCode == 200) {
     /**
      * Use the compute function to run parseDetailedMeal in a separate isolate, which is
@@ -36,7 +30,6 @@ Future<List<DetailedMeal>> fetchDetailedMeals(
      */
     return compute(parseDetailedMeals, response.body);
   } else {
-    // throw Exception that shows the data loading has failed
     throw Exception('Failed to load detailed meal object');
   }
 }

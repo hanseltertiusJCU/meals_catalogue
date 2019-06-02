@@ -1,3 +1,4 @@
+import 'package:async/async.dart';
 import 'package:flutter/material.dart';
 import 'package:meals_catalogue/database/meals_db_helper.dart';
 import 'package:meals_catalogue/model/meal.dart';
@@ -32,37 +33,23 @@ class DataWidget extends StatefulWidget {
 }
 
 // State untuk membangun widget dan juga menampung variable yang akan berubah
-class _DataWidgetState extends State<DataWidget>
-    with AutomaticKeepAliveClientMixin<DataWidget> {
+class _DataWidgetState extends State<DataWidget> {
   Future<List<Meal>> meals;
 
   var mealsDatabaseHelper = MealsDBHelper();
 
-  @override
-  // Make the state keep alive, which is useful when we want to navigate into other selected tabs
-  bool get wantKeepAlive => true;
+  final AsyncMemoizer _asyncMemoizer = AsyncMemoizer();
 
   // init state
   @override
   void initState() {
     super.initState();
-    setState(() {
-      meals = fetchMeals(http.Client(), widget.keyword);
-      if(!widget.searchEnabled){
-        if(widget.databaseMode == "desert"){
-          meals = mealsDatabaseHelper.getFavoriteDesertDataList();
-        } else if(widget.databaseMode == "seafood"){
-          meals = mealsDatabaseHelper.getFavoriteSeafoodDataList();
-        }
-      }
-    });
+    meals = fetchFutureMeal(widget.searchEnabled, widget.databaseMode);
   }
 
   // Build the widget
   @override
   Widget build(BuildContext context) {
-    // Use super.build because of using AutomaticKeepAliveMixin
-    super.build(context);
     return FutureBuilder<List<Meal>>(
       future: meals,
       builder: (context, snapshot) {
@@ -90,6 +77,8 @@ class _DataWidgetState extends State<DataWidget>
 
         }
       },
+
+      // todo: automatic keep alive nya true hanya ketika searchable nya true
     );
   }
 
@@ -98,19 +87,37 @@ class _DataWidgetState extends State<DataWidget>
     print("load new meal");
     setState(() {
       meals = fetchSearchMeals(http.Client(), searchKeyword);
+      didUpdateWidget(widget);
     });
   }
 
-  // todo: method for requery data into database, based on mode, trus set state method
   reloadFavoriteMeals(String mode){
     setState(() {
       if(mode == "desert"){
         meals = mealsDatabaseHelper.getFavoriteDesertDataList();
+        didUpdateWidget(widget);
       } else if (mode == "seafood") {
         meals = mealsDatabaseHelper.getFavoriteSeafoodDataList();
+        didUpdateWidget(widget);
       }
     });
-    // todo: rebuild widget
+  }
+
+  Future<List<Meal>> fetchFutureMeal(bool searchableData, String databaseMode){
+    Future<List<Meal>> futureMeal;
+    this._asyncMemoizer.runOnce(() async{
+      if(searchableData){
+        futureMeal = fetchMeals(http.Client(), widget.keyword);
+      } else {
+        if(databaseMode == "desert"){
+          futureMeal = mealsDatabaseHelper.getFavoriteDesertDataList();
+        } else if(databaseMode == "seafood"){
+          futureMeal = mealsDatabaseHelper.getFavoriteSeafoodDataList();
+        }
+      }
+    });
+
+    return futureMeal;
   }
 }
 

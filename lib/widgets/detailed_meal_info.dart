@@ -126,7 +126,7 @@ class _DetailedMealInfoState extends State<DetailedMealInfo> {
             // Align the text into the left side
             alignment: Alignment.centerLeft,
             child: Column(
-                children: createIngredientsList(
+                children: createListIngredientsText(
                     widget.detailedMeals[0].detailedMealIngredients)),
           ),
           Align(
@@ -142,7 +142,7 @@ class _DetailedMealInfoState extends State<DetailedMealInfo> {
           Align(
             alignment: Alignment.centerLeft,
             child: Column(
-              children: createInstructionsList(
+              children: createListInstructionsText(
                   widget.detailedMeals[0].detailedMealInstructions),
             ),
           )
@@ -152,26 +152,16 @@ class _DetailedMealInfoState extends State<DetailedMealInfo> {
   }
 }
 
-/// Method ini berguna untuk retrieve List<Padding> object dari List<String>
-List<Padding> createIngredientsList(List<String> stringList) {
-  List<Padding> childrenTexts = List<Padding>();
+List<Padding> createListIngredientsText(List<String> stringList) {
+  List<Padding> ingredientTexts = List<Padding>();
 
-  // Check if member exist in List of String
   for (String string in stringList) {
-    // Cek jika length of String object itu lebih dari 0 alias ada isinya
     if (string.length > 0) {
-      /**
-       * Add text into padding object.
-       * Note : pake padding agar enable Padding di text
-       */
-      childrenTexts.add(
+      ingredientTexts.add(
         Padding(
-          // Atur padding di text, yaitu top padding
           padding: EdgeInsets.only(top: 4.0),
-          // Align object untuk enable text alignment
           child: Align(
             alignment: Alignment.centerLeft,
-            // Set text based on container
             child: Container(
               child: Text('*) ' + string),
             ),
@@ -180,13 +170,12 @@ List<Padding> createIngredientsList(List<String> stringList) {
       );
     }
   }
-  return childrenTexts;
+  return ingredientTexts;
 }
 
-List<Padding> createInstructionsList(List<String> stringList) {
+List<Padding> createListInstructionsText(List<String> stringList) {
   List<Padding> instructionTexts = List<Padding>();
 
-  // Check if member exist in List of String
   for (String string in stringList) {
     instructionTexts.add(
       Padding(
