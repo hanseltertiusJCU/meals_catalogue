@@ -49,6 +49,8 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
       } else {
         setState(() {
           _searchText = _textEditingController.text;
+          _dataWidget.keyword = _searchText;
+          // todo: ganti keywordnya
         });
       }
     });
@@ -93,11 +95,7 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
 
   @override
   Widget build(BuildContext context) {
-    /**
-     * Return Scaffold that represents basic material design
-     * visual layout structure
-     */
-
+    // todo: tinggal ganti balik jadi bottomnavigationbar
     return Scaffold(
       appBar: AppBar(
         // Set title based on selected DataWidget

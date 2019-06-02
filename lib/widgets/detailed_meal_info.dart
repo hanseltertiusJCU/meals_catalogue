@@ -27,11 +27,13 @@ class _DetailedMealInfoState extends State<DetailedMealInfo> {
       Scaffold.of(context).showSnackBar(
         SnackBar(
             content: Text(
-          // Content of the Text
-          widget.detailedMeals[0].detailedMealTitle,
-          // Attribute for setting font family
-          style: TextStyle(fontFamily: 'Nunito'),
-        )),
+              // Content of the Text
+              widget.detailedMeals[0].detailedMealTitle,
+              // Attribute for setting font family
+              style: TextStyle(fontFamily: 'Nunito'),
+            ),
+            duration: const Duration(seconds: 4),
+        ),
       );
     });
     super.initState();

@@ -246,28 +246,59 @@ class _DetailedPageState extends State<DetailedPage> {
 
   // region snackbar
   _displaySnackbar(BuildContext context, bool isFavorite) {
-    // Text value for displaying content in snackbar
-    Text text;
+    Text snackbarTextContent;
 
     if (isFavorite) {
-      text = Text(
+      snackbarTextContent = Text(
         "Marked ${widget.meal.mealTitle} as favorite",
         style: TextStyle(fontFamily: "Nunito"),
       );
     } else {
-      text = Text(
+      snackbarTextContent = Text(
         "Unmarked ${widget.meal.mealTitle} as favorite",
         style: TextStyle(fontFamily: "Nunito"),
       );
     }
 
-    final snackBar = SnackBar(content: text);
+    final snackBar = SnackBar(content: snackbarTextContent, action: SnackBarAction(label: "UNDO", onPressed: (){undoState(_isFavorite);}, textColor: Colors.green[600],));
 
-    // Show snackbar
-    _scaffoldKey.currentState
-        .showSnackBar(snackBar); // todo: action undo, then readd or re-remove
+    _scaffoldKey.currentState.showSnackBar(snackBar);
   }
-  // endregion
 
-  // todo : tinggal pake method untuk undo
+  undoState(bool modeFavorite){
+    setState(() {
+      if(modeFavorite){
+        if(widget.dataWidget.databaseMode == "desert"){
+          deleteFromDesertFavorite(widget.meal);
+          // Line of code used for prevent future variable to reload
+          if(widget.dataWidget.searchEnabled == false){
+            widget.dataWidget.dataWidgetState.reloadFavoriteMeals(widget.dataWidget.databaseMode);
+          }
+        } else if(widget.dataWidget.databaseMode == "seafood"){
+          deleteFromSeafoodFavorite(widget.meal);
+          if(widget.dataWidget.searchEnabled == false){
+            widget.dataWidget.dataWidgetState.reloadFavoriteMeals(widget.dataWidget.databaseMode);
+          }
+        }
+        _isFavorite = false;
+        iconFromFavorite(_isFavorite);
+      } else {
+        if(widget.dataWidget.databaseMode == "desert"){
+          addIntoDesertFavorite();
+          if(widget.dataWidget.searchEnabled == false){
+            widget.dataWidget.dataWidgetState.reloadFavoriteMeals(widget.dataWidget.databaseMode);
+          }
+        } else if(widget.dataWidget.databaseMode == "seafood"){
+          addIntoSeafoodFavorite();
+          if(widget.dataWidget.searchEnabled == false){
+            widget.dataWidget.dataWidgetState.reloadFavoriteMeals(widget.dataWidget.databaseMode);
+          }
+        }
+        _isFavorite = true;
+        iconFromFavorite(_isFavorite);
+      }
+    });
+  }
+
+  // endregion
 }

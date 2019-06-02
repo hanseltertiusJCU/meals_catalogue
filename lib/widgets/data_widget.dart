@@ -95,10 +95,8 @@ class _DataWidgetState extends State<DataWidget> {
     setState(() {
       if(mode == "desert"){
         meals = mealsDatabaseHelper.getFavoriteDesertDataList();
-        didUpdateWidget(widget);
       } else if (mode == "seafood") {
         meals = mealsDatabaseHelper.getFavoriteSeafoodDataList();
-        didUpdateWidget(widget);
       }
     });
   }
