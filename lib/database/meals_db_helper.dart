@@ -35,14 +35,12 @@ class MealsDBHelper {
 
   void _onCreate(Database db, int version) async {
     // Create Desert table
-    await db.execute(
-        "CREATE TABLE desert(id TEXT PRIMARY KEY, title TEXT, imageUrl TEXT, createDate TEXT)");
+    await db.execute("CREATE TABLE desert(id INTEGER PRIMARY KEY, mealId TEXT, mealTitle TEXT, mealImageUrl TEXT, mealCreateDate TEXT)");
 
     print("DB Desert Created");
 
     // Create Seafood table
-    await db.execute(
-        "CREATE TABLE seafood(id TEXT PRIMARY KEY, title TEXT, imageUrl TEXT, createDate TEXT)");
+    await db.execute("CREATE TABLE seafood(id INTEGER PRIMARY KEY, mealId TEXT, mealTitle TEXT, mealImageUrl TEXT, mealCreateDate TEXT)");
 
     print("DB Seafood Created");
   }
@@ -51,42 +49,42 @@ class MealsDBHelper {
   Future<int> saveDesertData(Meal meal) async {
     var databaseClient = await database;
 
-    // todo: use meal to map thing
-    int res = await databaseClient.insert("desert", meal.toHashMap());
+    int desertId = await databaseClient.insert("desert", meal.toHashMap());
 
-    print("Desert data inserted");
-
-    return res;
+    return desertId;
   }
 
   // Insert seafood data
   Future<int> saveSeafoodData(Meal meal) async {
     var databaseClient = await database;
 
-    int res = await databaseClient.insert("seafood", meal.toHashMap());
+    int seafoodId = await databaseClient.insert("seafood", meal.toHashMap());
 
-    print("Seafood data inserted");
-
-    return res;
+    return seafoodId;
   }
 
-  Future<List<Meal>> getDesertFavoriteDataList() async {
+  Future<List<Meal>> getFavoriteDesertDataList() async {
     var databaseClient = await database;
 
-    List<Map> desertListDb = await databaseClient
-        .rawQuery("SELECT * FROM desert ORDER BY createDate DESC");
+    List<Map> desertListDb = await databaseClient.rawQuery("SELECT * FROM desert ORDER BY mealCreateDate DESC");
 
     List<Meal> favoriteDeserts = new List();
 
     for (int i = 0; i < desertListDb.length; i++) {
       var desertMeal = Meal(
-          mealId: desertListDb[i]["id"],
-          mealTitle: desertListDb[i]["title"],
-          mealImageUrl: desertListDb[i]["imageUrl"],
-          favoriteMealCreateDate: desertListDb[i]["createDate"]
+          mealId: desertListDb[i]["mealId"],
+          mealTitle: desertListDb[i]["mealTitle"],
+          mealImageUrl: desertListDb[i]["mealImageUrl"],
+          favoriteMealCreateDate: desertListDb[i]["mealCreateDate"]
       );
+
+      desertMeal.setMealId(desertListDb[i]["id"]);
+
       favoriteDeserts.add(desertMeal);
     }
+
+    print("data read");
+
     return favoriteDeserts;
   }
 
@@ -94,20 +92,21 @@ class MealsDBHelper {
     var databaseClient = await database;
 
     List<Map> seafoodListDb = await databaseClient
-        .rawQuery("SELECT * FROM desert ORDER BY createDate DESC");
+        .rawQuery("SELECT * FROM seafood ORDER BY mealCreateDate DESC");
 
     List<Meal> favoriteSeafood = new List();
 
     for (int i = 0; i < seafoodListDb.length; i++) {
       var seafoodMeal = Meal(
-        mealId: seafoodListDb[i]["id"],
-        mealTitle: seafoodListDb[i]["title"],
-        mealImageUrl: seafoodListDb[i]["imageUrl"],
-        favoriteMealCreateDate: seafoodListDb[i]["createDate"]
+        mealId: seafoodListDb[i]["mealId"],
+        mealTitle: seafoodListDb[i]["mealTitle"],
+        mealImageUrl: seafoodListDb[i]["mealImageUrl"],
+        favoriteMealCreateDate: seafoodListDb[i]["mealCreateDate"]
       );
+      
+      seafoodMeal.setMealId(seafoodListDb[i]["id"]);
 
       favoriteSeafood.add(seafoodMeal);
-
     }
     return favoriteSeafood;
   }
@@ -115,16 +114,16 @@ class MealsDBHelper {
   Future<int> deleteDesertData(Meal meal) async {
     var databaseClient = await database;
 
-    int res = await databaseClient.rawDelete("DELETE FROM desert WHERE id = ?", [meal.mealId]);
+    int desertRowsDeleted = await databaseClient.rawDelete("DELETE FROM desert WHERE mealId = ?", [meal.mealId]);
 
-    return res;
+    return desertRowsDeleted;
   }
 
   Future<int> deleteSeafoodData(Meal meal) async {
     var databaseClient = await database;
 
-    int res = await databaseClient.rawDelete("DELETE FROM seafood WHERE id = ?", [meal.mealId]);
+    int seafoodRowsDeleted = await databaseClient.rawDelete("DELETE FROM seafood WHERE mealId = ?", [meal.mealId]);
 
-    return res;
+    return seafoodRowsDeleted;
   }
 }

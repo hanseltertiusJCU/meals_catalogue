@@ -1,19 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:meals_catalogue/model/meal.dart';
+import 'package:meals_catalogue/widgets/data_widget.dart';
 import 'package:meals_catalogue/widgets/detailed_page.dart';
 
-/// Kelas ini berguna untuk menampilkan data
-/// (hasil dari JSON parsing di Food2Fork API) yang terdiri dari GridView items
+
 class MealsList extends StatelessWidget {
   // Buat variable List dengan Meal sebagai object
   final List<Meal> meals;
 
+  final DataWidget dataWidget;
+
   // Constructor untuk MealsList
-  MealsList({Key key, this.meals}) : super(key: key);
+  MealsList({Key key, this.meals, this.dataWidget}) : super(key: key);
+
+  // todo: function to return tags based on datawidget state false or true
+
+  String getHeroTag(DataWidget dataWidget, Meal meal){
+
+    String heroTag;
+
+    if(dataWidget.searchEnabled){
+      heroTag = meal.mealTitle;
+    } else {
+      heroTag = meal.mealImageUrl;
+    }
+
+    return heroTag;
+  }
 
   @override
   Widget build(BuildContext context) {
-    // Create a  GridView object dengan GridView.builder
+    // todo : bikin automatic keep alive mixin mungkin bisa
     return GridView.builder(
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           /*
@@ -39,7 +56,7 @@ class MealsList extends StatelessWidget {
           // Source hero
           return Hero(
               // tag in Source hero
-              tag: meals[index].mealId,
+              tag: getHeroTag(dataWidget, meals[index]),
               child: Stack(
                 children: <Widget>[
                   Card(
@@ -101,7 +118,7 @@ class MealsList extends StatelessWidget {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) =>
-                                      DetailedPage(meal: meals[index]),
+                                      DetailedPage(meal: meals[index], dataWidget: dataWidget),
                                 ),
                           ),
                         ),

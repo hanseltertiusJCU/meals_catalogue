@@ -30,7 +30,11 @@ dependencies:
   # This package is used for path
   path_provider: '>=0.3.0'
 
+  # This package is used for performing SQLite operation
   sqflite: ^1.1.0
+
+  # This package is used for getting DateFormat
+  intl: ^0.15.7
 
 dev_dependencies:
   flutter_test:
