@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:meals_catalogue/model/detailed_meal.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class DetailedMealInfo extends StatefulWidget {
   final List<DetailedMeal> detailedMeals;
@@ -20,12 +21,11 @@ class _DetailedMealInfoState extends State<DetailedMealInfo> {
     Future<Null>.delayed(Duration.zero, () {
       Scaffold.of(context).showSnackBar(
         SnackBar(
-            content: Text(
-              widget.detailedMeals[0].detailedMealTitle,
-              style: TextStyle(fontFamily: 'Nunito'
-              ),
-            ),
-            duration: Duration(seconds: 4),
+          content: Text(
+            widget.detailedMeals[0].detailedMealTitle,
+            style: TextStyle(fontFamily: 'Nunito'),
+          ),
+          duration: Duration(seconds: 4),
         ),
       );
     });
@@ -41,16 +41,15 @@ class _DetailedMealInfoState extends State<DetailedMealInfo> {
         children: <Widget>[
           Align(
             alignment: Alignment.center,
-            child: Container(
-              width: 125.0,
-              height: 125.0,
-              decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  image: DecorationImage(
-                      // Sesuaikan image size dengan container size (width + height)
-                      fit: BoxFit.fill,
-                      image: NetworkImage(
-                          widget.detailedMeals[0].detailedMealImageUrl))),
+            child: ClipOval(
+              child: CachedNetworkImage(
+                imageUrl: widget.detailedMeals[0].detailedMealImageUrl,
+                placeholder: (context, url) => Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.green[600]))),
+                errorWidget: (context, url, error) => Icon(Icons.error),
+                width: 125.0,
+                height: 125.0,
+                fit: BoxFit.fill,
+              ),
             ),
           ),
           Align(

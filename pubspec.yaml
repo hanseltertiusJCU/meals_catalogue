@@ -36,6 +36,9 @@ dependencies:
   # This package is used for getting DateFormat
   intl: ^0.15.7
 
+  # Cached network image
+  cached_network_image: ^0.8.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

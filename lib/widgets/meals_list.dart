@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:meals_catalogue/model/meal.dart';
 import 'package:meals_catalogue/widgets/data_widget.dart';
 import 'package:meals_catalogue/widgets/detailed_page.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 
 class MealsList extends StatelessWidget {
@@ -62,10 +63,10 @@ class MealsList extends StatelessWidget {
                             borderRadius: BorderRadius.only(
                                 topLeft: Radius.circular(5.0),
                                 topRight: Radius.circular(5.0)),
-                            child: Image.network(
-                              // Image source from web
-                              mealsList[index].mealImageUrl,
-                              // double.infinity = match_parent
+                            child: CachedNetworkImage(
+                              imageUrl: mealsList[index].mealImageUrl,
+                              placeholder: (context, url) => Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.green[600]))),
+                              errorWidget: (context, url, error) => Icon(Icons.error),
                               width: double.infinity,
                               height: double.infinity,
                               fit: BoxFit.fill,
