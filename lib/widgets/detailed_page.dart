@@ -98,6 +98,7 @@ class _DetailedPageState extends State<DetailedPage> {
   String getHeroTag(DataWidget dataWidget, Meal meal) {
     String heroTag;
 
+    // todo: ubah searchnya, klo dari fetch meal itu intinya pake meal title, klo dari fetch meal search itu pake meal title search in keywordnya aja dan bedain pake db mode aja intinya
     if (dataWidget.searchEnabled) {
       heroTag = meal.mealTitle;
     } else {
@@ -143,13 +144,17 @@ class _DetailedPageState extends State<DetailedPage> {
                   case ConnectionState.active:
                     break;
                   case ConnectionState.done:
-                    // todo: check if there is internet connection
-                    if (snapshot.data.length > 0) {
-                      this._isDataLoaded = true;
-                      return DetailedMealInfo(detailedMeals: snapshot.data);
+                    if(snapshot.hasData){
+                      if (snapshot.data.length > 0) {
+                        this._isDataLoaded = true;
+                        return DetailedMealInfo(detailedMeals: snapshot.data);
+                      } else {
+                        return Center(child: Text("There is no data given"));
+                      }
                     } else {
-                      return Center(child: Text("There is no data given"));
+                      return Center(child: Text("There is no internet connection"));
                     }
+
                 }
               }),
         ));

@@ -21,9 +21,7 @@ Future<List<Meal>> fetchDetailedMeals(http.Client client, String mealId) async {
   // Detailed Meal URL
   final response = await client.get('https://www.themealdb.com/api/json/v1/1/lookup.php?i=$mealId');
 
-  // response.statusCode == 200 => success
   if (response.statusCode == 200) {
-    // Use compute to avoid jank and call parseMeals
     return compute(parseDetailedMeals, response.body);
   } else {
     throw Exception('Failed to load detailed meal object');

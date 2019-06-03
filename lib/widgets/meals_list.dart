@@ -26,7 +26,6 @@ class MealsList extends StatelessWidget {
     return heroTag;
   }
 
-  // todo: bikin fungsi baru untuk return gridview.builder dan juga heronya
   @override
   Widget build(BuildContext context) {
     // todo : bikin automatic keep alive mixin mungkin bisa
@@ -45,73 +44,81 @@ class MealsList extends StatelessWidget {
         ),
         padding: EdgeInsets.all(16.0),
         itemCount: mealsList.length,
-        itemBuilder: (context, index) {
-          // Source hero
-          return Hero(
-              tag: getHeroTag(dataWidget, mealsList[index]),
-              child: Stack(
-                children: <Widget>[
-                  Card(
-                    elevation: 2.0,
-                    child: Column(
-                      children: <Widget>[
-                        // Use layout weight in Expanded class to prevent overflow
-                        Expanded(
-                          // flex = layout weight
-                          flex: 1,
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(5.0),
-                                topRight: Radius.circular(5.0)),
-                            child: CachedNetworkImage(
-                              imageUrl: mealsList[index].mealImageUrl,
-                              placeholder: (context, url) => Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.green[600]))),
-                              errorWidget: (context, url, error) => Icon(Icons.error),
-                              width: double.infinity,
-                              height: double.infinity,
-                              fit: BoxFit.fill,
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child:
-                          Padding(
-                            padding: EdgeInsets.all(4.0),
-                            child: Align(
-                              alignment: Alignment(0.0, 0.0),
-                              child: Text(
-                                mealsList[index].mealTitle,
-                                textAlign: TextAlign.center,
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+        itemBuilder: (context, index) => getHero(context, index)
+    );
+  }
+
+  // region Hero
+  Hero getHero(context, index){
+    // Source hero
+    return Hero(
+      tag: getHeroTag(dataWidget, mealsList[index]),
+      child: Stack(
+        children: <Widget>[
+          Card(
+            elevation: 2.0,
+            child: Column(
+              children: <Widget>[
+                // Use layout weight in Expanded class to prevent overflow
+                Expanded(
+                  // flex = layout weight
+                  flex: 1,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(5.0),
+                        topRight: Radius.circular(5.0)),
+                    child: CachedNetworkImage(
+                      imageUrl: mealsList[index].mealImageUrl,
+                      placeholder: (context, url) => Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.green[600]))),
+                      errorWidget: (context, url, error) => Icon(Icons.error),
+                      width: double.infinity,
+                      height: double.infinity,
+                      fit: BoxFit.fill,
                     ),
                   ),
-                  // Ripple effect
-                  Positioned.fill(
-                    // Set shape of ripple effect
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                      child: Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          onTap: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      DetailedPage(meal: mealsList[index], dataWidget: dataWidget),
-                                ),
-                          ),
-                        ),
+                ),
+                Expanded(
+                  flex: 1,
+                  child:
+                  Padding(
+                    padding: EdgeInsets.all(4.0),
+                    child: Align(
+                      alignment: Alignment(0.0, 0.0),
+                      child: Text(
+                        mealsList[index].mealTitle,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),
-                ],
-              ));
-        });
+                ),
+              ],
+            ),
+          ),
+          // Ripple effect
+          Positioned.fill(
+            // Set shape of ripple effect
+            child: ClipRRect(
+              borderRadius: BorderRadius.all(Radius.circular(5.0)),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          DetailedPage(meal: mealsList[index], dataWidget: dataWidget),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
+  // endregion
 }
+
+

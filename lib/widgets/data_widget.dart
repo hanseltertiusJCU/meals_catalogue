@@ -19,10 +19,9 @@ class DataWidget extends StatefulWidget {
 
   final String databaseMode;
 
-  // Create dataWidgetState object to access from another widget
+  // Create dataWidgetState object to open access into another widget
   _DataWidgetState dataWidgetState;
 
-  // Create state in StatefulWidget
   @override
   _DataWidgetState createState() {
     dataWidgetState = _DataWidgetState();

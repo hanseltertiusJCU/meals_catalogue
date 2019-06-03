@@ -19,7 +19,6 @@ Future<List<Meal>> fetchSearchMeals(http.Client client, String keyword) async {
   // Search URL
   final response = await client.get("https://www.themealdb.com/api/json/v1/1/search.php?s=" + keyword);
 
-  // Check if response is successfully loaded
   if(response.statusCode == 200) {
     return compute(parseSearchMeals, response.body);
   } else {
