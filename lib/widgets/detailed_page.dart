@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:meals_catalogue/database/meals_db_helper.dart';
-import 'package:meals_catalogue/model/detailed_meal.dart';
 import 'package:meals_catalogue/model/meal.dart';
 
 // Import HTTP package as http (variable name from the package)
@@ -40,7 +39,7 @@ class _DetailedPageState extends State<DetailedPage> {
 
   var currentDateTime = DateTime.now();
 
-  Future<List<DetailedMeal>> futureDetailedMeal;
+  Future<List<Meal>> futureDetailedMeal;
 
   @override
   void initState() {
@@ -128,7 +127,7 @@ class _DetailedPageState extends State<DetailedPage> {
         // destination hero
         body: Hero(
           tag: getHeroTag(widget.dataWidget, widget.meal),
-          child: FutureBuilder<List<DetailedMeal>>(
+          child: FutureBuilder<List<Meal>>(
               future: futureDetailedMeal,
               builder: (context, snapshot) {
                 if (snapshot.hasError) print(snapshot.error);

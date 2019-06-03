@@ -5,12 +5,22 @@ class MealResponse {
 
   MealResponse(this.meals);
 
-  MealResponse.fromJson(Map<String, dynamic> json) {
-    if (json['meals'] != null) {
-      meals = List<Meal>();
-      json['meals'].forEach((v) {
-        meals.add(Meal.fromJson(v));
-      });
+  MealResponse.fromJson(Map<String, dynamic> json, bool isDetailedPage) {
+
+    if(isDetailedPage){
+      if (json['meals'] != null) {
+        meals = List<Meal>();
+        json['meals'].forEach((v) {
+          meals.add(Meal.fromJson(v, isDetailedPage));
+        });
+      }
+    } else {
+      if(json['meals'] != null){
+        meals = List<Meal>();
+        json['meals'].forEach((v){
+          meals.add(Meal.fromJson(v, isDetailedPage));
+        });
+      }
     }
   }
 

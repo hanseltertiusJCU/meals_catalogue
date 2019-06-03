@@ -1,21 +1,24 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
-import 'package:meals_catalogue/model/detailed_meal.dart';
-import 'package:meals_catalogue/response/detailed_meal_response.dart';
+import 'package:meals_catalogue/model/meal.dart';
+import 'package:meals_catalogue/response/meals_response.dart';
+
 
 // Import HTTP package as http (variable name from the package)
 import 'package:http/http.dart' as http;
 
-List<DetailedMeal> parseDetailedMeals(String responseBody) {
+List<Meal> parseDetailedMeals(String responseBody) {
+
   final responseJson = json.decode(responseBody);
 
-  final detailedMealsResponse = DetailedMealResponse.fromJson(responseJson);
+  final detailedMealsResponse = MealResponse.fromJson(responseJson, true);
 
-  return detailedMealsResponse.detailedMeals;
+  return detailedMealsResponse.meals;
 }
 
-Future<List<DetailedMeal>> fetchDetailedMeals(http.Client client, String mealId) async {
+Future<List<Meal>> fetchDetailedMeals(http.Client client, String mealId) async {
+  // Detailed Meal URL
   final response = await client.get('https://www.themealdb.com/api/json/v1/1/lookup.php?i=$mealId');
 
   // response.statusCode == 200 => success

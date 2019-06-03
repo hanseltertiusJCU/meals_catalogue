@@ -26,7 +26,7 @@ class MealsList extends StatelessWidget {
     return heroTag;
   }
 
-  // todo: bikin fungsi baru
+  // todo: bikin fungsi baru untuk return gridview.builder dan juga heronya
   @override
   Widget build(BuildContext context) {
     // todo : bikin automatic keep alive mixin mungkin bisa

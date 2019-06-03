@@ -7,9 +7,10 @@ import 'package:meals_catalogue/response/meals_response.dart';
 
 
 List<Meal> parseSearchMeals(String responseBody){
+
   final responseJson = json.decode(responseBody);
 
-  final searchMealsResponse = MealResponse.fromJson(responseJson);
+  final searchMealsResponse = MealResponse.fromJson(responseJson, false);
 
   return searchMealsResponse.meals;
 }
