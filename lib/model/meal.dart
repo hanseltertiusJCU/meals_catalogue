@@ -10,7 +10,6 @@ class Meal {
 
   Meal({this.mealId, this.mealTitle, this.mealImageUrl, this.favoriteMealCreateDate});
 
-  // Named constructor
   factory Meal.fromJson(Map<String, dynamic> json) {
     // todo: apa return satu class aja ga usah pake detailed meal
     return Meal(

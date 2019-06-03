@@ -11,10 +11,11 @@ List<Meal> parseMeals(String responseBody) {
   // Decode the String response into JSON response
   final responseJson = json.decode(responseBody);
 
+  // todo: from json di bikin 1 class saja
   final mealsResponse = MealResponse.fromJson(responseJson);
 
   // Return variable meals di MealResponse class
-  return mealsResponse.getMealsList();
+  return mealsResponse.meals;
 }
 
 Future<List<Meal>> fetchMeals(http.Client client, String keyword) async {

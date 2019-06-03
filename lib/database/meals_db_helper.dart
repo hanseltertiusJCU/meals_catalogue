@@ -33,6 +33,7 @@ class MealsDBHelper {
     return dB;
   }
 
+  // region create table
   void _onCreate(Database db, int version) async {
     // Create Desert table
     await db.execute("CREATE TABLE desert(id INTEGER PRIMARY KEY, mealId TEXT, mealTitle TEXT, mealImageUrl TEXT, mealCreateDate TEXT)");
@@ -44,23 +45,16 @@ class MealsDBHelper {
 
     print("DB Seafood Created");
   }
+  // endregion
 
-  // Insert desert data
+  // region Dessert DB (CRUD operation)
+
   Future<int> saveDesertData(Meal meal) async {
     var databaseClient = await database;
 
     int desertId = await databaseClient.insert("desert", meal.toHashMap());
 
     return desertId;
-  }
-
-  // Insert seafood data
-  Future<int> saveSeafoodData(Meal meal) async {
-    var databaseClient = await database;
-
-    int seafoodId = await databaseClient.insert("seafood", meal.toHashMap());
-
-    return seafoodId;
   }
 
   Future<List<Meal>> getFavoriteDesertDataList() async {
@@ -83,9 +77,27 @@ class MealsDBHelper {
       favoriteDeserts.add(desertMeal);
     }
 
-    print("data read");
-
     return favoriteDeserts;
+  }
+
+  Future<int> deleteDesertData(Meal meal) async {
+    var databaseClient = await database;
+
+    int desertRowsDeleted = await databaseClient.rawDelete("DELETE FROM desert WHERE mealId = ?", [meal.mealId]);
+
+    return desertRowsDeleted;
+  }
+
+  // endregion
+
+  // region Seafood DB (CRUD operation)
+
+  Future<int> saveSeafoodData(Meal meal) async {
+    var databaseClient = await database;
+
+    int seafoodId = await databaseClient.insert("seafood", meal.toHashMap());
+
+    return seafoodId;
   }
 
   Future<List<Meal>> getFavoriteSeafoodDataList() async {
@@ -98,25 +110,17 @@ class MealsDBHelper {
 
     for (int i = 0; i < seafoodListDb.length; i++) {
       var seafoodMeal = Meal(
-        mealId: seafoodListDb[i]["mealId"],
-        mealTitle: seafoodListDb[i]["mealTitle"],
-        mealImageUrl: seafoodListDb[i]["mealImageUrl"],
-        favoriteMealCreateDate: seafoodListDb[i]["mealCreateDate"]
+          mealId: seafoodListDb[i]["mealId"],
+          mealTitle: seafoodListDb[i]["mealTitle"],
+          mealImageUrl: seafoodListDb[i]["mealImageUrl"],
+          favoriteMealCreateDate: seafoodListDb[i]["mealCreateDate"]
       );
-      
+
       seafoodMeal.setMealId(seafoodListDb[i]["id"]);
 
       favoriteSeafood.add(seafoodMeal);
     }
     return favoriteSeafood;
-  }
-
-  Future<int> deleteDesertData(Meal meal) async {
-    var databaseClient = await database;
-
-    int desertRowsDeleted = await databaseClient.rawDelete("DELETE FROM desert WHERE mealId = ?", [meal.mealId]);
-
-    return desertRowsDeleted;
   }
 
   Future<int> deleteSeafoodData(Meal meal) async {
@@ -126,4 +130,7 @@ class MealsDBHelper {
 
     return seafoodRowsDeleted;
   }
+
+  // endregion
+
 }

@@ -11,7 +11,7 @@ List<Meal> parseSearchMeals(String responseBody){
 
   final searchMealsResponse = MealResponse.fromJson(responseJson);
 
-  return searchMealsResponse.getMealsList();
+  return searchMealsResponse.meals;
 }
 
 Future<List<Meal>> fetchSearchMeals(http.Client client, String keyword) async {

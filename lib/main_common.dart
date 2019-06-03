@@ -24,16 +24,8 @@ Widget _buildApp(String appName) {
   return MaterialApp(
     title: appName,
     theme: ThemeData(
-      // This is the theme of your application.
-
-      // Attribute primaryColor for the ability to access Colors attribute
-      // instead of having to access MaterialColor
       primaryColor: Colors.green[600],
-
-      // Color Accent for tab selected
       accentColor: Colors.white,
-
-      // Set font family
       fontFamily: 'Nunito',
     ),
     home: Home(title : appName),

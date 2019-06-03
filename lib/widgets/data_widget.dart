@@ -1,4 +1,3 @@
-import 'package:async/async.dart';
 import 'package:flutter/material.dart';
 import 'package:meals_catalogue/database/meals_db_helper.dart';
 import 'package:meals_catalogue/model/meal.dart';
@@ -9,7 +8,6 @@ import 'package:meals_catalogue/widgets/meals_list.dart';
 // Import HTTP package as http (variable name from the package)
 import 'package:http/http.dart' as http;
 
-// todo: bikin app bar thing in there
 // ignore: must_be_immutable
 class DataWidget extends StatefulWidget {
 
@@ -52,7 +50,7 @@ class _DataWidgetState extends State<DataWidget> with AutomaticKeepAliveClientMi
       } else if(widget.databaseMode == "seafood"){
         meals = mealsDatabaseHelper.getFavoriteSeafoodDataList();
       }
-      keepPageAlive = false; // Make the widget updatable
+      keepPageAlive = false; // Rebuild the page
     }
   }
 
@@ -77,7 +75,7 @@ class _DataWidgetState extends State<DataWidget> with AutomaticKeepAliveClientMi
             if(snapshot.hasData){
               if(snapshot.data.length > 0) {
                 // todo: mungkin pake internet connection active atau tidak klo kyk begitu
-                return MealsList(meals: snapshot.data, dataWidget: widget);
+                return MealsList(mealsList: snapshot.data, dataWidget: widget);
               } else {
                 return Center(child: Text("There is no data given"));
               }
@@ -91,14 +89,13 @@ class _DataWidgetState extends State<DataWidget> with AutomaticKeepAliveClientMi
     );
   }
 
-  // load when text input is submitted, which is to change the future
   loadSearchMeals(String searchKeyword) {
     setState(() {
       meals = fetchSearchMeals(http.Client(), searchKeyword);
     });
   }
 
-  // mungkin ini butuh untuk
+  // mungkin ini butuh untuk change future di page favorite
   reloadFavoriteMeals(String mode){
     setState(() {
       if(mode == "desert"){
@@ -110,7 +107,6 @@ class _DataWidgetState extends State<DataWidget> with AutomaticKeepAliveClientMi
   }
 
   @override
-  // TODO: implement wantKeepAlive
   bool get wantKeepAlive => keepPageAlive;
 
 }

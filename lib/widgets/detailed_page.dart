@@ -21,22 +21,22 @@ class DetailedPage extends StatefulWidget {
 }
 
 class _DetailedPageState extends State<DetailedPage> {
-  Icon favoriteIcon = Icon(
-    Icons.favorite_border,
-    color: Colors.white,
-  );
-
   var mealsDatabaseHelper = MealsDBHelper();
-
-  List<Meal> favoriteDesertsCheck;
-
-  List<Meal> favoriteSeafoodCheck;
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   bool _isFavorite = false;
 
   bool _isDataLoaded = false;
+
+  Icon favoriteIcon = Icon(
+    Icons.favorite_border,
+    color: Colors.white,
+  );
+
+  List<Meal> favoriteDesserts;
+
+  List<Meal> favoriteSeafood;
 
   var currentDateTime = DateTime.now();
 
@@ -47,19 +47,18 @@ class _DetailedPageState extends State<DetailedPage> {
     // Prevent loading while select mark item as favorite
     futureDetailedMeal = fetchDetailedMeals(http.Client(), widget.meal.mealId);
     if (widget.dataWidget.databaseMode == "desert") {
-      checkItemPartOfDesertDb();
+      checkItemPartOfDessertDb();
     } else if (widget.dataWidget.databaseMode == "seafood") {
       checkItemPartOfSeafoodDb();
     }
     super.initState();
   }
 
-  checkItemPartOfDesertDb() async {
-    favoriteDesertsCheck =
-        await mealsDatabaseHelper.getFavoriteDesertDataList();
+  checkItemPartOfDessertDb() async {
+    favoriteDesserts = await mealsDatabaseHelper.getFavoriteDesertDataList();
     setState(() {
-      for (int i = 0; i < favoriteDesertsCheck.length; i++) {
-        if (favoriteDesertsCheck[i].mealId == widget.meal.mealId) {
+      for (int i = 0; i < favoriteDesserts.length; i++) {
+        if (favoriteDesserts[i].mealId == widget.meal.mealId) {
           _isFavorite = true;
           iconFromFavorite(_isFavorite);
           break;
@@ -72,10 +71,10 @@ class _DetailedPageState extends State<DetailedPage> {
   }
 
   checkItemPartOfSeafoodDb() async {
-    favoriteSeafoodCheck = await mealsDatabaseHelper.getFavoriteSeafoodDataList();
+    favoriteSeafood = await mealsDatabaseHelper.getFavoriteSeafoodDataList();
     setState(() {
-      for (int i = 0; i < favoriteSeafoodCheck.length; i++) {
-        if (favoriteSeafoodCheck[i].mealId == widget.meal.mealId) {
+      for (int i = 0; i < favoriteSeafood.length; i++) {
+        if (favoriteSeafood[i].mealId == widget.meal.mealId) {
           _isFavorite = true;
           iconFromFavorite(_isFavorite);
           break;
@@ -97,10 +96,10 @@ class _DetailedPageState extends State<DetailedPage> {
     });
   }
 
-  String getHeroTag(DataWidget dataWidget, Meal meal){
+  String getHeroTag(DataWidget dataWidget, Meal meal) {
     String heroTag;
 
-    if(dataWidget.searchEnabled){
+    if (dataWidget.searchEnabled) {
       heroTag = meal.mealTitle;
     } else {
       heroTag = meal.mealImageUrl;
@@ -115,39 +114,38 @@ class _DetailedPageState extends State<DetailedPage> {
         key: _scaffoldKey,
         appBar: AppBar(
           title: Text(widget.meal.mealTitle),
-          // Text theme to manage fonts
           textTheme: TextTheme(
               title: TextStyle(
                   fontSize: 20.0,
                   fontWeight: FontWeight.bold,
                   fontFamily: 'Nunito')),
-          // favorite for enable, favorite_border for disable
           actions: <Widget>[
             IconButton(
-              icon: favoriteIcon,
-              // Change icon
-              onPressed: () => enableFavoriteButtonPressed(_isDataLoaded)
-            ),
+                icon: favoriteIcon,
+                onPressed: () => enableFavoriteButtonPressed(_isDataLoaded)),
           ],
         ),
+        // destination hero
         body: Hero(
-          // Use ID as tag as it is unique and returns String data type too
           tag: getHeroTag(widget.dataWidget, widget.meal),
           child: FutureBuilder<List<DetailedMeal>>(
               future: futureDetailedMeal,
-              // Call the method based on variable mealId from {@link Meal} object
               builder: (context, snapshot) {
                 if (snapshot.hasError) print(snapshot.error);
 
-                switch(snapshot.connectionState){
+                switch (snapshot.connectionState) {
                   case ConnectionState.none:
                     break;
                   case ConnectionState.waiting:
-                    return Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.green[600])));
+                    return Center(
+                        child: CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                                Colors.green[600])));
                   case ConnectionState.active:
                     break;
                   case ConnectionState.done:
-                    if(snapshot.data.length > 0){
+                    // todo: check if there is internet connection
+                    if (snapshot.data.length > 0) {
                       this._isDataLoaded = true;
                       return DetailedMealInfo(detailedMeals: snapshot.data);
                     } else {
@@ -158,46 +156,50 @@ class _DetailedPageState extends State<DetailedPage> {
         ));
   }
 
-
   // region button pressed
-  enableFavoriteButtonPressed(bool isDataLoaded){
+  enableFavoriteButtonPressed(bool isDataLoaded) {
     setState(() {
-      if(isDataLoaded){
+      if (isDataLoaded) {
         setDataFavoriteState(_isFavorite);
       } else {
         return null;
       }
     });
-
   }
 
   setDataFavoriteState(bool modeFavorite) {
     setState(() {
       if (modeFavorite) {
-        if(widget.dataWidget.databaseMode == "desert"){
+        if (widget.dataWidget.databaseMode == "desert") {
           deleteFromDesertFavorite(widget.meal);
-          if(widget.dataWidget.searchEnabled == false) {
-            widget.dataWidget.dataWidgetState.reloadFavoriteMeals(widget.dataWidget.databaseMode);
+          // Used for making sure that the future doesn't change in search page DataWidget
+          if (widget.dataWidget.searchEnabled == false) {
+            widget.dataWidget.dataWidgetState.reloadFavoriteMeals(widget
+                .dataWidget
+                .databaseMode); // Used this to change future in favorite page DataWidget
           }
-        } else if(widget.dataWidget.databaseMode == "seafood"){
+        } else if (widget.dataWidget.databaseMode == "seafood") {
           deleteFromSeafoodFavorite(widget.meal);
-          if(widget.dataWidget.searchEnabled == false){
-            widget.dataWidget.dataWidgetState.reloadFavoriteMeals(widget.dataWidget.databaseMode);
+          if (widget.dataWidget.searchEnabled == false) {
+            widget.dataWidget.dataWidgetState
+                .reloadFavoriteMeals(widget.dataWidget.databaseMode);
           }
         }
         _isFavorite = false;
         iconFromFavorite(_isFavorite);
         _displaySnackbar(context, _isFavorite);
       } else {
-        if(widget.dataWidget.databaseMode == "desert"){
+        if (widget.dataWidget.databaseMode == "desert") {
           addIntoDesertFavorite();
-          if(widget.dataWidget.searchEnabled == false){
-            widget.dataWidget.dataWidgetState.reloadFavoriteMeals(widget.dataWidget.databaseMode);
+          if (widget.dataWidget.searchEnabled == false) {
+            widget.dataWidget.dataWidgetState
+                .reloadFavoriteMeals(widget.dataWidget.databaseMode);
           }
-        } else if(widget.dataWidget.databaseMode == "seafood"){
+        } else if (widget.dataWidget.databaseMode == "seafood") {
           addIntoSeafoodFavorite();
-          if(widget.dataWidget.searchEnabled == false){
-            widget.dataWidget.dataWidgetState.reloadFavoriteMeals(widget.dataWidget.databaseMode);
+          if (widget.dataWidget.searchEnabled == false) {
+            widget.dataWidget.dataWidgetState
+                .reloadFavoriteMeals(widget.dataWidget.databaseMode);
           }
         }
         _isFavorite = true;
@@ -209,7 +211,7 @@ class _DetailedPageState extends State<DetailedPage> {
 
   // endregion
 
-  // region add + remove desert
+  // region add + remove dessert
   Future addIntoDesertFavorite() async {
     var desertMeal = Meal(
         mealId: widget.meal.mealId,
@@ -218,31 +220,30 @@ class _DetailedPageState extends State<DetailedPage> {
         favoriteMealCreateDate: currentDateTime.toString());
 
     await mealsDatabaseHelper.saveDesertData(desertMeal);
-
-    print("saved into desert DB");
   }
 
   void deleteFromDesertFavorite(Meal desertMeal) {
     mealsDatabaseHelper.deleteDesertData(desertMeal);
   }
+
   // endregion
 
   // region add + remove seafood
   Future addIntoSeafoodFavorite() async {
     var seafoodMeal = Meal(
-      mealId: widget.meal.mealId,
-      mealTitle: widget.meal.mealTitle,
-      mealImageUrl: widget.meal.mealImageUrl,
-      favoriteMealCreateDate: currentDateTime.toString());
+        mealId: widget.meal.mealId,
+        mealTitle: widget.meal.mealTitle,
+        mealImageUrl: widget.meal.mealImageUrl,
+        favoriteMealCreateDate: currentDateTime.toString());
 
     await mealsDatabaseHelper.saveSeafoodData(seafoodMeal);
   }
 
-  void deleteFromSeafoodFavorite(Meal seafoodMeal){
+  void deleteFromSeafoodFavorite(Meal seafoodMeal) {
     mealsDatabaseHelper.deleteSeafoodData(seafoodMeal);
   }
-  // endregion
 
+  // endregion
 
   // region snackbar
   _displaySnackbar(BuildContext context, bool isFavorite) {
@@ -260,38 +261,50 @@ class _DetailedPageState extends State<DetailedPage> {
       );
     }
 
-    final snackBar = SnackBar(content: snackbarTextContent, action: SnackBarAction(label: "UNDO", onPressed: (){undoState(_isFavorite);}, textColor: Colors.green[600],));
+    final snackBar = SnackBar(
+      content: snackbarTextContent,
+      action: SnackBarAction(
+        label: "UNDO",
+        onPressed: () {
+          undoState(_isFavorite);
+        },
+        textColor: Colors.green[600],
+      ),
+    );
 
     _scaffoldKey.currentState.showSnackBar(snackBar);
   }
 
-  undoState(bool modeFavorite){
+  undoState(bool modeFavorite) {
     setState(() {
-      if(modeFavorite){
-        if(widget.dataWidget.databaseMode == "desert"){
+      if (modeFavorite) {
+        if (widget.dataWidget.databaseMode == "desert") {
           deleteFromDesertFavorite(widget.meal);
-          // Line of code used for prevent future variable to reload
-          if(widget.dataWidget.searchEnabled == false){
-            widget.dataWidget.dataWidgetState.reloadFavoriteMeals(widget.dataWidget.databaseMode);
+          if (widget.dataWidget.searchEnabled == false) {
+            widget.dataWidget.dataWidgetState
+                .reloadFavoriteMeals(widget.dataWidget.databaseMode);
           }
-        } else if(widget.dataWidget.databaseMode == "seafood"){
+        } else if (widget.dataWidget.databaseMode == "seafood") {
           deleteFromSeafoodFavorite(widget.meal);
-          if(widget.dataWidget.searchEnabled == false){
-            widget.dataWidget.dataWidgetState.reloadFavoriteMeals(widget.dataWidget.databaseMode);
+          if (widget.dataWidget.searchEnabled == false) {
+            widget.dataWidget.dataWidgetState
+                .reloadFavoriteMeals(widget.dataWidget.databaseMode);
           }
         }
         _isFavorite = false;
         iconFromFavorite(_isFavorite);
       } else {
-        if(widget.dataWidget.databaseMode == "desert"){
+        if (widget.dataWidget.databaseMode == "desert") {
           addIntoDesertFavorite();
-          if(widget.dataWidget.searchEnabled == false){
-            widget.dataWidget.dataWidgetState.reloadFavoriteMeals(widget.dataWidget.databaseMode);
+          if (widget.dataWidget.searchEnabled == false) {
+            widget.dataWidget.dataWidgetState
+                .reloadFavoriteMeals(widget.dataWidget.databaseMode);
           }
-        } else if(widget.dataWidget.databaseMode == "seafood"){
+        } else if (widget.dataWidget.databaseMode == "seafood") {
           addIntoSeafoodFavorite();
-          if(widget.dataWidget.searchEnabled == false){
-            widget.dataWidget.dataWidgetState.reloadFavoriteMeals(widget.dataWidget.databaseMode);
+          if (widget.dataWidget.searchEnabled == false) {
+            widget.dataWidget.dataWidgetState
+                .reloadFavoriteMeals(widget.dataWidget.databaseMode);
           }
         }
         _isFavorite = true;
@@ -300,5 +313,5 @@ class _DetailedPageState extends State<DetailedPage> {
     });
   }
 
-  // endregion
+// endregion
 }
