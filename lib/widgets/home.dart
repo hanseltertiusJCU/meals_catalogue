@@ -12,25 +12,67 @@ class Home extends StatefulWidget {
 }
 
 class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
+
   // List of DataWidget
-  final List<DataWidget> _dataWidgetTabs = [
+  final List<DataWidget> _dataWidgetsList = [
     DataWidget(keyword: "Dessert", searchEnabled: true, databaseMode: "desert"),
     DataWidget(keyword: "Seafood", searchEnabled: true, databaseMode: "seafood"),
     DataWidget(keyword: "Favorite Dessert", searchEnabled: false, databaseMode: "desert"),
     DataWidget(keyword: "Favorite Seafood", searchEnabled: false, databaseMode: "seafood")
   ];
 
-  DataWidget _dataWidget;
 
-  TabController _tabController;
+  int _currentIndex = 0;
+
+  final List<BottomNavigationBarItem> _bottomNavigationBarItems = [
+    BottomNavigationBarItem(icon: Icon(Icons.cake), title: Text("Dessert")),
+    BottomNavigationBarItem(icon: Icon(Icons.restaurant), title: Text("Seafood")),
+    BottomNavigationBarItem(icon: Icon(Icons.cake), title: Text("Favorite Dessert")),
+    BottomNavigationBarItem(icon: Icon(Icons.restaurant), title: Text("Favorite Seafood"))
+  ];
+
+  PageController _pageController = PageController(
+    initialPage: 0,
+    keepPage: true,
+  );
+
+  changeSelectedBottomNavigationBarItem(int index){
+    setState(() {
+      _currentIndex = index;
+      // change title
+      appBarTitle = Text(_dataWidgetsList[_currentIndex].keyword);
+      endSearch();
+      _pageController.animateToPage(index, duration: Duration(milliseconds: 500), curve: Curves.ease);
+    });
+  }
+
+  changeSelectedPageViewItem(int index){
+    setState(() {
+      _currentIndex = index;
+      appBarTitle = Text(_dataWidgetsList[_currentIndex].keyword);
+      endSearch();
+    });
+  }
+
+  // Method for returning back into search icon in action bar menu
+  void endSearch(){
+    setState(() {
+      this.searchIcon = new Icon(
+        Icons.search,
+        color: Colors.white,
+      );
+      appBarTitle = Text(_dataWidgetsList[_currentIndex].keyword);
+      _textEditingController.clear(); // Set text value in edit text into empty
+    });
+  }
 
   // Controller for EditText
   TextEditingController _textEditingController = TextEditingController();
 
   // Icon
   Icon searchIcon = Icon(
-    Icons.search,
-    color : Colors.white
+      Icons.search,
+      color : Colors.white
   );
 
   // Search text
@@ -48,23 +90,11 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
         });
       } else {
         setState(() {
+          // todo: kyknya ini bisa di simplein, pake keyword di datawidget
           _searchText = _textEditingController.text;
-          _dataWidget.keyword = _searchText;
-          // todo: ganti keywordnya
+          _dataWidgetsList[_currentIndex].keyword = _searchText;
         });
       }
-    });
-  }
-
-  // Method for returning back into search icon in action bar menu
-  void handleSearchEnd(){
-    setState(() {
-      this.searchIcon = new Icon(
-        Icons.search,
-        color: Colors.white,
-      );
-      appBarTitle = Text(_dataWidget.keyword);
-      _textEditingController.clear(); // Set text value in edit text into empty
     });
   }
 
@@ -72,36 +102,17 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
   void initState() {
     // Initialize state, only run once
     super.initState();
-    // Initiate TabController
-    _tabController = TabController(length: 4, vsync: this);
-    // Initialize DataWidget
-    _dataWidget = _dataWidgetTabs[_tabController.index];
-    // Add listener to tabController
-    _tabController.addListener(_handleSelectedTabs);
-    // Set app bar title
-    appBarTitle = Text(_dataWidget.keyword);
+    appBarTitle = Text(_dataWidgetsList[_currentIndex].keyword);
   }
 
-  void _handleSelectedTabs() {
-    setState(() {
-      // Change selected DataWidget
-      _dataWidget = _dataWidgetTabs[_tabController.index];
-      // todo: ganti data widget keyword
-      appBarTitle = Text(_dataWidget.keyword);
-      // Call method agar ke search icon when tab changed
-      handleSearchEnd();
-    });
-  }
+  // todo: bikin page view
 
   @override
   Widget build(BuildContext context) {
-    // todo: tinggal ganti balik jadi bottomnavigationbar
     return Scaffold(
       appBar: AppBar(
-        // Set title based on selected DataWidget
         title: appBarTitle,
-        actions: getMenuIcon(_dataWidget.searchEnabled),
-        // Text theme to manage fonts
+        actions: getMenuIcon(_dataWidgetsList[_currentIndex].searchEnabled),
         textTheme: TextTheme(
           title: TextStyle(
               fontSize: 20.0,
@@ -109,35 +120,29 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
               fontFamily: 'Nunito'
           ),
         ),
-        // TabBar ini adalah TabLayout di Android
-        bottom: TabBar(
-          isScrollable : true,
-          // Set controller into TabBar
-          controller: _tabController,
-          // Tabs item
-          tabs: <Widget>[
-            Tab(icon: Icon(Icons.cake), text: "Desert"),
-            Tab(icon: Icon(Icons.restaurant), text: "Seafood"),
-            Tab(icon: Icon(Icons.cake), text: "Favorite Desert"),
-            Tab(icon: Icon(Icons.restaurant), text: "Favorite Seafood")
-          ],
-        ),
       ),
-      // Content of the scaffold, shows the selected tab view based on selected index
-      body: TabBarView(
-        // Set controller
-        controller: _tabController,
-        // Set children, which is the content
-        children: _dataWidgetTabs,
+      body: // todo: bikin pageview as the body
+      PageView(
+        controller: _pageController,
+        onPageChanged: (index){
+          changeSelectedPageViewItem(index);
+        },
+        children: _dataWidgetsList,
       ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: _bottomNavigationBarItems,
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          changeSelectedBottomNavigationBarItem(index);
+        },
+        selectedItemColor: Colors.green[600],
+        unselectedItemColor: Colors.grey,),
     );
   }
 
-  // Method for getting the menu icon based on searchEnabled
   List<Widget> getMenuIcon(bool isSearchEnabled){
     List<Widget> menuIcons = List<Widget>();
     if(isSearchEnabled){
-      // Add into list of widgets
       menuIcons.add(IconButton(
           icon: this.searchIcon,
           onPressed: () {
@@ -154,19 +159,18 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
   setSearchKeyword() {
     setState(() {
       if(this.searchIcon.icon == Icons.search) {
-        // Change icon action bar
         this.searchIcon = new Icon(
           Icons.close,
           color: Colors.white,
-        ); // Icon
+        );
         this.appBarTitle = new TextField(
           controller: _textEditingController,
           style: TextStyle(
               color: Colors.white
           ),
-          // Called when button search in keyboard is pressed
+          // Called when action key in keyboard is pressed
           onSubmitted: (_){
-            _dataWidget.dataWidgetState.loadSearchMeals(_searchText);
+            _dataWidgetsList[_currentIndex].dataWidgetState.loadSearchMeals(_searchText);
           },
           decoration: new InputDecoration(
             prefixIcon: Icon(Icons.search, color: Colors.white),
@@ -183,12 +187,11 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
                 color: Colors.white,
               ),
             ),
-            // Change text hint color
             hintStyle: TextStyle(color: Colors.white),
           ),
-        ); // Change app bar title into edit text
+        );
       } else {
-        handleSearchEnd(); // Call method to end search
+        endSearch(); // Call method to end search
       }
     });
   }

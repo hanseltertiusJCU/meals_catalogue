@@ -5,7 +5,7 @@ import 'package:meals_catalogue/main_common.dart';
 // Main function for develop
 void main(){
   var configuredApp = AppConfig(
-    appDisplayName: "Meals Catalogue Develop",
+    appDisplayName: "Developped Meals Catalogue",
     appInternalId: 1,
     child: MyApp(),
   );

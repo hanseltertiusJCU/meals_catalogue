@@ -33,23 +33,33 @@ class DataWidget extends StatefulWidget {
 }
 
 // State untuk membangun widget dan juga menampung variable yang akan berubah
-class _DataWidgetState extends State<DataWidget> {
+class _DataWidgetState extends State<DataWidget> with AutomaticKeepAliveClientMixin<DataWidget> {
   Future<List<Meal>> meals;
 
   var mealsDatabaseHelper = MealsDBHelper();
 
-  final AsyncMemoizer _asyncMemoizer = AsyncMemoizer();
+  var keepPageAlive = false;
 
-  // init state
   @override
   void initState() {
     super.initState();
-    meals = fetchFutureMeal(widget.searchEnabled, widget.databaseMode);
+    if(widget.searchEnabled){
+      meals = fetchMeals(http.Client(), widget.keyword);
+      keepPageAlive = true; // Prevent page reload when change page
+    } else {
+      if(widget.databaseMode == "desert"){
+        meals = mealsDatabaseHelper.getFavoriteDesertDataList();
+      } else if(widget.databaseMode == "seafood"){
+        meals = mealsDatabaseHelper.getFavoriteSeafoodDataList();
+      }
+      keepPageAlive = false; // Make the widget updatable
+    }
   }
 
   // Build the widget
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return FutureBuilder<List<Meal>>(
       future: meals,
       builder: (context, snapshot) {
@@ -78,19 +88,17 @@ class _DataWidgetState extends State<DataWidget> {
         }
       },
 
-      // todo: automatic keep alive nya true hanya ketika searchable nya true
     );
   }
 
   // load when text input is submitted, which is to change the future
   loadSearchMeals(String searchKeyword) {
-    print("load new meal");
     setState(() {
       meals = fetchSearchMeals(http.Client(), searchKeyword);
-      didUpdateWidget(widget);
     });
   }
 
+  // mungkin ini butuh untuk
   reloadFavoriteMeals(String mode){
     setState(() {
       if(mode == "desert"){
@@ -101,21 +109,9 @@ class _DataWidgetState extends State<DataWidget> {
     });
   }
 
-  Future<List<Meal>> fetchFutureMeal(bool searchableData, String databaseMode){
-    Future<List<Meal>> futureMeal;
-    this._asyncMemoizer.runOnce(() async{
-      if(searchableData){
-        futureMeal = fetchMeals(http.Client(), widget.keyword);
-      } else {
-        if(databaseMode == "desert"){
-          futureMeal = mealsDatabaseHelper.getFavoriteDesertDataList();
-        } else if(databaseMode == "seafood"){
-          futureMeal = mealsDatabaseHelper.getFavoriteSeafoodDataList();
-        }
-      }
-    });
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => keepPageAlive;
 
-    return futureMeal;
-  }
 }
 
