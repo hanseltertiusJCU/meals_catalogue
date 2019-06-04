@@ -98,12 +98,9 @@ class _DetailedPageState extends State<DetailedPage> {
   String getHeroTag(DataWidget dataWidget, Meal meal) {
     String heroTag;
 
-    // todo: ubah searchnya, klo dari fetch meal itu intinya pake meal title, klo dari fetch meal search itu pake meal title search in keywordnya aja dan bedain pake db mode aja intinya
-    if (dataWidget.searchEnabled) {
-      heroTag = meal.mealTitle;
-    } else {
-      heroTag = meal.mealImageUrl;
-    }
+    heroTag = "Meal ID : ${meal.mealId}\n"
+        "Database Mode : ${dataWidget.databaseMode}\n"
+        "Search Enabled : ${dataWidget.searchEnabled}";
 
     return heroTag;
   }
@@ -131,8 +128,6 @@ class _DetailedPageState extends State<DetailedPage> {
           child: FutureBuilder<List<Meal>>(
               future: futureDetailedMeal,
               builder: (context, snapshot) {
-                if (snapshot.hasError) print(snapshot.error);
-
                 switch (snapshot.connectionState) {
                   case ConnectionState.none:
                     break;
@@ -151,9 +146,11 @@ class _DetailedPageState extends State<DetailedPage> {
                       } else {
                         return Center(child: Text("There is no data given"));
                       }
-                    } else {
-                      return Center(child: Text("There is no internet connection"));
                     }
+
+                    if(snapshot.hasError)
+                      return Center(child: Text("There is no internet connection"));
+
 
                 }
               }),

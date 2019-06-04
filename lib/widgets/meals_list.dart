@@ -16,19 +16,15 @@ class MealsList extends StatelessWidget {
 
     String heroTag;
 
-    // Ensure that hero tag is unique
-    if(dataWidget.searchEnabled){
-      heroTag = meal.mealTitle;
-    } else {
-      heroTag = meal.mealImageUrl;
-    }
+    heroTag = "Meal ID : ${meal.mealId}\n"
+        "Database Mode : ${dataWidget.databaseMode}\n"
+        "Search Enabled : ${dataWidget.searchEnabled}";
 
     return heroTag;
   }
 
   @override
   Widget build(BuildContext context) {
-    // todo : bikin automatic keep alive mixin mungkin bisa
     return GridView.builder(
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           // How many items in a row

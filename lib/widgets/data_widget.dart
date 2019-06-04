@@ -60,8 +60,6 @@ class _DataWidgetState extends State<DataWidget> with AutomaticKeepAliveClientMi
     return FutureBuilder<List<Meal>>(
       future: meals,
       builder: (context, snapshot) {
-        if (snapshot.hasError)
-          print(snapshot.error);
 
         switch(snapshot.connectionState){
           case ConnectionState.none:
@@ -71,15 +69,14 @@ class _DataWidgetState extends State<DataWidget> with AutomaticKeepAliveClientMi
           case ConnectionState.active:
             break;
           case ConnectionState.done:
+            if (snapshot.hasError)
+              return Center(child: Text("There is no internet connection"));
             if(snapshot.hasData){
               if(snapshot.data.length > 0) {
-                // todo: mungkin pake internet connection active atau tidak klo kyk begitu
                 return MealsList(mealsList: snapshot.data, dataWidget: widget);
               } else {
                 return Center(child: Text("There is no data given"));
               }
-            } else {
-              return Center(child: Text("There is no internet connection"));
             }
 
         }
@@ -98,6 +95,7 @@ class _DataWidgetState extends State<DataWidget> with AutomaticKeepAliveClientMi
   reloadFavoriteMeals(String mode){
     setState(() {
       if(mode == "desert"){
+        // pake datawidget index 2 dan 3 and some shit
         meals = mealsDatabaseHelper.getFavoriteDesertDataList();
       } else if (mode == "seafood") {
         meals = mealsDatabaseHelper.getFavoriteSeafoodDataList();

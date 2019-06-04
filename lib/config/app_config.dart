@@ -6,6 +6,7 @@ class AppConfig extends InheritedWidget {
 
   final String appDisplayName;
   final int appInternalId;
+  // todo: color untuk icon beda
 
   static AppConfig of(BuildContext buildContext) {
     return buildContext.inheritFromWidgetOfExactType(AppConfig);
