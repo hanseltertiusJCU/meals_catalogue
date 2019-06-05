@@ -26,6 +26,7 @@ class MealsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
+        key: Key('mealsList'),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           // How many items in a row
           crossAxisCount:
@@ -81,6 +82,7 @@ class MealsList extends StatelessWidget {
                     child: Align(
                       alignment: Alignment(0.0, 0.0),
                       child: Text(
+                        // todo: key untuk meal title
                         mealsList[index].mealTitle,
                         textAlign: TextAlign.center,
                         style: TextStyle(fontWeight: FontWeight.bold),
@@ -99,6 +101,7 @@ class MealsList extends StatelessWidget {
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
+                  key: Key('inkWell'),
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(

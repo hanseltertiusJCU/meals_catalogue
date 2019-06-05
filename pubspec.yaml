@@ -42,7 +42,11 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  # This package is used for writing integration tests
+  flutter_driver:
+    sdk: flutter
   test: 1.6.1
+  # This package is used for unit testing in Mockito
   mockito: 4.0.0
 
 

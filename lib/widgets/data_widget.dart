@@ -91,11 +91,9 @@ class _DataWidgetState extends State<DataWidget> with AutomaticKeepAliveClientMi
     });
   }
 
-  // mungkin ini butuh untuk change future di page favorite
   reloadFavoriteMeals(String mode){
     setState(() {
       if(mode == "desert"){
-        // pake datawidget index 2 dan 3 and some shit
         meals = mealsDatabaseHelper.getFavoriteDesertDataList();
       } else if (mode == "seafood") {
         meals = mealsDatabaseHelper.getFavoriteSeafoodDataList();

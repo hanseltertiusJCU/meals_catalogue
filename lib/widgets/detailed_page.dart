@@ -88,9 +88,9 @@ class _DetailedPageState extends State<DetailedPage> {
   iconFromFavorite(bool isMealFav) {
     setState(() {
       if (isMealFav) {
-        this.favoriteIcon = Icon(Icons.favorite, color: Colors.white);
+        this.favoriteIcon = Icon(Icons.favorite, color: Colors.white,);
       } else {
-        this.favoriteIcon = Icon(Icons.favorite_border, color: Colors.white);
+        this.favoriteIcon = Icon(Icons.favorite_border, color: Colors.white,);
       }
     });
   }
@@ -118,6 +118,7 @@ class _DetailedPageState extends State<DetailedPage> {
                   fontFamily: 'Nunito')),
           actions: <Widget>[
             IconButton(
+                key: Key('favoriteIconButton'),
                 icon: favoriteIcon,
                 onPressed: () => enableFavoriteButtonPressed(_isDataLoaded)),
           ],
@@ -265,6 +266,7 @@ class _DetailedPageState extends State<DetailedPage> {
     final snackBar = SnackBar(
       content: snackbarTextContent,
       action: SnackBarAction(
+        key: Key("snackBarAction"),
         label: "UNDO",
         onPressed: () {
           undoState(_isFavorite);

@@ -44,6 +44,7 @@ class _DetailedMealInfoState extends State<DetailedMealInfo> {
 // region get ListView widget
 ListView getListView(DetailedMealInfo detailedMealInfo){
   return ListView(
+    key: Key('mealDetail'),
     padding: EdgeInsets.all(16.0),
     children: <Widget>[
       Align(

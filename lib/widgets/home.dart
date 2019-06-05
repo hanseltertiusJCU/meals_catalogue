@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:meals_catalogue/const_strings.dart';
+import 'package:meals_catalogue/key_tooltip_strings.dart';
 import 'package:meals_catalogue/widgets/data_widget.dart';
 
 class Home extends StatefulWidget {
@@ -11,7 +13,6 @@ class Home extends StatefulWidget {
 }
 
 class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
-
   Widget appBarTitle;
 
   Icon homeMenuIcon = Icon(Icons.search, color: Colors.white);
@@ -19,47 +20,30 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
   TextEditingController _textEditingController = TextEditingController();
 
   final List<DataWidget> _dataWidgetsList = [
+    DataWidget(keyword: "Dessert", searchEnabled: true, databaseMode: "desert"),
     DataWidget(
-        keyword: "Dessert",
-        searchEnabled: true,
-        databaseMode: "desert"
-    ),
-    DataWidget(
-        keyword: "Seafood",
-        searchEnabled: true,
-        databaseMode: "seafood"
-    ),
+        keyword: "Seafood", searchEnabled: true, databaseMode: "seafood"),
     DataWidget(
         keyword: "Favorite Dessert",
         searchEnabled: false,
-        databaseMode: "desert"
-    ),
+        databaseMode: "desert"),
     DataWidget(
         keyword: "Favorite Seafood",
         searchEnabled: false,
-        databaseMode: "seafood"
-    )
+        databaseMode: "seafood")
   ];
 
   int _currentIndex = 0;
 
   final List<BottomNavigationBarItem> _bottomNavigationBarItems = [
     BottomNavigationBarItem(
-        icon: Icon(Icons.cake),
-        title: Text("Dessert")
-    ),
+        icon: Icon(Icons.cake, key: Key('dessert'),), title: Text("Dessert")),
     BottomNavigationBarItem(
-        icon: Icon(Icons.restaurant),
-        title: Text("Seafood")
-    ),
+        icon: Icon(Icons.restaurant, key : Key('seafood')), title: Text("Seafood")),
     BottomNavigationBarItem(
-        icon: Icon(Icons.cake),
-        title: Text("Favorite Dessert")
-    ),
+        icon: Icon(Icons.cake, key: Key('favoriteDessert')), title: Text("Favorite Dessert")),
     BottomNavigationBarItem(
-        icon: Icon(Icons.restaurant),
-        title: Text("Favorite Seafood")
-    )
+        icon: Icon(Icons.restaurant, key: Key('favoriteSeafood')), title: Text("Favorite Seafood"))
   ];
 
   PageController _pageController = PageController(
@@ -70,20 +54,21 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
   changeSelectedBottomNavigationBarItem(int index) {
     setState(() {
       _currentIndex = index;
-      appBarTitle = Text(_dataWidgetsList[_currentIndex].keyword);
-      endSearch();
-      _pageController.animateToPage(
-          index,
-          duration: Duration(milliseconds: 500),
-          curve: Curves.ease
+      appBarTitle = Text(
+        _dataWidgetsList[_currentIndex].keyword,
       );
+      endSearch();
+      _pageController.animateToPage(index,
+          duration: Duration(milliseconds: 500), curve: Curves.ease);
     });
   }
 
   changeSelectedPageViewItem(int index) {
     setState(() {
       _currentIndex = index;
-      appBarTitle = Text(_dataWidgetsList[_currentIndex].keyword);
+      appBarTitle = Text(
+        _dataWidgetsList[_currentIndex].keyword,
+      );
       endSearch();
     });
   }
@@ -94,7 +79,9 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
         Icons.search,
         color: Colors.white,
       );
-      appBarTitle = Text(_dataWidgetsList[_currentIndex].keyword);
+      appBarTitle = Text(
+        _dataWidgetsList[_currentIndex].keyword,
+      );
       _textEditingController.clear();
     });
   }
@@ -113,13 +100,16 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
   @override
   void initState() {
     super.initState();
-    appBarTitle = Text(_dataWidgetsList[_currentIndex].keyword);
+    appBarTitle = Text(
+      _dataWidgetsList[_currentIndex].keyword,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        key: Key(getStringKey(APP_BAR)),
         title: appBarTitle,
         actions: getMenuIcon(_dataWidgetsList[_currentIndex].searchEnabled),
         textTheme: TextTheme(
@@ -173,6 +163,7 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
           color: Colors.white,
         );
         this.appBarTitle = new TextField(
+          key: Key('textField'),
           controller: _textEditingController,
           style: TextStyle(color: Colors.white),
           // Called when action key in keyboard is pressed
