@@ -15,5 +15,9 @@ const String SEAFOOD = 'seafood';
 const String FAVORITE_DESSERT = "favoriteDessert";
 const String FAVORITE_SEAFOOD = "favoriteSeafood";
 
-// Inkwell section
-const String INKWELL = "inkWell";
+// Toolbar constant
+const String TOOLTIP_MENU_ICON = "Menu Icon";
+const String TOOLTIP_FAVORITE = "Favorite";
+
+// Undo snackbar action
+const String UNDO_SNACKBAR_ACTION = "undoSnackBarAction";

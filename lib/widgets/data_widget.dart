@@ -10,8 +10,8 @@ import 'package:http/http.dart' as http;
 
 // ignore: must_be_immutable
 class DataWidget extends StatefulWidget {
-
-  DataWidget({Key key, this.keyword, this.searchEnabled, this.databaseMode}) : super(key: key); // Key-value pair constructor
+  DataWidget({Key key, this.keyword, this.searchEnabled, this.databaseMode})
+      : super(key: key); // Key-value pair constructor
 
   String keyword;
 
@@ -30,7 +30,8 @@ class DataWidget extends StatefulWidget {
 }
 
 // State untuk membangun widget dan juga menampung variable yang akan berubah
-class _DataWidgetState extends State<DataWidget> with AutomaticKeepAliveClientMixin<DataWidget> {
+class _DataWidgetState extends State<DataWidget>
+    with AutomaticKeepAliveClientMixin<DataWidget> {
   Future<List<Meal>> meals;
 
   var mealsDatabaseHelper = MealsDBHelper();
@@ -40,13 +41,13 @@ class _DataWidgetState extends State<DataWidget> with AutomaticKeepAliveClientMi
   @override
   void initState() {
     super.initState();
-    if(widget.searchEnabled){
+    if (widget.searchEnabled) {
       meals = fetchMeals(http.Client(), widget.keyword);
       keepPageAlive = true; // Prevent page reload when change page
     } else {
-      if(widget.databaseMode == "desert"){
+      if (widget.databaseMode == "desert") {
         meals = mealsDatabaseHelper.getFavoriteDesertDataList();
-      } else if(widget.databaseMode == "seafood"){
+      } else if (widget.databaseMode == "seafood") {
         meals = mealsDatabaseHelper.getFavoriteSeafoodDataList();
       }
       keepPageAlive = false; // Rebuild the page
@@ -60,28 +61,40 @@ class _DataWidgetState extends State<DataWidget> with AutomaticKeepAliveClientMi
     return FutureBuilder<List<Meal>>(
       future: meals,
       builder: (context, snapshot) {
+        Widget dataWidget;
 
-        switch(snapshot.connectionState){
+        switch (snapshot.connectionState) {
           case ConnectionState.none:
             break;
           case ConnectionState.waiting:
-            return Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.green[600])));
+            dataWidget = Center(
+                child: CircularProgressIndicator(
+                    valueColor:
+                        AlwaysStoppedAnimation<Color>(Colors.green[600])));
+            break;
           case ConnectionState.active:
             break;
           case ConnectionState.done:
-            if (snapshot.hasError)
-              return Center(child: Text("There is no internet connection"));
-            if(snapshot.hasData){
-              if(snapshot.data.length > 0) {
-                return MealsList(mealsList: snapshot.data, dataWidget: widget);
+            if (snapshot.hasData) {
+              if (snapshot.data.length > 0) {
+                dataWidget =
+                    MealsList(mealsList: snapshot.data, dataWidget: widget);
+                break;
               } else {
-                return Center(child: Text("There is no data given"));
+                dataWidget = Center(child: Text("There is no data given"));
+                break;
               }
             }
 
+            if (snapshot.hasError) {
+              dataWidget =
+                  Center(child: Text("There is no internet connection"));
+              break;
+            }
         }
-      },
 
+        return dataWidget;
+      },
     );
   }
 
@@ -91,9 +104,9 @@ class _DataWidgetState extends State<DataWidget> with AutomaticKeepAliveClientMi
     });
   }
 
-  reloadFavoriteMeals(String mode){
+  reloadFavoriteMeals(String mode) {
     setState(() {
-      if(mode == "desert"){
+      if (mode == "desert") {
         meals = mealsDatabaseHelper.getFavoriteDesertDataList();
       } else if (mode == "seafood") {
         meals = mealsDatabaseHelper.getFavoriteSeafoodDataList();
@@ -103,6 +116,4 @@ class _DataWidgetState extends State<DataWidget> with AutomaticKeepAliveClientMi
 
   @override
   bool get wantKeepAlive => keepPageAlive;
-
 }
-

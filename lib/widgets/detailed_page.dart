@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:meals_catalogue/const_strings.dart';
 import 'package:meals_catalogue/database/meals_db_helper.dart';
+import 'package:meals_catalogue/key_strings.dart';
 import 'package:meals_catalogue/model/meal.dart';
 
 // Import HTTP package as http (variable name from the package)
@@ -118,8 +120,8 @@ class _DetailedPageState extends State<DetailedPage> {
                   fontFamily: 'Nunito')),
           actions: <Widget>[
             IconButton(
-                key: Key('favoriteIconButton'),
                 icon: favoriteIcon,
+                tooltip: TOOLTIP_FAVORITE,
                 onPressed: () => enableFavoriteButtonPressed(_isDataLoaded)),
           ],
         ),
@@ -129,31 +131,41 @@ class _DetailedPageState extends State<DetailedPage> {
           child: FutureBuilder<List<Meal>>(
               future: futureDetailedMeal,
               builder: (context, snapshot) {
+
+                Widget detailedWidget;
+
                 switch (snapshot.connectionState) {
                   case ConnectionState.none:
                     break;
                   case ConnectionState.waiting:
-                    return Center(
+                    detailedWidget = Center(
                         child: CircularProgressIndicator(
                             valueColor: AlwaysStoppedAnimation<Color>(
                                 Colors.green[600])));
+                    break;
                   case ConnectionState.active:
                     break;
                   case ConnectionState.done:
                     if(snapshot.hasData){
                       if (snapshot.data.length > 0) {
                         this._isDataLoaded = true;
-                        return DetailedMealInfo(detailedMeals: snapshot.data);
+                        detailedWidget = DetailedMealInfo(detailedMeals: snapshot.data);
+                        break;
                       } else {
-                        return Center(child: Text("There is no data given"));
+                        detailedWidget = Center(child: Text("There is no data given"));
+                        break;
                       }
                     }
 
-                    if(snapshot.hasError)
-                      return Center(child: Text("There is no internet connection"));
+                    if(snapshot.hasError) {
+                      detailedWidget = Center(
+                          child: Text("There is no internet connection"));
+                      break;
+                    }
 
 
                 }
+                return detailedWidget;
               }),
         ));
   }
@@ -266,7 +278,7 @@ class _DetailedPageState extends State<DetailedPage> {
     final snackBar = SnackBar(
       content: snackbarTextContent,
       action: SnackBarAction(
-        key: Key("snackBarAction"),
+        key: Key(getStringKey(UNDO_SNACKBAR_ACTION)),
         label: "UNDO",
         onPressed: () {
           undoState(_isFavorite);

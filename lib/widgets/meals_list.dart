@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meals_catalogue/key_strings.dart';
 import 'package:meals_catalogue/model/meal.dart';
 import 'package:meals_catalogue/widgets/data_widget.dart';
 import 'package:meals_catalogue/widgets/detailed_page.dart';
@@ -26,7 +27,6 @@ class MealsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
-        key: Key('mealsList'),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           // How many items in a row
           crossAxisCount:
@@ -82,7 +82,6 @@ class MealsList extends StatelessWidget {
                     child: Align(
                       alignment: Alignment(0.0, 0.0),
                       child: Text(
-                        // todo: key untuk meal title
                         mealsList[index].mealTitle,
                         textAlign: TextAlign.center,
                         style: TextStyle(fontWeight: FontWeight.bold),
@@ -101,7 +100,7 @@ class MealsList extends StatelessWidget {
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
-                  key: Key('inkWell'),
+                  key: Key(getStringKey('food: ${mealsList[index].mealId}')),
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(

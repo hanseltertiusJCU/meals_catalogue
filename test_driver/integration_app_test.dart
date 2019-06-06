@@ -1,5 +1,5 @@
 import 'package:flutter_driver/flutter_driver.dart';
-import 'package:meals_catalogue/finder.dart';
+import 'finder.dart';
 import 'package:test/test.dart';
 
 // todo: import finder dan key
@@ -8,67 +8,84 @@ void main(){
   // todo: verify the behavior
   group('Meals Catalogue App', (){
 
-
-    // todo: find by key
-    // home
-
     FlutterDriver flutterDriver;
 
     setUpAll(() async {
       flutterDriver = await FlutterDriver.connect();
     });
-
-    // todo: app bar title
-    test('Show default app bar title', () async {
-      // todo: text app bar title
-      expect(await flutterDriver.getText(appBar), "Dessert");
-    });
-
-//    // todo: bottom navigation bar tap bottom navigation bar item
-//    test('bottom navigation bar test item', () async{
-//
-//      // todo: bottom navigation bar item text research
-//      await flutterDriver.tap(find.byValueKey('dessert'));
-//
-//      print('This is Dessert section');
-//
-//      // todo: expect title is keyword
-//
-//      await flutterDriver.tap(find.byValueKey('seafood'));
-//
-//      print('This is Seafood section');
-//
-//      await flutterDriver.tap(find.byValueKey('favoriteDessert'));
-//
-//      print('This is Favorite Dessert section');
-//
-//      await flutterDriver.tap(find.byValueKey('favoriteSeafood'));
-//
-//      print('This is Favorite Seafood section');
-//
-//
-//    });
-
-    // todo: search icon
-//    test('click icon search', () async {
-//        // do the thing
-//        await flutterDriver.tap(find.byValueKey('favoriteIconButton'));
-//
-//    });
-
-    // todo: pageview scroll
-
-
-    // todo: listview pressed
-    // todo: navigate to detail
-
-    // todo: pressed favorite icon button
-    // todo: snack bar action undo pressed
     
     tearDownAll(() async {
       if(flutterDriver != null){
         flutterDriver.close();
       }
+    });
+
+    // todo: the error lies in data keep on loading
+
+    // todo : click item untuk ke detail
+    test('Click icon into detail item', () async{
+      await flutterDriver.tap(firstDessertMeal);
+
+      print('Click item named Apple & Blackberry Crumble');
+
+      expect(await flutterDriver.getText(firstDessertMeal), 'food : 52893');
+      // todo: make a flutter driver command and then do the command tap in inkwell
+    });
+
+    // todo: pressed favorite in detail
+    test('Pressed favorite Icon in detail', () async{
+      await flutterDriver.tap(tooltipFavorite);
+
+      print('Click favorite button');
+      // todo: make a flutter driver command and then do the command tap in inkwell
+    });
+
+    test('Snackbar undo button', () async{
+      await flutterDriver.tap(snackBarUndo);
+
+      print('Click snackbar undo action');
+    });
+
+    // todo: pressed back
+    test('Pressed back button', () async{
+      await flutterDriver.tap(find.byTooltip('Back'));
+
+      print('Press back button');
+    });
+
+    // todo: search icon
+    test('click icon search', () async {
+      // do the thing
+      await flutterDriver.tap(tooltipMenuIcon);
+
+      // todo: tap icon button -> enter text field -> submit
+    });
+
+    // todo: bottom navigation pressed
+    test('bottom navigation bar test item', () async{
+
+      // todo: intended = pressed favorite dessert, but we want to test
+
+      // todo: bottom navigation bar item text research
+//      await flutterDriver.tap(dessert); // intended : tap at bottom navigation view item
+
+      print('This is Dessert section');
+
+      // todo: expect title is keyword
+
+//      await flutterDriver.tap(seafood);
+
+      print('This is Seafood section');
+
+//      await flutterDriver.tap(favoriteDessert);
+
+      print('This is Favorite Dessert section');
+
+//      await flutterDriver.tap(favoriteSeafood);
+
+      print('This is Favorite Seafood section');
+
+
     });
   });
 }
