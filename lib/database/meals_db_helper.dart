@@ -38,12 +38,8 @@ class MealsDBHelper {
     // Create Desert table
     await db.execute("CREATE TABLE desert(id INTEGER PRIMARY KEY, mealId TEXT, mealTitle TEXT, mealImageUrl TEXT, mealCreateDate TEXT)");
 
-    print("DB Desert Created");
-
     // Create Seafood table
     await db.execute("CREATE TABLE seafood(id INTEGER PRIMARY KEY, mealId TEXT, mealTitle TEXT, mealImageUrl TEXT, mealCreateDate TEXT)");
-
-    print("DB Seafood Created");
   }
   // endregion
 

@@ -18,7 +18,6 @@ class _DetailedMealInfoState extends State<DetailedMealInfo> {
 
   @override
   void initState() {
-
     /*
     Bikin Future object agar tidak mengganggu content dari DetailedMealInfoState
     ketika menampilkan SnackBar.
@@ -52,7 +51,6 @@ ListView getListView(BuildContext context, DetailedMealInfo detailedMealInfo){
   var appConfig = AppConfig.of(context);
 
   return ListView(
-    key: Key('mealDetail'),
     padding: EdgeInsets.all(16.0),
     children: <Widget>[
       Align(

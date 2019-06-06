@@ -7,7 +7,7 @@ void main() {
   var configuredApp = AppConfig(
     appDisplayName: "Meals Catalogue",
     appInternalId: 1,
-    appColor: Colors.deepOrange[600],
+    appColor: Colors.orange[800],
     appFont: 'Nunito',
     child: MyApp(),
   );
