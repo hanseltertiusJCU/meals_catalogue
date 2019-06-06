@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meals_catalogue/config/app_config.dart';
 import 'package:meals_catalogue/database/meals_db_helper.dart';
 import 'package:meals_catalogue/model/meal.dart';
 import 'package:meals_catalogue/network/network_meals.dart';
@@ -58,6 +59,7 @@ class _DataWidgetState extends State<DataWidget>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    var appConfig = AppConfig.of(context);
     return FutureBuilder<List<Meal>>(
       future: meals,
       builder: (context, snapshot) {
@@ -70,7 +72,7 @@ class _DataWidgetState extends State<DataWidget>
             dataWidget = Center(
                 child: CircularProgressIndicator(
                     valueColor:
-                        AlwaysStoppedAnimation<Color>(Colors.green[600])));
+                        AlwaysStoppedAnimation<Color>(appConfig.appColor)));
             break;
           case ConnectionState.active:
             break;

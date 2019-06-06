@@ -96,3 +96,7 @@ flutter:
       fonts:
         - asset : fonts/Nunito-Regular.ttf
         - asset : fonts/Nunito-Bold.ttf
+    - family: Alegreya
+      fonts:
+        - asset : fonts/Alegreya-Regular.ttf
+        - asset : fonts/Alegreya-Bold.ttf

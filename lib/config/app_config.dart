@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 
 class AppConfig extends InheritedWidget {
 
-  AppConfig({this.appDisplayName, this.appInternalId, Widget child}) : super(child : child);
+  AppConfig({this.appDisplayName, this.appInternalId, this.appColor, this.appFont, Widget child}) : super(child : child);
 
   final String appDisplayName;
   final int appInternalId;
-  // todo: color untuk icon beda
+  final Color appColor;
+  final String appFont;
 
   static AppConfig of(BuildContext buildContext) {
     return buildContext.inheritFromWidgetOfExactType(AppConfig);

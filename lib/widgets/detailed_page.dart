@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meals_catalogue/config/app_config.dart';
 import 'package:meals_catalogue/const_strings.dart';
 import 'package:meals_catalogue/database/meals_db_helper.dart';
 import 'package:meals_catalogue/key_strings.dart';
@@ -15,7 +16,9 @@ class DetailedPage extends StatefulWidget {
 
   final DataWidget dataWidget;
 
-  DetailedPage({Key key, this.meal, this.dataWidget}) : super(key: key);
+  final String font;
+
+  DetailedPage({Key key, this.meal, this.dataWidget, this.font}) : super(key: key);
 
   @override
   _DetailedPageState createState() => _DetailedPageState();
@@ -109,6 +112,7 @@ class _DetailedPageState extends State<DetailedPage> {
 
   @override
   Widget build(BuildContext context) {
+    var appConfig = AppConfig.of(context);
     return Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
@@ -117,7 +121,7 @@ class _DetailedPageState extends State<DetailedPage> {
               title: TextStyle(
                   fontSize: 20.0,
                   fontWeight: FontWeight.bold,
-                  fontFamily: 'Nunito')),
+                  fontFamily: appConfig.appFont)),
           actions: <Widget>[
             IconButton(
                 icon: favoriteIcon,
@@ -141,7 +145,7 @@ class _DetailedPageState extends State<DetailedPage> {
                     detailedWidget = Center(
                         child: CircularProgressIndicator(
                             valueColor: AlwaysStoppedAnimation<Color>(
-                                Colors.green[600])));
+                                appConfig.appColor)));
                     break;
                   case ConnectionState.active:
                     break;
@@ -149,7 +153,7 @@ class _DetailedPageState extends State<DetailedPage> {
                     if(snapshot.hasData){
                       if (snapshot.data.length > 0) {
                         this._isDataLoaded = true;
-                        detailedWidget = DetailedMealInfo(detailedMeals: snapshot.data);
+                        detailedWidget = DetailedMealInfo(detailedMeals: snapshot.data, font: widget.font);
                         break;
                       } else {
                         detailedWidget = Center(child: Text("There is no data given"));
@@ -261,17 +265,19 @@ class _DetailedPageState extends State<DetailedPage> {
 
   // region snackbar
   _displaySnackbar(BuildContext context, bool isFavorite) {
+    var appConfig = AppConfig.of(context);
+
     Text snackbarTextContent;
 
     if (isFavorite) {
       snackbarTextContent = Text(
         "Marked ${widget.meal.mealTitle} as favorite",
-        style: TextStyle(fontFamily: "Nunito"),
+        style: TextStyle(fontFamily: appConfig.appFont),
       );
     } else {
       snackbarTextContent = Text(
         "Unmarked ${widget.meal.mealTitle} as favorite",
-        style: TextStyle(fontFamily: "Nunito"),
+        style: TextStyle(fontFamily: appConfig.appFont),
       );
     }
 
@@ -283,7 +289,7 @@ class _DetailedPageState extends State<DetailedPage> {
         onPressed: () {
           undoState(_isFavorite);
         },
-        textColor: Colors.green[600],
+        textColor: appConfig.appColor,
       ),
     );
 

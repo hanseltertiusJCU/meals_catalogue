@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meals_catalogue/config/app_config.dart';
 import 'package:meals_catalogue/key_strings.dart';
 import 'package:meals_catalogue/model/meal.dart';
 import 'package:meals_catalogue/widgets/data_widget.dart';
@@ -47,6 +48,7 @@ class MealsList extends StatelessWidget {
 
   // region Hero
   Hero getHero(context, index){
+    var appConfig = AppConfig.of(context);
     // Source hero
     return Hero(
       tag: getHeroTag(dataWidget, mealsList[index]),
@@ -66,7 +68,7 @@ class MealsList extends StatelessWidget {
                         topRight: Radius.circular(5.0)),
                     child: CachedNetworkImage(
                       imageUrl: mealsList[index].mealImageUrl,
-                      placeholder: (context, url) => Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.green[600]))),
+                      placeholder: (context, url) => Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(appConfig.appColor))),
                       errorWidget: (context, url, error) => Icon(Icons.error),
                       width: double.infinity,
                       height: double.infinity,
@@ -105,7 +107,7 @@ class MealsList extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                       builder: (context) =>
-                          DetailedPage(meal: mealsList[index], dataWidget: dataWidget),
+                          DetailedPage(meal: mealsList[index], dataWidget: dataWidget, font: appConfig.appFont),
                     ),
                   ),
                 ),

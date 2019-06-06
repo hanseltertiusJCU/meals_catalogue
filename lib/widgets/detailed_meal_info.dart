@@ -1,19 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:meals_catalogue/config/app_config.dart';
 import 'package:meals_catalogue/model/meal.dart';
 
 class DetailedMealInfo extends StatefulWidget {
   final List<Meal> detailedMeals;
 
-  DetailedMealInfo({Key key, this.detailedMeals}) : super(key: key);
+  final String font;
+
+  DetailedMealInfo({Key key, this.detailedMeals, this.font}) : super(key: key);
 
   @override
   _DetailedMealInfoState createState() => _DetailedMealInfoState();
 }
 
 class _DetailedMealInfoState extends State<DetailedMealInfo> {
+
   @override
   void initState() {
+
     /*
     Bikin Future object agar tidak mengganggu content dari DetailedMealInfoState
     ketika menampilkan SnackBar.
@@ -23,7 +28,7 @@ class _DetailedMealInfoState extends State<DetailedMealInfo> {
         SnackBar(
           content: Text(
             widget.detailedMeals[0].mealTitle,
-            style: TextStyle(fontFamily: 'Nunito'),
+            style: TextStyle(fontFamily: widget.font),
           ),
           duration: Duration(seconds: 4),
         ),
@@ -36,13 +41,16 @@ class _DetailedMealInfoState extends State<DetailedMealInfo> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomPadding: false,
-      body: getListView(widget)
+      body: getListView(context, widget)
     );
   }
 }
 
 // region get ListView widget
-ListView getListView(DetailedMealInfo detailedMealInfo){
+ListView getListView(BuildContext context, DetailedMealInfo detailedMealInfo){
+
+  var appConfig = AppConfig.of(context);
+
   return ListView(
     key: Key('mealDetail'),
     padding: EdgeInsets.all(16.0),
@@ -52,7 +60,7 @@ ListView getListView(DetailedMealInfo detailedMealInfo){
         child: ClipOval(
           child: CachedNetworkImage(
             imageUrl: detailedMealInfo.detailedMeals[0].mealImageUrl,
-            placeholder: (context, url) => Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.green[600]))),
+            placeholder: (context, url) => Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(appConfig.appColor))),
             errorWidget: (context, url, error) => Icon(Icons.error),
             width: 125.0,
             height: 125.0,

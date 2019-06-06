@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:meals_catalogue/config/app_config.dart';
 import 'package:meals_catalogue/const_strings.dart';
 import 'package:meals_catalogue/key_strings.dart';
 import 'package:meals_catalogue/widgets/data_widget.dart';
 
 class Home extends StatefulWidget {
-  final String title;
-
-  Home({Key key, this.title}) : super(key: key);
 
   @override
   HomeScreen createState() => HomeScreen();
@@ -107,6 +105,7 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
 
   @override
   Widget build(BuildContext context) {
+    var appConfig = AppConfig.of(context);
     return Scaffold(
       appBar: AppBar(
         title: appBarTitle,
@@ -115,7 +114,7 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
           title: TextStyle(
               fontSize: 20.0,
               fontWeight: FontWeight.bold,
-              fontFamily: 'Nunito'),
+              fontFamily: appConfig.appFont),
         ),
       ),
       body: PageView(
@@ -132,7 +131,7 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
         onTap: (index) {
           changeSelectedBottomNavigationBarItem(index);
         },
-        selectedItemColor: Colors.green[600],
+        selectedItemColor: appConfig.appColor,
         unselectedItemColor: Colors.grey,
       ),
     );
