@@ -20,33 +20,34 @@ void main(){
 
     // todo: the error lies in data keep on loading
 
-    // todo : click item untuk ke detail
+    // todo : click item into the detail, specifically the first item
     test('Click icon into detail item', () async{
-//      await flutterDriver.tap(firstDessertMeal);
+
+      await flutterDriver.tap(firstDessertMeal);
 
       print('Click item named Apple & Blackberry Crumble');
 
-//      expect(await flutterDriver.getText(firstDessertMeal), 'food : 52893');
+      expect(await flutterDriver.getText(firstDessertMeal), 'food : 52893');
       // todo: make a flutter driver command and then do the command tap in inkwell
     });
 
     // todo: pressed favorite in detail
     test('Pressed favorite Icon in detail', () async{
-//      await flutterDriver.tap(tooltipFavorite);
+      await flutterDriver.tap(tooltipFavorite);
 
       print('Click favorite button');
       // todo: make a flutter driver command and then do the command tap in inkwell
     });
 
     test('Snackbar undo button', () async{
-//      await flutterDriver.tap(snackBarUndo);
+      await flutterDriver.tap(snackBarUndo);
 
       print('Click snackbar undo action');
     });
 
     // todo: pressed back
     test('Pressed back button', () async{
-//      await flutterDriver.tap(find.byTooltip('Back'));
+      await flutterDriver.tap(find.byTooltip('Back'));
 
       print('Press back button and return to list view item that contains grid');
     });
@@ -54,13 +55,19 @@ void main(){
     // todo: search icon
     test('click icon search', () async {
       // do the thing
-//      await flutterDriver.tap(tooltipMenuIcon);
+      await flutterDriver.tap(tooltipMenuIcon);
 
       print("Search icon pressed");
+      
+      await flutterDriver.tap(textField);
 
-      print("Enter text field");
+      await flutterDriver.enterText("Prawn");
 
-      print("Enter prawn");
+      await flutterDriver.waitFor(find.text("Prawn"));
+
+      // todo: command for submission
+
+      print("Enter text field, specifically, we want to input Prawn");
 
       print("Submit");
 
@@ -71,6 +78,7 @@ void main(){
     test('bottom navigation bar test item', () async{
 
       // todo: intended = pressed favorite dessert, but we want to test
+      await flutterDriver.waitFor(bottomNavigationBar);
 
       // todo: bottom navigation bar item text research
       await flutterDriver.tap(dessert); // intended : tap at bottom navigation view item
@@ -79,15 +87,15 @@ void main(){
 
       // todo: expect title is keyword
 
-//      await flutterDriver.tap(seafood);
+      await flutterDriver.tap(seafood);
 
       print('This is Seafood section');
 
-//      await flutterDriver.tap(favoriteDessert);
+      await flutterDriver.tap(favoriteDessert);
 
       print('This is Favorite Dessert section');
 
-//      await flutterDriver.tap(favoriteSeafood);
+      await flutterDriver.tap(favoriteSeafood);
 
       print('This is Favorite Seafood section');
 

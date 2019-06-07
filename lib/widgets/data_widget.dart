@@ -21,17 +21,17 @@ class DataWidget extends StatefulWidget {
   final String databaseMode;
 
   // Create dataWidgetState object to open access into another widget
-  _DataWidgetState dataWidgetState;
+  DataWidgetState dataWidgetState;
 
   @override
-  _DataWidgetState createState() {
-    dataWidgetState = _DataWidgetState();
+  DataWidgetState createState() {
+    dataWidgetState = DataWidgetState();
     return dataWidgetState;
   }
 }
 
 // State untuk membangun widget dan juga menampung variable yang akan berubah
-class _DataWidgetState extends State<DataWidget>
+class DataWidgetState extends State<DataWidget>
     with AutomaticKeepAliveClientMixin<DataWidget> {
   Future<List<Meal>> meals;
 

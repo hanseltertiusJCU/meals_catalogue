@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:meals_catalogue/config/app_config.dart';
-import 'package:meals_catalogue/key_strings.dart';
 import 'package:meals_catalogue/model/meal.dart';
 import 'package:meals_catalogue/widgets/data_widget.dart';
 import 'package:meals_catalogue/widgets/detailed_page.dart';
@@ -102,7 +101,7 @@ class MealsList extends StatelessWidget {
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
-                  key: Key(getStringKey('food: ${mealsList[index].mealId}')),
+                  key: Key('food: ${mealsList[index].mealId}'),
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:meals_catalogue/config/app_config.dart';
 import 'package:meals_catalogue/const_strings.dart';
 import 'package:meals_catalogue/database/meals_db_helper.dart';
-import 'package:meals_catalogue/key_strings.dart';
 import 'package:meals_catalogue/model/meal.dart';
 
 // Import HTTP package as http (variable name from the package)
@@ -284,7 +283,7 @@ class _DetailedPageState extends State<DetailedPage> {
     final snackBar = SnackBar(
       content: snackbarTextContent,
       action: SnackBarAction(
-        key: Key(getStringKey(UNDO_SNACKBAR_ACTION)),
+        key: Key(UNDO_SNACKBAR_ACTION),
         label: "UNDO",
         onPressed: () {
           undoState(_isFavorite);

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:meals_catalogue/config/app_config.dart';
 import 'package:meals_catalogue/const_strings.dart';
-import 'package:meals_catalogue/key_strings.dart';
 import 'package:meals_catalogue/widgets/data_widget.dart';
 
 class Home extends StatefulWidget {
@@ -15,9 +14,9 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
 
   Icon homeMenuIcon = Icon(Icons.search, color: Colors.white);
 
-  TextEditingController _textEditingController = TextEditingController();
+  TextEditingController textEditingController = TextEditingController();
 
-  final List<DataWidget> _dataWidgetsList = [
+  final List<DataWidget> dataWidgetsList = [
     DataWidget(keyword: "Dessert", searchEnabled: true, databaseMode: "desert"),
     DataWidget(
         keyword: "Seafood", searchEnabled: true, databaseMode: "seafood"),
@@ -31,41 +30,41 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
         databaseMode: "seafood")
   ];
 
-  int _currentIndex = 0;
+  int currentIndex = 0;
 
-  final List<BottomNavigationBarItem> _bottomNavigationBarItems = [
+  List<BottomNavigationBarItem> bottomNavigationBarItems = [
     BottomNavigationBarItem(
-        icon: Icon(Icons.cake, key: Key(getStringKey(DESSERT))), title: Text("Dessert")),
+        icon: Icon(Icons.cake, key: Key(DESSERT)), title: Text("Dessert")),
     BottomNavigationBarItem(
-        icon: Icon(Icons.restaurant, key : Key(getStringKey(SEAFOOD))), title: Text("Seafood")),
+        icon: Icon(Icons.restaurant, key : Key(SEAFOOD)), title: Text("Seafood")),
     BottomNavigationBarItem(
-        icon: Icon(Icons.cake, key: Key(getStringKey(FAVORITE_DESSERT))), title: Text("Favorite Dessert")),
+        icon: Icon(Icons.cake, key: Key(FAVORITE_DESSERT)), title: Text("Favorite Dessert")),
     BottomNavigationBarItem(
-        icon: Icon(Icons.restaurant, key: Key(getStringKey(FAVORITE_SEAFOOD))), title: Text("Favorite Seafood"))
+        icon: Icon(Icons.restaurant, key: Key(FAVORITE_SEAFOOD)), title: Text("Favorite Seafood"))
   ];
 
-  PageController _pageController = PageController(
+  PageController pageController = PageController(
     initialPage: 0,
     keepPage: true,
   );
 
   changeSelectedBottomNavigationBarItem(int index) {
     setState(() {
-      _currentIndex = index;
+      currentIndex = index;
       appBarTitle = Text(
-        _dataWidgetsList[_currentIndex].keyword,
+        dataWidgetsList[currentIndex].keyword,
       );
       endSearch();
-      _pageController.animateToPage(index,
+      pageController.animateToPage(index,
           duration: Duration(milliseconds: 500), curve: Curves.ease);
     });
   }
 
   changeSelectedPageViewItem(int index) {
     setState(() {
-      _currentIndex = index;
+      currentIndex = index;
       appBarTitle = Text(
-        _dataWidgetsList[_currentIndex].keyword,
+        dataWidgetsList[currentIndex].keyword,
       );
       endSearch();
     });
@@ -78,17 +77,17 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
         color: Colors.white,
       );
       appBarTitle = Text(
-        _dataWidgetsList[_currentIndex].keyword,
+        dataWidgetsList[currentIndex].keyword,
       );
-      _textEditingController.clear();
+      textEditingController.clear();
     });
   }
 
   HomeScreen() {
-    _textEditingController.addListener(() {
-      if (_textEditingController.text.isNotEmpty) {
+    textEditingController.addListener(() {
+      if (textEditingController.text.isNotEmpty) {
         setState(() {
-          _dataWidgetsList[_currentIndex].keyword = _textEditingController.text;
+          dataWidgetsList[currentIndex].keyword = textEditingController.text;
         });
       }
     });
@@ -99,7 +98,7 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
   void initState() {
     super.initState();
     appBarTitle = Text(
-      _dataWidgetsList[_currentIndex].keyword,
+      dataWidgetsList[currentIndex].keyword,
     );
   }
 
@@ -109,7 +108,7 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
     return Scaffold(
       appBar: AppBar(
         title: appBarTitle,
-        actions: getMenuIcon(_dataWidgetsList[_currentIndex].searchEnabled),
+        actions: getMenuIcon(dataWidgetsList[currentIndex].searchEnabled),
         textTheme: TextTheme(
           title: TextStyle(
               fontSize: 20.0,
@@ -118,16 +117,17 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
         ),
       ),
       body: PageView(
-        key: Key(getStringKey(PAGE_VIEW)),
-        controller: _pageController,
+        key: Key(PAGE_VIEW),
+        controller: pageController,
         onPageChanged: (index) {
           changeSelectedPageViewItem(index);
         },
-        children: _dataWidgetsList,
+        children: dataWidgetsList,
       ),
       bottomNavigationBar: BottomNavigationBar(
-        items: _bottomNavigationBarItems,
-        currentIndex: _currentIndex,
+        key: Key(BOTTOM_NAVIGATION_BAR),
+        items: bottomNavigationBarItems,
+        currentIndex: currentIndex,
         onTap: (index) {
           changeSelectedBottomNavigationBarItem(index);
         },
@@ -158,19 +158,19 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
   enableSearch() {
     setState(() {
       if (this.homeMenuIcon.icon == Icons.search) {
-        this.homeMenuIcon = new Icon(
+        this.homeMenuIcon = Icon(
           Icons.close,
           color: Colors.white,
         );
-        this.appBarTitle = new TextField(
-          key: Key(getStringKey(TEXT_FIELD)),
-          controller: _textEditingController,
+        this.appBarTitle = TextField(
+          key: Key(TEXT_FIELD),
+          controller: textEditingController,
           style: TextStyle(color: Colors.white),
           // Called when action key in keyboard is pressed
           onSubmitted: (_) {
-            _dataWidgetsList[_currentIndex]
+            dataWidgetsList[currentIndex]
                 .dataWidgetState
-                .loadSearchMeals(_dataWidgetsList[_currentIndex].keyword);
+                .loadSearchMeals(dataWidgetsList[currentIndex].keyword);
           },
           decoration: new InputDecoration(
             prefixIcon: Icon(Icons.search, color: Colors.white),
