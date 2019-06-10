@@ -9,7 +9,7 @@ class NetworkData {
   http.Client httpClient = http.Client();
   final String baseUrl = "https://www.themealdb.com/api/json/v1/1/";
 
-  Future<MealData> fetchMealData({int bottomNavigationPosition = 0, bool isSearchingMeals = false, String searchQuery = "", category = "Dessert"}) async {
+  Future<MealData> fetchMealData({int bottomNavigationPosition = 0, bool isSearchingMeals = false, String keyword = "", category = "Dessert"}) async {
     MealData mealData;
 
     String urlComponent;
@@ -21,8 +21,8 @@ class NetworkData {
         urlComponent = "filter.php?c=Seafood";
       }
 
-      if(isSearchingMeals && searchQuery.isNotEmpty) {
-        urlComponent = "search.php?s=$searchQuery";
+      if(isSearchingMeals && keyword.isNotEmpty) {
+        urlComponent = "search.php?s=$keyword";
       }
 
       var response = await httpClient.get(baseUrl + urlComponent);
@@ -40,14 +40,14 @@ class NetworkData {
       var dbData;
 
       if(category == "Favorite Dessert"){
-        if(isSearchingMeals && searchQuery.isNotEmpty) {
-          dbData = await mealsDBHelper.getFavoriteDessertsByKeyword(searchQuery);
+        if(isSearchingMeals && keyword.isNotEmpty) {
+          dbData = await mealsDBHelper.getFavoriteDessertsByKeyword(keyword);
         } else {
           dbData = await mealsDBHelper.getFavoriteDesserts();
         }
       } else {
-        if(isSearchingMeals && searchQuery.isNotEmpty) {
-          dbData = await mealsDBHelper.getFavoriteSeafoodByKeyword(searchQuery);
+        if(isSearchingMeals && keyword.isNotEmpty) {
+          dbData = await mealsDBHelper.getFavoriteSeafoodByKeyword(keyword);
         } else {
           dbData = await mealsDBHelper.getFavoriteSeafood();
         }

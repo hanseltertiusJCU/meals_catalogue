@@ -1,7 +1,10 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:meals_catalogue/config/app_config.dart';
 import 'package:meals_catalogue/const_strings.dart';
-import 'package:meals_catalogue/widgets/data_widget.dart';
+import 'package:meals_catalogue/data/meal_data.dart';
+import 'package:meals_catalogue/model/meal.dart';
+import 'package:meals_catalogue/network/network_data.dart';
 
 class Home extends StatefulWidget {
 
@@ -12,49 +15,163 @@ class Home extends StatefulWidget {
 class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
   Widget appBarTitle;
 
-  Icon homeMenuIcon = Icon(Icons.search, color: Colors.white);
-
-  TextEditingController textEditingController = TextEditingController();
-
-  final List<DataWidget> dataWidgetsList = [
-    DataWidget(keyword: "Dessert", searchEnabled: true, databaseMode: "desert"),
-    DataWidget(
-        keyword: "Seafood", searchEnabled: true, databaseMode: "seafood"),
-    DataWidget(
-        keyword: "Favorite Dessert",
-        searchEnabled: false,
-        databaseMode: "desert"),
-    DataWidget(
-        keyword: "Favorite Seafood",
-        searchEnabled: false,
-        databaseMode: "seafood")
-  ];
+  MealData mealData;
 
   int currentIndex = 0;
 
-  List<BottomNavigationBarItem> bottomNavigationBarItems = [
-    BottomNavigationBarItem(
-        icon: Icon(Icons.cake, key: Key(DESSERT)), title: Text("Dessert")),
-    BottomNavigationBarItem(
-        icon: Icon(Icons.restaurant, key : Key(SEAFOOD)), title: Text("Seafood")),
-    BottomNavigationBarItem(
-        icon: Icon(Icons.cake, key: Key(FAVORITE_DESSERT)), title: Text("Favorite Dessert")),
-    BottomNavigationBarItem(
-        icon: Icon(Icons.restaurant, key: Key(FAVORITE_SEAFOOD)), title: Text("Favorite Seafood"))
-  ];
+  // todo: mesti gantinya gmn gt
+  String mealCategory = "Dessert";
 
-  PageController pageController = PageController(
-    initialPage: 0,
-    keepPage: true,
+  PageController pageController;
+
+  // region Search meals
+  String keyword = "";
+  TextEditingController textEditingController;
+  bool _isSearchingMeals = false;
+
+  AppConfig appConfig;
+
+  void _enableSearch() {
+    setState(() {
+      _isSearchingMeals = true;
+    });
+  }
+
+  void _updateKeyword(String keyword){
+    setState(() {
+      this.keyword = keyword;
+    });
+  }
+
+  void _disableSearch(){
+    setState(() {
+      textEditingController.clear();
+
+      _updateKeyword("");
+
+      _isSearchingMeals = false;
+    });
+  }
+  // endregion
+
+  // region Initialize and get data
+  @override
+  void initState() {
+    super.initState();
+
+    textEditingController = TextEditingController();
+
+    pageController = PageController(
+      initialPage: 0,
+      keepPage: true,
+    );
+
+    fetchMealData();
+  }
+
+  fetchMealData() async {
+    NetworkData networkData = NetworkData();
+
+    MealData mealData = await networkData.fetchMealData(
+      bottomNavigationPosition: currentIndex,
+      isSearchingMeals: _isSearchingMeals,
+      keyword: keyword,
+      category: mealCategory
+    );
+
+    setState(() {
+      this.mealData = mealData;
+    });
+  }
+  // endregion
+
+  // region Hero
+  String getHeroTag(Meal meal) {
+    String heroTag;
+
+    heroTag = "Meal ID : ${meal.mealId}\n" + "Index position: $currentIndex\n" + "Category: $mealCategory";
+
+    return heroTag;
+  }
+
+  getCardHeroes(AppConfig appConfig, MealData mealData) =>
+    mealData.meals.map((item) =>
+        Hero(
+          tag: getHeroTag(item),
+          child: Stack(
+            children: <Widget>[
+              getCard(appConfig, item),
+              getInkwellCard(appConfig, item)
+            ],
+          ),
+        )).toList();
+  // endregion
+
+  // region Card
+  getCard(AppConfig appConfig, Meal meal) => Card(
+    elevation: 2.0,
+    child: Column(
+      children: <Widget>[
+        Expanded(
+          flex: 1,
+          child: ClipRRect(
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(5.0),
+              topRight: Radius.circular(5.0),
+            ),
+            child: CachedNetworkImage(
+              imageUrl: meal.mealImageUrl,
+              placeholder: (context, url) => Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(appConfig.appColor))),
+              errorWidget: (context, url, error) => Icon(Icons.error),
+              width: double.infinity,
+              height: double.infinity,
+              fit: BoxFit.fill,
+            ),
+          ),
+        ),
+        Expanded(
+          flex: 1,
+          child: Padding(
+            padding: EdgeInsets.all(4.0),
+            child: Align(
+              alignment: Alignment(0.0, 0.0),
+              child: Text(
+                meal.mealTitle,
+                textAlign: TextAlign.center,
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+        ),
+      ],
+    ),
   );
+  // endregion
 
+  // region Inkwell
+  getInkwellCard(AppConfig appConfig, Meal meal) => Positioned.fill(
+      child: ClipRRect(
+        borderRadius: BorderRadius.all(Radius.circular(5.0)),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            key: Key('food: ${meal.mealId}'),
+            onTap: () => Navigator.push(context,
+                // todo: home screen itu untuk di ubah ke detailed pagenya
+                MaterialPageRoute(builder: (context) => DetailedPage(meal: meal, font: appConfig.appFont, homeScreen: this))),
+          ),
+        ),
+      )
+  );
+  // endregion
+
+  // region Set state method
   changeSelectedBottomNavigationBarItem(int index) {
     setState(() {
       currentIndex = index;
-      appBarTitle = Text(
-        dataWidgetsList[currentIndex].keyword,
-      );
-      endSearch();
+      changeCategory(index);
+      fetchMealData();
+      _disableSearch();
       pageController.animateToPage(index,
           duration: Duration(milliseconds: 500), curve: Curves.ease);
     });
@@ -63,52 +180,135 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
   changeSelectedPageViewItem(int index) {
     setState(() {
       currentIndex = index;
-      appBarTitle = Text(
-        dataWidgetsList[currentIndex].keyword,
-      );
-      endSearch();
+      changeCategory(index);
+      fetchMealData();
+      _disableSearch();
     });
   }
 
-  void endSearch() {
+  changeCategory(int index){
     setState(() {
-      this.homeMenuIcon = new Icon(
-        Icons.search,
-        color: Colors.white,
-      );
-      appBarTitle = Text(
-        dataWidgetsList[currentIndex].keyword,
-      );
-      textEditingController.clear();
-    });
-  }
-
-  HomeScreen() {
-    textEditingController.addListener(() {
-      if (textEditingController.text.isNotEmpty) {
-        setState(() {
-          dataWidgetsList[currentIndex].keyword = textEditingController.text;
-        });
+      switch(index){
+        case 1:
+          mealCategory = "Seafood";
+          break;
+        case 2:
+          mealCategory = "Favorite Dessert";
+          break;
+        case 3:
+          mealCategory = "Favorite Seafood";
+          break;
+        default:
+          mealCategory = "Dessert";
+          break;
       }
     });
   }
+  // endregion
 
-  // Initialize state, only run once
-  @override
-  void initState() {
-    super.initState();
-    appBarTitle = Text(
-      dataWidgetsList[currentIndex].keyword,
-    );
+  // region Action bar icon
+  _buildTextField() =>
+      TextField(
+        key: Key(TEXT_FIELD),
+        controller: textEditingController,
+        style: TextStyle(
+          color: Colors.white,
+        ),
+        autofocus: true,
+        decoration: InputDecoration(
+          prefixIcon: Icon(Icons.search, color: Colors.white),
+          hintText: "Search meals",
+          enabledBorder: UnderlineInputBorder(
+            borderSide: BorderSide(
+              color: Colors.white,
+            ),
+          ),
+          focusedBorder: UnderlineInputBorder(
+            borderSide: BorderSide(
+              color: Colors.white,
+            ),
+          ),
+          hintStyle: TextStyle(
+              color: Colors.white30,
+          ),
+        ),
+        onSubmitted: _updateKeyword,
+      );
+
+  List<Widget> _getMenuIcon() {
+    List<Widget> menuIcons;
+    if (_isSearchingMeals) {
+      menuIcons = List<Widget>();
+      menuIcons.add(
+        IconButton(
+          icon: Icon(Icons.clear),
+          onPressed: _disableSearch,
+          tooltip: 'Clear Search',
+        ),
+      );
+    } else {
+      menuIcons = List<Widget>();
+      menuIcons.add(
+        IconButton(
+          icon: Icon(Icons.search),
+          onPressed: _enableSearch,
+          tooltip: 'Search',
+        ),
+      );
+    }
+
+    return menuIcons;
   }
+  // endregion
+
+  // region Create Views
+  createPageView(AppConfig appConfig) => PageView(
+    key: Key(PAGE_VIEW),
+    controller: pageController,
+    onPageChanged: changeSelectedPageViewItem,
+    children: <Widget>[
+      mealListWidget(appConfig),
+      mealListWidget(appConfig),
+      mealListWidget(appConfig),
+      mealListWidget(appConfig),
+    ],
+  );
+
+  createBottomNavigationBar() => BottomNavigationBar(
+    key: Key(BOTTOM_NAVIGATION_BAR),
+    items:[
+      BottomNavigationBarItem(icon: Icon(Icons.cake, key: Key(DESSERT)), title: Text("Dessert")),
+      BottomNavigationBarItem(icon: Icon(Icons.restaurant, key: Key(SEAFOOD)), title: Text("Seafood")),
+      BottomNavigationBarItem(icon: Icon(Icons.cake, key: Key(FAVORITE_DESSERT)), title: Text("Favorite Dessert")),
+      BottomNavigationBarItem(icon: Icon(Icons.restaurant, key: Key(FAVORITE_SEAFOOD)), title: Text("Favorite Seafood"))
+    ],
+    currentIndex: currentIndex,
+    onTap: changeSelectedBottomNavigationBarItem,
+    selectedItemColor: appConfig.appColor,
+    unselectedItemColor: Colors.grey,
+  );
+
+  mealListWidget(AppConfig appConfig) =>
+      mealData != null && mealData.meals != null
+          ? Builder(builder: (context) => GridView.count(
+        crossAxisCount: MediaQuery.of(context).orientation == Orientation.portrait
+            ? 2
+            : 3,
+        crossAxisSpacing: 16.0,
+        mainAxisSpacing: 16.0,
+        padding: EdgeInsets.all(16.0),
+        children: getCardHeroes(appConfig, mealData),
+      ))
+          : Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(appConfig.appColor)));
+  // endregion
 
   @override
   Widget build(BuildContext context) {
     var appConfig = AppConfig.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: appBarTitle,
-        actions: getMenuIcon(dataWidgetsList[currentIndex].searchEnabled),
+        title: _isSearchingMeals ? _buildTextField() : Text(mealCategory),
+        actions: _getMenuIcon(),
         textTheme: TextTheme(
           title: TextStyle(
               fontSize: 20.0,
@@ -116,83 +316,9 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
               fontFamily: appConfig.appFont),
         ),
       ),
-      body: PageView(
-        key: Key(PAGE_VIEW),
-        controller: pageController,
-        onPageChanged: (index) {
-          changeSelectedPageViewItem(index);
-        },
-        children: dataWidgetsList,
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        key: Key(BOTTOM_NAVIGATION_BAR),
-        items: bottomNavigationBarItems,
-        currentIndex: currentIndex,
-        onTap: (index) {
-          changeSelectedBottomNavigationBarItem(index);
-        },
-        selectedItemColor: appConfig.appColor,
-        unselectedItemColor: Colors.grey,
-      ),
+      body: createPageView(appConfig),
+      bottomNavigationBar: createBottomNavigationBar(),
     );
   }
 
-  List<Widget> getMenuIcon(bool isSearchEnabled) {
-    List<Widget> menuIcons = List<Widget>();
-    if (isSearchEnabled) {
-      menuIcons.add(
-        IconButton(
-          icon: this.homeMenuIcon,
-          onPressed: () {
-            enableSearch();
-          },
-          tooltip: TOOLTIP_MENU_ICON,
-        ),
-      );
-      return menuIcons;
-    } else {
-      return null;
-    }
-  }
-
-  enableSearch() {
-    setState(() {
-      if (this.homeMenuIcon.icon == Icons.search) {
-        this.homeMenuIcon = Icon(
-          Icons.close,
-          color: Colors.white,
-        );
-        this.appBarTitle = TextField(
-          key: Key(TEXT_FIELD),
-          controller: textEditingController,
-          style: TextStyle(color: Colors.white),
-          // Called when action key in keyboard is pressed
-          onSubmitted: (_) {
-            dataWidgetsList[currentIndex]
-                .dataWidgetState
-                .loadSearchMeals(dataWidgetsList[currentIndex].keyword);
-          },
-          decoration: new InputDecoration(
-            prefixIcon: Icon(Icons.search, color: Colors.white),
-            hintText: "Search meals",
-            // Activate when we pressed IconButton search
-            enabledBorder: UnderlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.white,
-              ),
-            ),
-            // Activate when we want to input text
-            focusedBorder: UnderlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.white,
-              ),
-            ),
-            hintStyle: TextStyle(color: Colors.white),
-          ),
-        );
-      } else {
-        endSearch();
-      }
-    });
-  }
 }

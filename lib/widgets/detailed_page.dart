@@ -10,9 +10,11 @@ import 'package:meals_catalogue/network/network_detailed_meal.dart';
 import 'package:meals_catalogue/widgets/data_widget.dart';
 import 'package:meals_catalogue/widgets/detailed_meal_info.dart';
 
+// todo: detailedpage dan detailed meal info jadi satu intinya
 class DetailedPage extends StatefulWidget {
   final Meal meal;
 
+  // todo: ganti jadi state
   final DataWidget dataWidget;
 
   final String font;

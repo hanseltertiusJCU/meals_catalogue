@@ -24,6 +24,7 @@ class MealsList extends StatelessWidget {
     return heroTag;
   }
 
+  // todo: ada builder bedasarkan data ada atau tidaknya
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
@@ -44,6 +45,8 @@ class MealsList extends StatelessWidget {
         itemBuilder: (context, index) => getHero(context, index)
     );
   }
+
+  // todo: get hero, trus get card
 
   // region Hero
   Hero getHero(context, index){

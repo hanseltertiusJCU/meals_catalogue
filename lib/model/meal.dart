@@ -8,6 +8,7 @@ class Meal {
     this.mealId,
     this.mealTitle,
     this.mealImageUrl,
+    this.mealFavoriteCreateDate = "",
   });
 
 
