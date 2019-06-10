@@ -1,4 +1,5 @@
 import 'package:meals_catalogue/model/meal.dart';
+import 'package:meals_catalogue/model/meal_recipe.dart';
 
 class MealResponse {
   List<Meal> meals = new List<Meal>();
@@ -22,6 +23,11 @@ class MealResponse {
         });
       }
     }
+  }
+
+  // todo: tinggal bikin from dbnya
+  MealsResponse.fromDatabase(List<MealRecipe> mealRecipeData){
+    // todo: tinggal bikin implementation
   }
 
 }

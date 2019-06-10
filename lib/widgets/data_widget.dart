@@ -47,9 +47,9 @@ class DataWidgetState extends State<DataWidget>
       keepPageAlive = true; // Prevent page reload when change page
     } else {
       if (widget.databaseMode == "desert") {
-        meals = mealsDatabaseHelper.getFavoriteDesertDataList();
+        meals = mealsDatabaseHelper.getFavoriteDesserts();
       } else if (widget.databaseMode == "seafood") {
-        meals = mealsDatabaseHelper.getFavoriteSeafoodDataList();
+        meals = mealsDatabaseHelper.getFavoriteSeafood();
       }
       keepPageAlive = false; // Rebuild the page
     }
@@ -109,9 +109,9 @@ class DataWidgetState extends State<DataWidget>
   reloadFavoriteMeals(String mode) {
     setState(() {
       if (mode == "desert") {
-        meals = mealsDatabaseHelper.getFavoriteDesertDataList();
+        meals = mealsDatabaseHelper.getFavoriteDesserts();
       } else if (mode == "seafood") {
-        meals = mealsDatabaseHelper.getFavoriteSeafoodDataList();
+        meals = mealsDatabaseHelper.getFavoriteSeafood();
       }
     });
   }

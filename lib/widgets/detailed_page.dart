@@ -58,7 +58,7 @@ class _DetailedPageState extends State<DetailedPage> {
   }
 
   checkItemPartOfDessertDb() async {
-    favoriteDesserts = await mealsDatabaseHelper.getFavoriteDesertDataList();
+    favoriteDesserts = await mealsDatabaseHelper.getFavoriteDesserts();
     setState(() {
       for (int i = 0; i < favoriteDesserts.length; i++) {
         if (favoriteDesserts[i].mealId == widget.meal.mealId) {
@@ -74,11 +74,12 @@ class _DetailedPageState extends State<DetailedPage> {
   }
 
   checkItemPartOfSeafoodDb() async {
-    favoriteSeafood = await mealsDatabaseHelper.getFavoriteSeafoodDataList();
+    favoriteSeafood = await mealsDatabaseHelper.getFavoriteSeafood();
     setState(() {
       for (int i = 0; i < favoriteSeafood.length; i++) {
         if (favoriteSeafood[i].mealId == widget.meal.mealId) {
           _isFavorite = true;
+          // todo: _isFavorite itu guna untuk menentukan iconnya
           iconFromFavorite(_isFavorite);
           break;
         } else {
