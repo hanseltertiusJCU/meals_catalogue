@@ -18,15 +18,12 @@ class Home extends StatefulWidget {
 }
 
 class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
-  Widget appBarTitle;
 
   MealData mealData;
 
   int currentIndex = 0;
 
   String mealCategory = "Dessert";
-
-  PageController pageController;
 
   // region Search meals
   String keyword = "";
@@ -45,6 +42,8 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
     setState(() {
       this.keyword = keyword;
     });
+
+    fetchMealData();
   }
 
   void _disableSearch(){
@@ -55,6 +54,8 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
 
       _isSearchingMeals = false;
     });
+
+    fetchMealData();
   }
   // endregion
 
@@ -208,33 +209,34 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
   // endregion
 
   // region Action bar icon
-  _buildTextField() =>
-      TextField(
-        key: Key(TEXT_FIELD),
-        controller: textEditingController,
-        style: TextStyle(
-          color: Colors.white,
-        ),
-        autofocus: true,
-        decoration: InputDecoration(
-          prefixIcon: Icon(Icons.search, color: Colors.white),
-          hintText: "Search meals",
-          enabledBorder: UnderlineInputBorder(
-            borderSide: BorderSide(
-              color: Colors.white,
-            ),
-          ),
-          focusedBorder: UnderlineInputBorder(
-            borderSide: BorderSide(
-              color: Colors.white,
-            ),
-          ),
-          hintStyle: TextStyle(
-            color: Colors.white30,
+  Widget _buildTextField() {
+    return TextField(
+      key: Key(TEXT_FIELD),
+      controller: textEditingController,
+      style: TextStyle(
+        color: Colors.white,
+      ),
+      autofocus: true,
+      decoration: InputDecoration(
+        prefixIcon: Icon(Icons.search, color: Colors.white),
+        hintText: "Search meals",
+        enabledBorder: UnderlineInputBorder(
+          borderSide: BorderSide(
+            color: Colors.white,
           ),
         ),
-        onSubmitted: _updateKeyword,
-      );
+        focusedBorder: UnderlineInputBorder(
+          borderSide: BorderSide(
+            color: Colors.white,
+          ),
+        ),
+        hintStyle: TextStyle(
+          color: Colors.white30,
+        ),
+      ),
+      onSubmitted: _updateKeyword,
+    );
+  }
 
   List<Widget> _getMenuIcon() {
     List<Widget> menuIcons;
