@@ -3,7 +3,9 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:meals_catalogue/data/meal_data.dart';
+import 'package:meals_catalogue/data/meal_recipe_data.dart';
 import 'package:meals_catalogue/database/meals_db_helper.dart';
+import 'package:meals_catalogue/model/meal_recipe.dart';
 
 class NetworkData {
   http.Client httpClient = http.Client();
@@ -15,11 +17,8 @@ class NetworkData {
     String urlComponent;
 
     if(bottomNavigationPosition < 2) {
-      if(bottomNavigationPosition == 0){
-        urlComponent = "filter.php?c=Dessert";
-      } else {
-        urlComponent = "filter.php?c=Seafood";
-      }
+
+      urlComponent = "filter.php?c=$category";
 
       if(isSearchingMeals && keyword.isNotEmpty) {
         urlComponent = "search.php?s=$keyword";
@@ -58,6 +57,27 @@ class NetworkData {
 
     return mealData;
   }
+
+  // todo: fetch detail
+  Future<MealRecipe> fetchMealRecipeData(String recipeMealId) async {
+    MealRecipeData mealRecipeData;
+
+    MealRecipe mealRecipe;
+
+    var response = await httpClient.get(baseUrl + "lookup.php?i=" + recipeMealId);
+
+    final jsonResponse = jsonDecode(response.body);
+
+    mealRecipeData = MealRecipeData.fromJson(jsonResponse);
+
+    if(mealRecipeData != null && mealRecipeData.mealRecipes != null){
+      mealRecipe = mealRecipeData.mealRecipes[0];
+    }
+
+    return mealRecipe;
+
+  }
+
 
 
 }

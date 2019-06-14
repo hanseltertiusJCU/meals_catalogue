@@ -1,5 +1,4 @@
 import 'package:meals_catalogue/model/meal.dart';
-import 'package:meals_catalogue/model/meal_recipe.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
@@ -34,7 +33,8 @@ class MealsDBHelper {
     return dB;
   }
 
-  // region create table
+  // todo: revert structure in database
+  // region Data Definition Language
   void _onCreate(Database db, int version) async {
     // todo: rename table column
     // Create Desert table
@@ -47,65 +47,58 @@ class MealsDBHelper {
 
   // region Dessert DB (CRUD operation)
 
-  Future<int> saveDesertData(MealRecipe mealRecipe) async {
+  Future<int> saveDessertData(Meal meal) async {
     var databaseClient = await database;
 
-    int desertId = await databaseClient.insert("desert", mealRecipe.toJson());
+    int dessertId = await databaseClient.insert("desert", meal.toJson());
 
-    return desertId;
+    return dessertId;
   }
 
-  Future<List<MealRecipe>> getFavoriteDesserts() async {
+  Future<List<Meal>> getFavoriteDesserts() async {
     var databaseClient = await database;
 
     List<Map> dessertListDb = await databaseClient.rawQuery("SELECT * FROM desert ORDER BY mealCreateDate DESC");
 
-    List<MealRecipe> favoriteDessertsMealRecipe = new List();
+    List<Meal> favoriteDessertsMeal = new List();
 
     for (int i = 0; i < dessertListDb.length; i++) {
-
-      MealRecipe dessertMealRecipe = MealRecipe(
-        mealRecipeId: dessertListDb[i]["mealRecipeId"],
-        mealRecipeTitle: dessertListDb[i]["mealRecipeTitle"],
-        mealRecipeCategory: dessertListDb[i]["mealRecipeCategory"],
-        mealRecipeImageUrl: dessertListDb[i]["mealRecipeImageUrl"],
-        mealRecipeIngredients: dessertListDb[i]["mealRecipeIngredients"],
-        mealRecipeInstructions: dessertListDb[i]["mealRecipeInstructions"],
-        mealRecipeFavoriteCreateDate: dessertListDb[i]["mealRecipeFavoriteCreateDate"]
+      Meal dessertMeal = Meal(
+          mealId: dessertListDb[i]['mealId'],
+          mealTitle: dessertListDb[i]['mealTitle'],
+          mealImageUrl: dessertListDb[i]['mealImageUrl'],
+          mealFavoriteCreateDate: dessertListDb[i]['mealCreateDate']
       );
-      dessertMealRecipe.setFavoriteRecipeId(dessertListDb[i]["id"]);
-      favoriteDessertsMealRecipe.add(dessertMealRecipe);
+      dessertMeal.setFavoriteRecipeId(dessertListDb[i]["id"]);
+      favoriteDessertsMeal.add(dessertMeal);
     }
 
-    return favoriteDessertsMealRecipe;
+    return favoriteDessertsMeal;
   }
 
-  Future<List<MealRecipe>> getFavoriteDessertsByKeyword(String keyword) async {
+  Future<List<Meal>> getFavoriteDessertsByKeyword(String keyword) async {
     var databaseClient = await database;
     
     List<Map> dessertListDb = await databaseClient.rawQuery("SELECT * FROM desert WHERE mealTitle LIKE $keyword ORDER BY mealCreateDate DESC");
 
-    List<MealRecipe> favoriteDessertsMealRecipe = new List();
+    List<Meal> favoriteDessertsMeal = new List();
 
     for (int i = 0; i < dessertListDb.length; i++) {
 
-      MealRecipe dessertMealRecipe = MealRecipe(
-          mealRecipeId: dessertListDb[i]["mealRecipeId"],
-          mealRecipeTitle: dessertListDb[i]["mealRecipeTitle"],
-          mealRecipeCategory: dessertListDb[i]["mealRecipeCategory"],
-          mealRecipeImageUrl: dessertListDb[i]["mealRecipeImageUrl"],
-          mealRecipeIngredients: dessertListDb[i]["mealRecipeIngredients"],
-          mealRecipeInstructions: dessertListDb[i]["mealRecipeInstructions"],
-          mealRecipeFavoriteCreateDate: dessertListDb[i]["mealRecipeFavoriteCreateDate"]
+      Meal dessertMeal = Meal(
+        mealId: dessertListDb[i]['mealId'],
+        mealTitle: dessertListDb[i]['mealTitle'],
+        mealImageUrl: dessertListDb[i]['mealImageUrl'],
+        mealFavoriteCreateDate: dessertListDb[i]['mealCreateDate']
       );
-      dessertMealRecipe.setFavoriteRecipeId(dessertListDb[i]["id"]);
-      favoriteDessertsMealRecipe.add(dessertMealRecipe);
+      dessertMeal.setFavoriteRecipeId(dessertListDb[i]["id"]);
+      favoriteDessertsMeal.add(dessertMeal);
     }
 
-    return favoriteDessertsMealRecipe;
+    return favoriteDessertsMeal;
   }
 
-  Future<int> deleteDesertData(Meal meal) async {
+  Future<int> deleteDessertData(Meal meal) async {
     var databaseClient = await database;
 
     int desertRowsDeleted = await databaseClient.rawDelete("DELETE FROM desert WHERE mealId = ?", [meal.mealId]);
@@ -117,63 +110,58 @@ class MealsDBHelper {
 
   // region Seafood DB (CRUD operation)
 
-  Future<int> saveSeafoodData(MealRecipe mealRecipe) async {
+  Future<int> saveSeafoodData(Meal meal) async {
     var databaseClient = await database;
 
-    int seafoodId = await databaseClient.insert("seafood", mealRecipe.toJson());
+    int seafoodId = await databaseClient.insert("seafood", meal.toJson());
 
     return seafoodId;
   }
 
-  Future<List<MealRecipe>> getFavoriteSeafood() async {
+  Future<List<Meal>> getFavoriteSeafood() async {
     var databaseClient = await database;
 
     List<Map> seafoodListDb = await databaseClient
         .rawQuery("SELECT * FROM seafood ORDER BY mealCreateDate DESC");
 
-    List<MealRecipe> favoriteSeafoodMealRecipe = new List();
+    List<Meal> favoriteSeafoodMeal = new List();
 
     for (int i = 0; i < seafoodListDb.length; i++) {
-      var seafoodMealRecipe = MealRecipe(
-        mealRecipeId: seafoodListDb[i]["mealRecipeId"],
-        mealRecipeTitle: seafoodListDb[i]["mealRecipeTitle"],
-        mealRecipeCategory: seafoodListDb[i]["mealRecipeCategory"],
-        mealRecipeImageUrl: seafoodListDb[i]["mealRecipeImageUrl"],
-        mealRecipeIngredients: seafoodListDb[i]["mealRecipeIngredients"],
-        mealRecipeInstructions: seafoodListDb[i]["mealRecipeInstructions"],
-        mealRecipeFavoriteCreateDate: seafoodListDb[i]["mealRecipeFavoriteCreateDate"]
+
+      Meal seafoodMeal = Meal(
+          mealId: seafoodListDb[i]['mealId'],
+          mealTitle: seafoodListDb[i]['mealTitle'],
+          mealImageUrl: seafoodListDb[i]['mealImageUrl'],
+          mealFavoriteCreateDate: seafoodListDb[i]['mealCreateDate']
       );
 
-      seafoodMealRecipe.setFavoriteRecipeId(seafoodListDb[i]["id"]);
+      seafoodMeal.setFavoriteRecipeId(seafoodListDb[i]["id"]);
 
-      favoriteSeafoodMealRecipe.add(seafoodMealRecipe);
+      favoriteSeafoodMeal.add(seafoodMeal);
     }
-    return favoriteSeafoodMealRecipe;
+    return favoriteSeafoodMeal;
   }
 
-  Future<List<MealRecipe>> getFavoriteSeafoodByKeyword(String keyword) async {
+  Future<List<Meal>> getFavoriteSeafoodByKeyword(String keyword) async {
     var databaseClient = await database;
 
     List<Map> seafoodListDb = await databaseClient.rawQuery("SELECT * FROM seafood WHERE mealTitle LIKE $keyword ORDER BY mealCreateDate DESC");
 
-    List<MealRecipe> favoriteSeafoodMealRecipe = new List();
+    List<Meal> favoriteSeafoodMeal = new List();
 
     for (int i = 0; i < seafoodListDb.length; i++) {
-      var seafoodMealRecipe = MealRecipe(
-          mealRecipeId: seafoodListDb[i]["mealRecipeId"],
-          mealRecipeTitle: seafoodListDb[i]["mealRecipeTitle"],
-          mealRecipeCategory: seafoodListDb[i]["mealRecipeCategory"],
-          mealRecipeImageUrl: seafoodListDb[i]["mealRecipeImageUrl"],
-          mealRecipeIngredients: seafoodListDb[i]["mealRecipeIngredients"],
-          mealRecipeInstructions: seafoodListDb[i]["mealRecipeInstructions"],
-          mealRecipeFavoriteCreateDate: seafoodListDb[i]["mealRecipeFavoriteCreateDate"]
+      Meal seafoodMeal = Meal(
+          mealId: seafoodListDb[i]['mealId'],
+          mealTitle: seafoodListDb[i]['mealTitle'],
+          mealImageUrl: seafoodListDb[i]['mealImageUrl'],
+          mealFavoriteCreateDate: seafoodListDb[i]['mealCreateDate']
       );
 
-      seafoodMealRecipe.setFavoriteRecipeId(seafoodListDb[i]["id"]);
+      seafoodMeal.setFavoriteRecipeId(seafoodListDb[i]["id"]);
 
-      favoriteSeafoodMealRecipe.add(seafoodMealRecipe);
+      favoriteSeafoodMeal.add(seafoodMeal);
     }
-    return favoriteSeafoodMealRecipe;
+    return favoriteSeafoodMeal;
 
   }
 

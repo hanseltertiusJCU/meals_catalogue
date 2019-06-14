@@ -9,7 +9,7 @@ void main(){
     appInternalId: 1,
     appColor: Colors.green[600],
     appFont: 'Alegreya',
-    child: MyApp(),
+    child: Home(),
   );
 
   mainCommon();

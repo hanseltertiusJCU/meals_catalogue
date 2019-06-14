@@ -1,5 +1,4 @@
 class MealRecipe {
-  int id;
 
   String mealRecipeId;
   String mealRecipeTitle;
@@ -15,7 +14,7 @@ class MealRecipe {
     this.mealRecipeImageUrl,
     this.mealRecipeIngredients,
     this.mealRecipeInstructions,
-    this.mealRecipeFavoriteCreateDate});
+    this.mealRecipeFavoriteCreateDate = ""});
 
   MealRecipe.fromJson(Map<String, dynamic> json){
     List<String> recipeIngredients = List<String>();
@@ -55,10 +54,6 @@ class MealRecipe {
     }
     mealRecipeData['strInstructions'] = this.mealRecipeIngredients.join("\r\n");
     return mealRecipeData;
-  }
-
-  void setFavoriteRecipeId(int id){
-    this.id = id;
   }
 
 

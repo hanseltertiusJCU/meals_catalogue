@@ -15,16 +15,17 @@ class MealData {
     }
   }
 
-  MealData.fromDatabase(List<MealRecipe> mealRecipe){
+  MealData.fromDatabase(List<Meal> mealRecipe){
 
     if(mealRecipe != null){
       meals = List<Meal>();
 
       for(int i = 0; i < mealRecipe.length; i++){
         Meal meal = Meal(
-          mealId: mealRecipe[i].mealRecipeId,
-          mealTitle: mealRecipe[i].mealRecipeTitle,
-          mealImageUrl: mealRecipe[i].mealRecipeImageUrl
+          mealId: mealRecipe[i].mealId,
+          mealTitle: mealRecipe[i].mealTitle,
+          mealImageUrl: mealRecipe[i].mealImageUrl,
+          mealFavoriteCreateDate: mealRecipe[i].mealFavoriteCreateDate
         );
         meals.add(meal);
       }
