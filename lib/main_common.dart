@@ -65,11 +65,6 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
 
     textEditingController = TextEditingController();
 
-    pageController = PageController(
-      initialPage: 0,
-      keepPage: true,
-    );
-
     fetchMealData();
   }
 
@@ -189,17 +184,6 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
       changeCategory(index);
       fetchMealData();
       _disableSearch();
-      pageController.animateToPage(index,
-          duration: Duration(milliseconds: 500), curve: Curves.ease);
-    });
-  }
-
-  changeSelectedPageViewItem(int index) {
-    setState(() {
-      currentIndex = index;
-      changeCategory(index);
-      fetchMealData();
-      _disableSearch();
     });
   }
 
@@ -279,17 +263,8 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
   // endregion
 
   // region Create Views
-  createPageView(AppConfig appConfig) => PageView(
-    key: Key(PAGE_VIEW),
-    controller: pageController,
-    onPageChanged: changeSelectedPageViewItem,
-    children: <Widget>[
-      mealListWidget(appConfig),
-      mealListWidget(appConfig),
-      mealListWidget(appConfig),
-      mealListWidget(appConfig),
-    ],
-  );
+
+  createBodyWidget(AppConfig config) => mealListWidget(config);
 
   createBottomNavigationBar(AppConfig appConfig) => BottomNavigationBar(
     key: Key(BOTTOM_NAVIGATION_BAR),
@@ -305,7 +280,6 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
     unselectedItemColor: Colors.grey,
   );
 
-  // todo: meal list widget jadi 1 class aja, parameternya itu appconfig sm position (3 dan 4 want keep alive false)
   mealListWidget(AppConfig appConfig) =>
       mealData != null && mealData.meals != null
           ? Builder(builder: (context) => GridView.count(
@@ -330,7 +304,7 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
             fontFamily: appConfig.appFont),
       ),
     ),
-    body: createPageView(appConfig),
+    body: createBodyWidget(appConfig),
     bottomNavigationBar: createBottomNavigationBar(appConfig),
   );
 
