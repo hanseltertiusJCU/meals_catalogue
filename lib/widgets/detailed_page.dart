@@ -36,18 +36,6 @@ class _DetailedPageState extends State<DetailedPage> {
   void initState() {
     super.initState();
 
-    Future<Null>.delayed(Duration.zero, () {
-      Scaffold.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            widget.meal.mealTitle,
-            style: TextStyle(fontFamily: widget.font),
-          ),
-          duration: Duration(seconds: 4),
-        ),
-      );
-    });
-
     mealsDatabaseHelper = MealsDBHelper();
 
     fetchMealRecipeData();

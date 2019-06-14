@@ -33,10 +33,8 @@ class MealsDBHelper {
     return dB;
   }
 
-  // todo: revert structure in database
   // region Data Definition Language
   void _onCreate(Database db, int version) async {
-    // todo: rename table column
     // Create Desert table
     await db.execute("CREATE TABLE desert(id INTEGER PRIMARY KEY, mealId TEXT, mealTitle TEXT, mealImageUrl TEXT, mealCreateDate TEXT)");
 

@@ -1,4 +1,3 @@
-// todo: kerjain network data
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
@@ -58,7 +57,6 @@ class NetworkData {
     return mealData;
   }
 
-  // todo: fetch detail
   Future<MealRecipe> fetchMealRecipeData(String recipeMealId) async {
     MealRecipeData mealRecipeData;
 

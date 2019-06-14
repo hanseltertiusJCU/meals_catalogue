@@ -1,5 +1,4 @@
 import 'package:meals_catalogue/model/meal.dart';
-import 'package:meals_catalogue/model/meal_recipe.dart';
 
 class MealData {
   List<Meal> meals;

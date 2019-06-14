@@ -6,7 +6,6 @@ class MealRecipe {
   String mealRecipeImageUrl;
   List<String> mealRecipeIngredients;
   List<String> mealRecipeInstructions;
-  String mealRecipeFavoriteCreateDate;
 
   MealRecipe({this.mealRecipeId,
     this.mealRecipeTitle,
@@ -14,7 +13,7 @@ class MealRecipe {
     this.mealRecipeImageUrl,
     this.mealRecipeIngredients,
     this.mealRecipeInstructions,
-    this.mealRecipeFavoriteCreateDate = ""});
+  });
 
   MealRecipe.fromJson(Map<String, dynamic> json){
     List<String> recipeIngredients = List<String>();

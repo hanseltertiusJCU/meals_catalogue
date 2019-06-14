@@ -21,7 +21,6 @@ class Meal {
     mealImageUrl = json['strMealThumb'];
   }
 
-  // todo: meal to json
   Map<String, dynamic> toJson(){
     var mealMap = Map<String, dynamic>();
 

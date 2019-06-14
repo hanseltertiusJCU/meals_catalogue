@@ -24,7 +24,6 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
 
   int currentIndex = 0;
 
-  // todo: mesti gantinya gmn gt
   String mealCategory = "Dessert";
 
   PageController pageController;
@@ -161,8 +160,22 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
           color: Colors.transparent,
           child: InkWell(
             key: Key('food: ${meal.mealId}'),
-            onTap: () => Navigator.push(context,
-                MaterialPageRoute(builder: (context) => DetailedPage(meal: meal, font: appConfig.appFont, homeScreen: this))),
+            onTap: () {
+              final snackBar = SnackBar(
+                content: Text(
+                  "${meal.mealTitle} is selected!",
+                  style: TextStyle(fontFamily: appConfig.appFont),
+                ),
+                action: SnackBarAction(
+                    label: "Go to Detail",
+                    textColor: appConfig.appColor,
+                    onPressed: (){
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => DetailedPage(meal: meal, font: appConfig.appFont, homeScreen: this)));
+                    }),
+              );
+              Scaffold.of(context).showSnackBar(snackBar);
+            }
           ),
         ),
       )
