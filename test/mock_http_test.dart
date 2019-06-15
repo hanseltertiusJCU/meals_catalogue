@@ -8,8 +8,7 @@ import 'package:meals_catalogue/network/network_data.dart';
 class MockHttpTestClient extends Mock implements http.Client{}
 
 // todo: mungkin ini jadi penyebabnya
-void main() {
-
+main(){
   group('Get Data from Internet', () {
     final NetworkData networkData = NetworkData();
 
@@ -64,5 +63,4 @@ void main() {
       expect(itemDetail, TypeMatcher<MealRecipe>());
     });
   });
-
 }

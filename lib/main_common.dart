@@ -7,6 +7,7 @@ import 'package:meals_catalogue/key_strings.dart';
 import 'package:meals_catalogue/model/meal.dart';
 import 'package:meals_catalogue/network/network_data.dart';
 import 'package:meals_catalogue/widgets/detailed_page.dart';
+import 'package:async_loader/async_loader.dart';
 
 class Home extends StatefulWidget {
 
@@ -21,6 +22,8 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
   int currentIndex = 0;
 
   String mealCategory = "Dessert";
+
+  final GlobalKey<AsyncLoaderState> asyncLoaderState = GlobalKey<AsyncLoaderState>();
 
   // region Search meals
   String keyword = "";
@@ -62,8 +65,6 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
     super.initState();
 
     textEditingController = TextEditingController();
-
-    fetchMealData();
   }
 
   fetchMealData() async {
@@ -263,9 +264,59 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
   }
   // endregion
 
-  // region Create Views
+  // region Refresh
+  Future<Null> handleRefresh() async {
+    asyncLoaderState.currentState.reloadState();
+    return null;
+  }
 
-  createBodyWidget(AppConfig config) => mealListWidget(config);
+  // endregion
+
+  // region Create Views
+  Scrollbar createBodyWidget(AppConfig config) {
+    var asyncLoader = AsyncLoader(
+      key: asyncLoaderState,
+      initState: () async => await fetchMealData(),
+      renderLoad: () => Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(config.appColor))),
+      renderError: ([error]) => getNoConnectionWidget(config),
+      renderSuccess: ({data}) => mealListWidget(config),
+    );
+
+    return Scrollbar(
+      child: RefreshIndicator(
+        child: asyncLoader,
+        onRefresh: handleRefresh,
+        color: config.appColor
+      ),
+    );
+
+  }
+
+  getNoConnectionWidget(AppConfig appConfig) => Column(
+    mainAxisSize: MainAxisSize.max,
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: getNoConnectionContent(appConfig),
+  );
+
+  getNoConnectionContent(AppConfig appConfig) => [
+    SizedBox(
+      height: 60.0,
+      child: new Container(
+        decoration: BoxDecoration(
+          image: new DecorationImage(
+              image: AssetImage('assets/no-wifi.png'),
+              fit: BoxFit.contain
+          ),
+        ),
+      ),
+    ),
+    Text("No Internet Connection"),
+    FlatButton(
+      color: appConfig.appColor,
+      child: Text("Restart", style: TextStyle(color: Colors.white)),
+      onPressed: () => asyncLoaderState.currentState.reloadState()
+    )
+  ];
 
   createBottomNavigationBar(AppConfig appConfig) => BottomNavigationBar(
     key: Key(BOTTOM_NAVIGATION_BAR),
@@ -282,7 +333,7 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
   );
 
   mealListWidget(AppConfig appConfig) =>
-      mealData != null && mealData.meals != null
+      mealData.meals.length > 0
           ? Builder(builder: (context) => GridView.count(
         crossAxisCount: MediaQuery.of(context).orientation == Orientation.portrait
             ? 2
@@ -291,7 +342,7 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
         mainAxisSpacing: 16.0,
         padding: EdgeInsets.all(16.0),
         children: getCardHeroes(context, appConfig, mealData)))
-          : Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(appConfig.appColor)));
+          : Center(child: Text('There is no data'));
   // endregion
 
   homeContent(AppConfig appConfig) => Scaffold(

@@ -7,6 +7,7 @@ import 'package:meals_catalogue/model/meal.dart';
 import 'package:meals_catalogue/model/meal_recipe.dart';
 import 'package:meals_catalogue/network/network_data.dart';
 import 'package:meals_catalogue/main_common.dart';
+import 'package:async_loader/async_loader.dart';
 
 class DetailedPage extends StatefulWidget {
 
@@ -30,6 +31,8 @@ class _DetailedPageState extends State<DetailedPage> {
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
+  final GlobalKey<AsyncLoaderState> asyncLoaderState = GlobalKey<AsyncLoaderState>();
+
   bool _isFavorite = false;
 
   @override
@@ -37,8 +40,6 @@ class _DetailedPageState extends State<DetailedPage> {
     super.initState();
 
     mealsDatabaseHelper = MealsDBHelper();
-
-    fetchMealRecipeData();
 
   }
 
@@ -128,6 +129,11 @@ class _DetailedPageState extends State<DetailedPage> {
     return heroTag;
   }
 
+  Future<Null> handleRefresh() async {
+    asyncLoaderState.currentState.reloadState();
+    return null;
+  }
+
   getAppBar(AppConfig appConfig) =>
       AppBar(
         title: Text(widget.meal.mealTitle),
@@ -154,15 +160,48 @@ class _DetailedPageState extends State<DetailedPage> {
         ],
       );
 
-  getHeroView(AppConfig appConfig) =>
-  Hero(
-    tag: getHeroTag(widget.meal),
-    child: mealRecipe == null ? Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(appConfig.appColor)))
-        : getListView(appConfig)
+  getHeroView(AppConfig appConfig) {
+    var asyncLoader = AsyncLoader(
+      key: asyncLoaderState,
+      initState: () async => await fetchMealRecipeData(),
+      renderLoad: () => Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(appConfig.appColor))),
+      renderError: ([error]) => getNoConnectionWidget(appConfig),
+      renderSuccess: ({data}) => getListView(appConfig),
+    );
+
+    return Hero(
+        tag: getHeroTag(widget.meal),
+        child: Scrollbar(child: RefreshIndicator(child: asyncLoader, onRefresh: handleRefresh, color: appConfig.appColor))
+    );
+  }
+
+  getNoConnectionWidget(AppConfig appConfig) => Column(
+    mainAxisSize: MainAxisSize.max,
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: getNoConnectionContent(appConfig),
   );
 
-  getListView(AppConfig appConfig) =>
-      ListView(
+  getNoConnectionContent(AppConfig appConfig) => [
+    SizedBox(
+      height: 60.0,
+      child: new Container(
+        decoration: BoxDecoration(
+          image: new DecorationImage(
+              image: AssetImage('assets/no-wifi.png'),
+              fit: BoxFit.contain
+          ),
+        ),
+      ),
+    ),
+    Text("No Internet Connection"),
+    FlatButton(
+        color: appConfig.appColor,
+        child: Text("Restart", style: TextStyle(color: Colors.white)),
+        onPressed: () => asyncLoaderState.currentState.reloadState()
+    )
+  ];
+
+  getListView(AppConfig appConfig) => ListView(
         padding: EdgeInsets.all(16.0),
         children: getListViewContent(appConfig),
       );

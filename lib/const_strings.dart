@@ -2,7 +2,6 @@
 const String APP_BAR_TITLE = "appBarTitle";
 
 // Navigation section
-const String PAGE_VIEW = "pageView";
 const String BOTTOM_NAVIGATION_BAR = "bottomNavigationBar";
 
 // Menu in home section
