@@ -6,7 +6,7 @@ void main(){
   enableFlutterDriverExtension();
 
   // Represent the whole app
-  appDevelop.main();
+  appDevelop.main(); // more like the main is the problem
 
   app.main();
 

@@ -12,7 +12,5 @@ void main() {
     child: Home(),
   );
 
-  mainCommon();
-
   runApp(configuredApp);
 }

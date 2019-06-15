@@ -149,7 +149,7 @@ class _DetailedPageState extends State<DetailedPage> {
                 return null;
               }
             },
-            tooltip: 'Favorite Button',
+            tooltip: TOOLTIP_FAVORITE,
           )
         ],
       );

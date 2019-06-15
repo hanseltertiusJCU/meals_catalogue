@@ -1,18 +1,24 @@
 import 'package:flutter_driver/flutter_driver.dart';
 import 'package:meals_catalogue/const_strings.dart';
+import 'package:meals_catalogue/key_strings.dart';
+
+SerializableFinder appBarTitle = find.byValueKey(APP_BAR_TITLE);
 
 SerializableFinder bottomNavigationBar = find.byValueKey(BOTTOM_NAVIGATION_BAR);
 
-SerializableFinder dessert = find.byValueKey(DESSERT);
-SerializableFinder seafood = find.byValueKey(SEAFOOD);
-SerializableFinder favoriteDessert = find.byValueKey(FAVORITE_DESSERT);
-SerializableFinder favoriteSeafood = find.byValueKey(FAVORITE_SEAFOOD);
+SerializableFinder dessert = find.byValueKey(DESSERT_ICON);
+SerializableFinder seafood = find.byValueKey(SEAFOOD_ICON);
+SerializableFinder favoriteDessert = find.byValueKey(FAVORITE_DESSERT_ICON);
+SerializableFinder favoriteSeafood = find.byValueKey(FAVORITE_SEAFOOD_ICON);
 
 SerializableFinder textField = find.byValueKey(TEXT_FIELD);
-SerializableFinder tooltipMenuIcon = find.byTooltip(TOOLTIP_MENU_ICON);
+
+SerializableFinder tooltipSearch = find.byTooltip(TOOLTIP_SEARCH);
+SerializableFinder tooltipClearSearch = find.byTooltip(TOOLTIP_CLEAR_SEARCH);
 
 SerializableFinder tooltipFavorite = find.byTooltip(TOOLTIP_FAVORITE);
 
-SerializableFinder firstDessertMeal = find.byValueKey('food : 52893');
+SerializableFinder firstDessertMeal = find.byValueKey(getStringKeyMealItem("52893"));
 
+SerializableFinder snackBarDetail = find.byValueKey(GO_TO_DETAIL_SNACKBAR_ACTION);
 SerializableFinder snackBarUndo = find.byValueKey(UNDO_SNACKBAR_ACTION);

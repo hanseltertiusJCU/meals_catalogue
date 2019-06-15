@@ -3,13 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:meals_catalogue/config/app_config.dart';
 import 'package:meals_catalogue/const_strings.dart';
 import 'package:meals_catalogue/data/meal_data.dart';
+import 'package:meals_catalogue/key_strings.dart';
 import 'package:meals_catalogue/model/meal.dart';
 import 'package:meals_catalogue/network/network_data.dart';
 import 'package:meals_catalogue/widgets/detailed_page.dart';
-
-void mainCommon(){
-  // This would be background init code, if any
-}
 
 class Home extends StatefulWidget {
 
@@ -155,14 +152,16 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
         child: Material(
           color: Colors.transparent,
           child: InkWell(
-            key: Key('food: ${meal.mealId}'),
+            key: Key(getStringKeyMealItem(meal.mealId)),
             onTap: () {
               final snackBar = SnackBar(
+                // todo: key untuk meal title trus return meal title is selected
                 content: Text(
                   "${meal.mealTitle} is selected!",
                   style: TextStyle(fontFamily: appConfig.appFont),
                 ),
                 action: SnackBarAction(
+                    key: Key(GO_TO_DETAIL_SNACKBAR_ACTION),
                     label: "Go to Detail",
                     textColor: appConfig.appColor,
                     onPressed: (){
@@ -246,7 +245,7 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
         IconButton(
           icon: Icon(Icons.clear),
           onPressed: _disableSearch,
-          tooltip: 'Clear Search',
+          tooltip: TOOLTIP_CLEAR_SEARCH,
         ),
       );
     } else {
@@ -255,7 +254,7 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
         IconButton(
           icon: Icon(Icons.search),
           onPressed: _enableSearch,
-          tooltip: 'Search',
+          tooltip: TOOLTIP_SEARCH,
         ),
       );
     }
@@ -271,10 +270,10 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
   createBottomNavigationBar(AppConfig appConfig) => BottomNavigationBar(
     key: Key(BOTTOM_NAVIGATION_BAR),
     items:[
-      BottomNavigationBarItem(icon: Icon(Icons.cake, key: Key(DESSERT)), title: Text("Dessert")),
-      BottomNavigationBarItem(icon: Icon(Icons.restaurant, key: Key(SEAFOOD)), title: Text("Seafood")),
-      BottomNavigationBarItem(icon: Icon(Icons.cake, key: Key(FAVORITE_DESSERT)), title: Text("Favorite Dessert")),
-      BottomNavigationBarItem(icon: Icon(Icons.restaurant, key: Key(FAVORITE_SEAFOOD)), title: Text("Favorite Seafood"))
+      BottomNavigationBarItem(icon: Icon(Icons.cake, key: Key(DESSERT_ICON)), title: Text("Dessert")),
+      BottomNavigationBarItem(icon: Icon(Icons.restaurant, key: Key(SEAFOOD_ICON)), title: Text("Seafood")),
+      BottomNavigationBarItem(icon: Icon(Icons.cake, key: Key(FAVORITE_DESSERT_ICON)), title: Text("Favorite Dessert")),
+      BottomNavigationBarItem(icon: Icon(Icons.restaurant, key: Key(FAVORITE_SEAFOOD_ICON)), title: Text("Favorite Seafood"))
     ],
     currentIndex: currentIndex,
     onTap: changeSelectedBottomNavigationBarItem,
@@ -297,7 +296,7 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
 
   homeContent(AppConfig appConfig) => Scaffold(
     appBar: AppBar(
-      title: _isSearchingMeals ? _buildTextField() : Text(mealCategory, key: Key(APP_BAR)),
+      title: _isSearchingMeals ? _buildTextField() : Text(mealCategory, key: Key(APP_BAR_TITLE)),
       actions: _getMenuIcon(),
       textTheme: TextTheme(
         title: TextStyle(
@@ -314,7 +313,6 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
   Widget build(BuildContext context) {
     var appConfig = AppConfig.of(context);
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
       title: appConfig.appDisplayName,
       theme: ThemeData(
         primaryColor: appConfig.appColor,

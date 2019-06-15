@@ -12,8 +12,6 @@ void main(){
     child: Home(),
   );
 
-  mainCommon();
-
   // This function is useful for widget to go onto the root of widget tree
   runApp(configuredApp);
 }
