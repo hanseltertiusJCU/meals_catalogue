@@ -57,14 +57,37 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
 
     fetchMealData();
   }
+
   // endregion
 
-  // region Initialize and get data
+  // region Initialize state and get data
+
+  @override
+  void dispose() {
+    textEditingController.dispose(); // Clean text edit controller when disposing widget
+    super.dispose();
+  }
+
   @override
   void initState() {
     super.initState();
 
     textEditingController = TextEditingController();
+
+    // The listener served the same functionality as onChanged in TextField
+    textEditingController.addListener((){
+      if(textEditingController.text.isNotEmpty){
+        setState(() {
+          keyword = textEditingController.text;
+          _updateKeyword(keyword);
+        });
+      } else {
+        setState(() {
+          keyword = "";
+          _updateKeyword(keyword);
+        });
+      }
+    });
   }
 
   fetchMealData() async {
@@ -156,7 +179,6 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
             key: Key(getStringKeyMealItem(meal.mealId)),
             onTap: () {
               final snackBar = SnackBar(
-                // todo: key untuk meal title trus return meal title is selected
                 content: Text(
                   "${meal.mealTitle} is selected!",
                   style: TextStyle(fontFamily: appConfig.appFont),
@@ -168,6 +190,7 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
                     onPressed: (){
                       Navigator.push(context,
                           MaterialPageRoute(builder: (context) => DetailedPage(meal: meal, font: appConfig.appFont, homeScreen: this)));
+                      _disableSearch();
                     }),
               );
               Scaffold.of(context).showSnackBar(snackBar);
@@ -208,7 +231,7 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
   }
   // endregion
 
-  // region Action bar icon
+  // region App bar View and action bar icon
   Widget _buildTextField() {
     return TextField(
       key: Key(TEXT_FIELD),
@@ -234,7 +257,6 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
           color: Colors.white30,
         ),
       ),
-      onSubmitted: _updateKeyword,
     );
   }
 
@@ -301,21 +323,65 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
   getNoConnectionContent(AppConfig appConfig) => [
     SizedBox(
       height: 60.0,
-      child: new Container(
+      child: Container(
         decoration: BoxDecoration(
-          image: new DecorationImage(
+          image: DecorationImage(
               image: AssetImage('assets/no-wifi.png'),
               fit: BoxFit.contain
           ),
         ),
       ),
     ),
-    Text("No Internet Connection"),
-    FlatButton(
-      color: appConfig.appColor,
-      child: Text("Restart", style: TextStyle(color: Colors.white)),
-      onPressed: () => asyncLoaderState.currentState.reloadState()
-    )
+    Container(
+      padding: EdgeInsets.only(top: 4.0),
+      child: Text("No Internet Connection"),
+    ),
+    Container(
+      padding: EdgeInsets.only(top: 4.0),
+      child: FlatButton(
+          color: appConfig.appColor,
+          child: Text("Restart", style: TextStyle(color: Colors.white)),
+          onPressed: () => asyncLoaderState.currentState.reloadState()
+      ),
+    ),
+  ];
+
+  mealListWidget(AppConfig appConfig) =>
+      mealData.meals.length > 0
+          ? getGridViewBuilder(appConfig)
+          : getEmptyData();
+
+  getGridViewBuilder(AppConfig appConfig) => Builder(builder: (context) => GridView.count(
+      crossAxisCount: MediaQuery.of(context).orientation == Orientation.portrait
+          ? 2
+          : 3,
+      crossAxisSpacing: 16.0,
+      mainAxisSpacing: 16.0,
+      padding: EdgeInsets.all(16.0),
+      children: getCardHeroes(context, appConfig, mealData)));
+
+  getEmptyData() => Column(
+    mainAxisSize: MainAxisSize.max,
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: getEmptyDataContent(),
+  );
+
+  getEmptyDataContent() => [
+    SizedBox(
+      height: 60.0,
+      child: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+              image: AssetImage('assets/empty-box.png'),
+              fit: BoxFit.contain
+          ),
+        ),
+      ),
+    ),
+    Container(
+      padding: EdgeInsets.only(top: 4.0),
+      child: Text('There is no data'),
+    ),
   ];
 
   createBottomNavigationBar(AppConfig appConfig) => BottomNavigationBar(
@@ -332,19 +398,6 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
     unselectedItemColor: Colors.grey,
   );
 
-  mealListWidget(AppConfig appConfig) =>
-      mealData.meals.length > 0
-          ? Builder(builder: (context) => GridView.count(
-        crossAxisCount: MediaQuery.of(context).orientation == Orientation.portrait
-            ? 2
-            : 3,
-        crossAxisSpacing: 16.0,
-        mainAxisSpacing: 16.0,
-        padding: EdgeInsets.all(16.0),
-        children: getCardHeroes(context, appConfig, mealData)))
-          : Center(child: Text('There is no data'));
-  // endregion
-
   homeContent(AppConfig appConfig) => Scaffold(
     appBar: AppBar(
       title: _isSearchingMeals ? _buildTextField() : Text(mealCategory, key: Key(APP_BAR_TITLE)),
@@ -359,6 +412,8 @@ class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
     body: createBodyWidget(appConfig),
     bottomNavigationBar: createBottomNavigationBar(appConfig),
   );
+
+  // endregion
 
   @override
   Widget build(BuildContext context) {

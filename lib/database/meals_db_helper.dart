@@ -77,7 +77,7 @@ class MealsDBHelper {
   Future<List<Meal>> getFavoriteDessertsByKeyword(String keyword) async {
     var databaseClient = await database;
     
-    List<Map> dessertListDb = await databaseClient.rawQuery("SELECT * FROM desert WHERE mealTitle LIKE $keyword ORDER BY mealCreateDate DESC");
+    List<Map> dessertListDb = await databaseClient.rawQuery("SELECT * FROM desert WHERE mealTitle LIKE ? ORDER BY mealCreateDate DESC", ["%$keyword%"]);
 
     List<Meal> favoriteDessertsMeal = new List();
 
@@ -143,7 +143,7 @@ class MealsDBHelper {
   Future<List<Meal>> getFavoriteSeafoodByKeyword(String keyword) async {
     var databaseClient = await database;
 
-    List<Map> seafoodListDb = await databaseClient.rawQuery("SELECT * FROM seafood WHERE mealTitle LIKE $keyword ORDER BY mealCreateDate DESC");
+    List<Map> seafoodListDb = await databaseClient.rawQuery("SELECT * FROM seafood WHERE mealTitle LIKE ? ORDER BY mealCreateDate DESC", ["%$keyword%"]);
 
     List<Meal> favoriteSeafoodMeal = new List();
 

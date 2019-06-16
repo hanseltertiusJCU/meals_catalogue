@@ -6,7 +6,6 @@ const String BOTTOM_NAVIGATION_BAR = "bottomNavigationBar";
 
 // Menu in home section
 const String TEXT_FIELD = "textField";
-const String MENU_ICON_BUTTON = "menuIconButton";
 
 // Navigation part section
 const String DESSERT_ICON = 'dessert';

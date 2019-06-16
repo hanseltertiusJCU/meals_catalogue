@@ -35,6 +35,7 @@ class _DetailedPageState extends State<DetailedPage> {
 
   bool _isFavorite = false;
 
+  // region initialize state and get data
   @override
   void initState() {
     super.initState();
@@ -81,7 +82,9 @@ class _DetailedPageState extends State<DetailedPage> {
       }
     });
   }
+  // endregion
 
+  // region Set data as favorite/unfavorite
   setFavorite() async {
 
     var currentDateTime = DateTime.now();
@@ -120,20 +123,16 @@ class _DetailedPageState extends State<DetailedPage> {
     });
 
   }
+  // endregion
 
-  String getHeroTag(Meal meal) {
-    String heroTag;
-
-    heroTag = "Meal ID : ${meal.mealId}\n" + "Index position: ${widget.homeScreen.currentIndex}\n" + "Category: ${widget.homeScreen.mealCategory}";
-
-    return heroTag;
-  }
-
+  // region Refresh
   Future<Null> handleRefresh() async {
     asyncLoaderState.currentState.reloadState();
     return null;
   }
+  // endregion
 
+  // region Get App Bar view
   getAppBar(AppConfig appConfig) =>
       AppBar(
         title: Text(widget.meal.mealTitle),
@@ -159,6 +158,16 @@ class _DetailedPageState extends State<DetailedPage> {
           )
         ],
       );
+  // endregion
+
+  // region Hero
+  String getHeroTag(Meal meal) {
+    String heroTag;
+
+    heroTag = "Meal ID : ${meal.mealId}\n" + "Index position: ${widget.homeScreen.currentIndex}\n" + "Category: ${widget.homeScreen.mealCategory}";
+
+    return heroTag;
+  }
 
   getHeroView(AppConfig appConfig) {
     var asyncLoader = AsyncLoader(
@@ -174,7 +183,9 @@ class _DetailedPageState extends State<DetailedPage> {
         child: Scrollbar(child: RefreshIndicator(child: asyncLoader, onRefresh: handleRefresh, color: appConfig.appColor))
     );
   }
+  // endregion
 
+  // region Get Views
   getNoConnectionWidget(AppConfig appConfig) => Column(
     mainAxisSize: MainAxisSize.max,
     mainAxisAlignment: MainAxisAlignment.center,
@@ -184,21 +195,27 @@ class _DetailedPageState extends State<DetailedPage> {
   getNoConnectionContent(AppConfig appConfig) => [
     SizedBox(
       height: 60.0,
-      child: new Container(
+      child: Container(
         decoration: BoxDecoration(
-          image: new DecorationImage(
+          image: DecorationImage(
               image: AssetImage('assets/no-wifi.png'),
               fit: BoxFit.contain
           ),
         ),
       ),
     ),
-    Text("No Internet Connection"),
-    FlatButton(
-        color: appConfig.appColor,
-        child: Text("Restart", style: TextStyle(color: Colors.white)),
-        onPressed: () => asyncLoaderState.currentState.reloadState()
-    )
+    Container(
+      padding: EdgeInsets.only(top: 4.0),
+      child: Text("No Internet Connection"),
+    ),
+    Container(
+      padding: EdgeInsets.only(top: 4.0),
+      child: FlatButton(
+          color: appConfig.appColor,
+          child: Text("Restart", style: TextStyle(color: Colors.white)),
+          onPressed: () => asyncLoaderState.currentState.reloadState()
+      ),
+    ),
   ];
 
   getListView(AppConfig appConfig) => ListView(
@@ -284,7 +301,7 @@ class _DetailedPageState extends State<DetailedPage> {
     ];
   }
 
-  // todo: create list ingredients text
+
   List<Padding> getIngredientsTextList(List<String> stringList){
     List<Padding> ingredientTexts = List<Padding>();
 
@@ -328,21 +345,7 @@ class _DetailedPageState extends State<DetailedPage> {
 
     return instructionTexts;
   }
-
-  // todo: create list instruction text method
-
-  @override
-  Widget build(BuildContext context) {
-    var appConfig = AppConfig.of(context);
-    // todo: intinya pake scaffold bener, bodynya yg beda intinya
-    return Scaffold(
-      key: _scaffoldKey,
-      // todo: get app bar
-      appBar: getAppBar(appConfig),
-      // todo: bodynya ya intinya klo null di recipe circular progress, klo ga tinggal hero or smth
-      body: getHeroView(appConfig),
-    );
-  }
+  // endregion
 
   // region snackbar
   _displaySnackbar(BuildContext context, bool isFavorite) {
@@ -374,6 +377,15 @@ class _DetailedPageState extends State<DetailedPage> {
 
     _scaffoldKey.currentState.showSnackBar(snackBar);
   }
+  // endregion
 
-// endregion
+  @override
+  Widget build(BuildContext context) {
+    var appConfig = AppConfig.of(context);
+    return Scaffold(
+      key: _scaffoldKey,
+      appBar: getAppBar(appConfig),
+      body: getHeroView(appConfig),
+    );
+  }
 }
