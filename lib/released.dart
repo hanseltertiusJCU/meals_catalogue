@@ -1,12 +1,9 @@
 // Main function for released
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:meals_catalogue/config/app_config.dart';
 import 'package:meals_catalogue/main_common.dart';
 
 void main() {
-
-  debugPaintSizeEnabled = false;
 
   var configuredApp = AppConfig(
     appDisplayName: "Meals Catalogue",

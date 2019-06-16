@@ -15,7 +15,7 @@ class Home extends StatefulWidget {
   HomeScreen createState() => HomeScreen();
 }
 
-class HomeScreen extends State<Home> with TickerProviderStateMixin<Home> {
+class HomeScreen extends State<Home> {
 
   MealData mealData;
 
