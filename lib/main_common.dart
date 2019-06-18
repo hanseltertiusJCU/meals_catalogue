@@ -30,8 +30,6 @@ class HomeScreen extends State<Home> {
   TextEditingController textEditingController;
   bool _isSearchingMeals = false;
 
-  AppConfig appConfig;
-
   void _enableSearch() {
     setState(() {
       _isSearchingMeals = true;
@@ -115,90 +113,96 @@ class HomeScreen extends State<Home> {
     return heroTag;
   }
 
-  getCardHeroes(BuildContext context, AppConfig appConfig, MealData mealData) =>
+  getCardHeroes(BuildContext context, MealData mealData) =>
       mealData.meals.map((item) =>
           Hero(
             tag: getHeroTag(item),
             child: Stack(
               children: <Widget>[
-                getCard(appConfig, item),
-                getInkwellCard(context, appConfig, item)
+                getCard(context, item),
+                getInkwellCard(context, item)
               ],
             ),
           )).toList();
   // endregion
 
   // region Card
-  getCard(AppConfig appConfig, Meal meal) => Card(
-    elevation: 2.0,
-    child: Column(
-      children: <Widget>[
-        Expanded(
-          flex: 1,
-          child: ClipRRect(
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(5.0),
-              topRight: Radius.circular(5.0),
-            ),
-            child: CachedNetworkImage(
-              imageUrl: meal.mealImageUrl,
-              placeholder: (context, url) => Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(appConfig.appColor))),
-              errorWidget: (context, url, error) => Icon(Icons.error),
-              width: double.infinity,
-              height: double.infinity,
-              fit: BoxFit.fill,
-            ),
-          ),
-        ),
-        Expanded(
-          flex: 1,
-          child: Padding(
-            padding: EdgeInsets.all(4.0),
-            child: Align(
-              alignment: Alignment(0.0, 0.0),
-              child: Text(
-                meal.mealTitle,
-                textAlign: TextAlign.center,
-                style: TextStyle(fontWeight: FontWeight.bold),
+  getCard(BuildContext context, Meal meal) {
+    var appConfig = AppConfig.of(context);
+    return Card(
+      elevation: 2.0,
+      child: Column(
+        children: <Widget>[
+          Expanded(
+            flex: 1,
+            child: ClipRRect(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(5.0),
+                topRight: Radius.circular(5.0),
+              ),
+              child: CachedNetworkImage(
+                imageUrl: meal.mealImageUrl,
+                placeholder: (context, url) => Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(appConfig.appColor))),
+                errorWidget: (context, url, error) => Icon(Icons.error),
+                width: double.infinity,
+                height: double.infinity,
+                fit: BoxFit.fill,
               ),
             ),
           ),
-        ),
-      ],
-    ),
-  );
+          Expanded(
+            flex: 1,
+            child: Padding(
+              padding: EdgeInsets.all(4.0),
+              child: Align(
+                alignment: Alignment(0.0, 0.0),
+                child: Text(
+                  meal.mealTitle,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
   // endregion
 
   // region Inkwell
-  getInkwellCard(BuildContext context, AppConfig appConfig, Meal meal) => Positioned.fill(
-      child: ClipRRect(
-        borderRadius: BorderRadius.all(Radius.circular(5.0)),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            key: Key(getStringKeyMealItem(meal.mealId)),
-            onTap: () {
-              final snackBar = SnackBar(
-                content: Text(
-                  "${meal.mealTitle} is selected!",
-                  style: TextStyle(fontFamily: appConfig.appFont),
-                ),
-                action: SnackBarAction(
-                    key: Key(GO_TO_DETAIL_SNACKBAR_ACTION),
-                    label: "Go to Detail",
-                    textColor: appConfig.appColor,
-                    onPressed: (){
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => DetailedPage(meal: meal, font: appConfig.appFont, homeScreen: this)));
-                      _disableSearch();
-                    }),
-              );
-              Scaffold.of(context).showSnackBar(snackBar);
-            }
+  getInkwellCard(BuildContext context, Meal meal) {
+    var appConfig = AppConfig.of(context);
+    return Positioned.fill(
+        child: ClipRRect(
+          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+                key: Key(getStringKeyMealItem(meal.mealId)),
+                onTap: () {
+                  final snackBar = SnackBar(
+                    content: Text(
+                      "${meal.mealTitle} is selected!",
+                      style: TextStyle(fontFamily: appConfig.appFont),
+                    ),
+                    action: SnackBarAction(
+                        key: Key(GO_TO_DETAIL_SNACKBAR_ACTION),
+                        label: "Go to Detail",
+                        textColor: appConfig.appColor,
+                        onPressed: (){
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) => DetailedPage(meal: meal, font: appConfig.appFont, homeScreen: this)));
+                          _disableSearch();
+                        }),
+                  );
+                  Scaffold.of(context).showSnackBar(snackBar);
+                }
+            ),
           ),
-        ),
-      )
-  );
+        )
+    );
+  }
   // endregion
 
   // region Set state method
@@ -295,70 +299,78 @@ class HomeScreen extends State<Home> {
   // endregion
 
   // region Create Views
-  Scrollbar createBodyWidget(AppConfig config) {
+  Scrollbar createBodyWidget(BuildContext context) {
+    var appConfig = AppConfig.of(context);
     var asyncLoader = AsyncLoader(
       key: asyncLoaderState,
       initState: () async => await fetchMealData(),
-      renderLoad: () => Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(config.appColor))),
-      renderError: ([error]) => getNoConnectionWidget(config),
-      renderSuccess: ({data}) => mealListWidget(config),
+      renderLoad: () => Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(appConfig.appColor))),
+      renderError: ([error]) => getNoConnectionWidget(context),
+      renderSuccess: ({data}) => mealListWidget(context),
     );
 
     return Scrollbar(
       child: RefreshIndicator(
         child: asyncLoader,
         onRefresh: handleRefresh,
-        color: config.appColor
+        color: appConfig.appColor
       ),
     );
 
   }
 
-  getNoConnectionWidget(AppConfig appConfig) => Column(
+  getNoConnectionWidget(BuildContext context) => Column(
     mainAxisSize: MainAxisSize.max,
     mainAxisAlignment: MainAxisAlignment.center,
-    children: getNoConnectionContent(appConfig),
+    children: getNoConnectionContent(context),
   );
 
-  getNoConnectionContent(AppConfig appConfig) => [
-    SizedBox(
-      height: 60.0,
-      child: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-              image: AssetImage('assets/no-wifi.png'),
-              fit: BoxFit.contain
+  getNoConnectionContent(BuildContext context) {
+    var appConfig = AppConfig.of(context);
+    return [
+      SizedBox(
+        height: 60.0,
+        child: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+                image: AssetImage('assets/no-wifi.png'),
+                fit: BoxFit.contain
+            ),
           ),
         ),
       ),
-    ),
-    Container(
-      padding: EdgeInsets.only(top: 4.0),
-      child: Text("No Internet Connection"),
-    ),
-    Container(
-      padding: EdgeInsets.only(top: 4.0),
-      child: FlatButton(
-          color: appConfig.appColor,
-          child: Text("Restart", style: TextStyle(color: Colors.white)),
-          onPressed: () => asyncLoaderState.currentState.reloadState()
+      Container(
+        padding: EdgeInsets.only(top: 4.0),
+        child: Text("No Internet Connection"),
       ),
-    ),
-  ];
+      Container(
+        padding: EdgeInsets.only(top: 4.0),
+        child: FlatButton(
+            color: appConfig.appColor,
+            child: Text("Restart", style: TextStyle(color: Colors.white)),
+            onPressed: () => asyncLoaderState.currentState.reloadState()
+        ),
+      ),
+    ];
+  }
 
-  mealListWidget(AppConfig appConfig) =>
+  mealListWidget(BuildContext context) =>
+      mealData.meals != null && mealData != null ?
       mealData.meals.length > 0
-          ? getGridViewBuilder(appConfig)
+          ? getGridViewBuilder(context)
+          : getEmptyData()
           : getEmptyData();
 
-  getGridViewBuilder(AppConfig appConfig) => Builder(builder: (context) => GridView.count(
-      crossAxisCount: MediaQuery.of(context).orientation == Orientation.portrait
-          ? 2
-          : 3,
-      crossAxisSpacing: 16.0,
-      mainAxisSpacing: 16.0,
-      padding: EdgeInsets.all(16.0),
-      children: getCardHeroes(context, appConfig, mealData)));
+  getGridViewBuilder(BuildContext context) {
+    return Builder(builder: (context) => GridView.count(
+        crossAxisCount: MediaQuery.of(context).orientation == Orientation.portrait
+            ? 2
+            : 3,
+        crossAxisSpacing: 16.0,
+        mainAxisSpacing: 16.0,
+        padding: EdgeInsets.all(16.0),
+        children: getCardHeroes(context, mealData)));
+  }
 
   getEmptyData() => Column(
     mainAxisSize: MainAxisSize.max,
@@ -384,34 +396,40 @@ class HomeScreen extends State<Home> {
     ),
   ];
 
-  createBottomNavigationBar(AppConfig appConfig) => BottomNavigationBar(
-    key: Key(BOTTOM_NAVIGATION_BAR),
-    items:[
-      BottomNavigationBarItem(icon: Icon(Icons.cake, key: Key(DESSERT_ICON)), title: Text("Dessert")),
-      BottomNavigationBarItem(icon: Icon(Icons.restaurant, key: Key(SEAFOOD_ICON)), title: Text("Seafood")),
-      BottomNavigationBarItem(icon: Icon(Icons.cake, key: Key(FAVORITE_DESSERT_ICON)), title: Text("Favorite Dessert")),
-      BottomNavigationBarItem(icon: Icon(Icons.restaurant, key: Key(FAVORITE_SEAFOOD_ICON)), title: Text("Favorite Seafood"))
-    ],
-    currentIndex: currentIndex,
-    onTap: changeSelectedBottomNavigationBarItem,
-    selectedItemColor: appConfig.appColor,
-    unselectedItemColor: Colors.grey,
-  );
+  createBottomNavigationBar(BuildContext context) {
+    var appConfig = AppConfig.of(context);
+    return BottomNavigationBar(
+      key: Key(BOTTOM_NAVIGATION_BAR),
+      items:[
+        BottomNavigationBarItem(icon: Icon(Icons.cake, key: Key(DESSERT_ICON)), title: Text("Dessert")),
+        BottomNavigationBarItem(icon: Icon(Icons.restaurant, key: Key(SEAFOOD_ICON)), title: Text("Seafood")),
+        BottomNavigationBarItem(icon: Icon(Icons.cake, key: Key(FAVORITE_DESSERT_ICON)), title: Text("Favorite Dessert")),
+        BottomNavigationBarItem(icon: Icon(Icons.restaurant, key: Key(FAVORITE_SEAFOOD_ICON)), title: Text("Favorite Seafood"))
+      ],
+      currentIndex: currentIndex,
+      onTap: changeSelectedBottomNavigationBarItem,
+      selectedItemColor: appConfig.appColor,
+      unselectedItemColor: Colors.grey,
+    );
+  }
 
-  homeContent(AppConfig appConfig) => Scaffold(
-    appBar: AppBar(
-      title: _isSearchingMeals ? _buildTextField() : Text(mealCategory, key: Key(APP_BAR_TITLE)),
-      actions: _getMenuIcon(),
-      textTheme: TextTheme(
-        title: TextStyle(
-            fontSize: 20.0,
-            fontWeight: FontWeight.bold,
-            fontFamily: appConfig.appFont),
+  homeContent(BuildContext context) {
+    var appConfig = AppConfig.of(context);
+    return Scaffold(
+      appBar: AppBar(
+        title: _isSearchingMeals ? _buildTextField() : Text(mealCategory, key: Key(APP_BAR_TITLE)),
+        actions: _getMenuIcon(),
+        textTheme: TextTheme(
+          title: TextStyle(
+              fontSize: 20.0,
+              fontWeight: FontWeight.bold,
+              fontFamily: appConfig.appFont),
+        ),
       ),
-    ),
-    body: createBodyWidget(appConfig),
-    bottomNavigationBar: createBottomNavigationBar(appConfig),
-  );
+      body: createBodyWidget(context),
+      bottomNavigationBar: createBottomNavigationBar(context),
+    );
+  }
 
   // endregion
 
@@ -425,7 +443,7 @@ class HomeScreen extends State<Home> {
         accentColor: Colors.white,
         fontFamily: appConfig.appFont,
       ),
-      home: homeContent(appConfig),
+      home: homeContent(context),
     );
   }
 

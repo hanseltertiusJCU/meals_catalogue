@@ -18,13 +18,10 @@ void main(){
     });
 
     test('Verify default app bar title', () async {
-      // todo: ada kemungkinan datanya ke load baru de, tapnya itu pas datanya d load
 
       expect(await flutterDriver.getText(appBarTitle), 'Dessert');
     });
 
-
-    // todo : click item into the detail, specifically the first item
     test('Click icon into detail item', () async{
 
       await flutterDriver.tap(firstDessertMeal);
@@ -33,7 +30,6 @@ void main(){
 
     });
 
-    // todo: pressed favorite in detail
     test('Pressed favorite icon in detail page', () async{
 
       await flutterDriver.tap(tooltipFavorite);
@@ -50,7 +46,6 @@ void main(){
 
 
     test('Click icon search and enter text', () async {
-      // do the thing
       await flutterDriver.tap(tooltipSearch);
 
       await flutterDriver.tap(tooltipClearSearch);
@@ -69,13 +64,11 @@ void main(){
 
     test('Bottom navigation bar test item', () async{
 
+      await flutterDriver.waitFor(bottomNavigationBar);
+
       await flutterDriver.tap(favoriteDessert);
 
-      // todo: verify
-
       await flutterDriver.tap(favoriteSeafood);
-
-      // todo: verify
 
     });
   });
