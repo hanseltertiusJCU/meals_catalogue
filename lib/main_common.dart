@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:meals_catalogue/config/app_config.dart';
 import 'package:meals_catalogue/const_strings.dart';
@@ -19,6 +21,9 @@ class HomeScreen extends State<Home>{
   String mealCategory = "Dessert";
   MealData mealData;
   PageController pageController;
+
+  final navigatorKey = GlobalKey<NavigatorState>();
+
   final GlobalKey<AsyncLoaderState> dessertAsyncLoaderState = GlobalKey<AsyncLoaderState>(debugLabel: '_dessertAsyncLoader');
   final GlobalKey<AsyncLoaderState> seafoodAsyncLoaderState = GlobalKey<AsyncLoaderState>(debugLabel: '_seafoodAsyncLoader');
   final GlobalKey<AsyncLoaderState> favoriteDessertAsyncLoaderState = GlobalKey<AsyncLoaderState>(debugLabel: '_favoriteDessertAsyncLoader');
@@ -332,16 +337,11 @@ class HomeScreen extends State<Home>{
       renderSuccess: ({data}) => mealListWidget(appConfig),
     );
 
-    return refreshIndicatorScrollbar(handleRefresh, currentIndex, asyncLoader, appConfig);
-  }
-
-  // todo: make scrollbar
-  Scrollbar refreshIndicatorScrollbar(Function handleRefresh, int currentIndex, AsyncLoader asyncLoader, AppConfig appConfig) {
     return Scrollbar(
       child: RefreshIndicator(
-          child: asyncLoader,
-          onRefresh: () => handleRefresh(currentIndex),
-          color: appConfig.appColor,
+        child: asyncLoader,
+        onRefresh: () => handleRefresh(currentIndex),
+        color: appConfig.appColor,
       ),
     );
   }
@@ -455,29 +455,62 @@ class HomeScreen extends State<Home>{
   }
 
   homeContent(AppConfig appConfig) {
-    return Scaffold(
-      appBar: AppBar(
-        title: _isSearchingMeals ? _buildTextField() : Text(mealCategory, key: Key(APP_BAR_TITLE)),
-        actions: _getMenuIcon(),
-        textTheme: TextTheme(
-          title: TextStyle(
-              fontSize: 20.0,
-              fontWeight: FontWeight.bold,
-              fontFamily: appConfig.appFont),
+    return WillPopScope(
+      onWillPop: () => onBackPressed(appConfig),
+      child: Scaffold(
+        appBar: AppBar(
+          title: _isSearchingMeals ? _buildTextField() : Text(mealCategory, key: Key(APP_BAR_TITLE)),
+          actions: _getMenuIcon(),
+          textTheme: TextTheme(
+            title: TextStyle(
+                fontSize: 20.0,
+                fontWeight: FontWeight.bold,
+                fontFamily: appConfig.appFont),
+          ),
         ),
+        body: createPageView(appConfig),
+        bottomNavigationBar: createBottomNavigationBar(appConfig),
       ),
-      body: createPageView(appConfig),
-      bottomNavigationBar: createBottomNavigationBar(appConfig),
     );
   }
 
   // endregion
 
-  // todo: bikin jadi will pop scope
+  // region back pressed
+  Future<bool> onBackPressed(AppConfig appConfig){
+    if(_isSearchingMeals){
+      _disableSearch();
+      return Future.value(false);
+    } else {
+      // MaterialApp has Overlay widget, so we need to show the context of it
+      final materialAppContext = navigatorKey.currentState.overlay.context;
+      return showDialog(
+        context: materialAppContext,
+        builder: (context) => AlertDialog(
+          title: Text('Exit Meals Catalogue App', style: TextStyle(fontWeight: FontWeight.bold),),
+          content: Text('Are you sure you want to quit the app?'),
+          actions: <Widget>[
+            FlatButton(
+              onPressed: () => Navigator.of(context).pop(false), // return Future.value(false);
+              child: Text('Return to App', style: TextStyle(color: appConfig.appColor),),
+            ),
+            FlatButton(
+              onPressed: () => Navigator.of(context).pop(true), // return Future.value(true);
+              child: Text('Quit', style: TextStyle(color: appConfig.appColor),),
+            ),
+          ],
+        ),
+      ) ?? false; // return Future.value(false); if there is no dialog
+    }
+  }
+
+  // endregion
+
   @override
   Widget build(BuildContext context) {
     var appConfig = AppConfig.of(context);
     return MaterialApp(
+      navigatorKey: navigatorKey,
       title: appConfig.appDisplayName,
       theme: ThemeData(
         primaryColor: appConfig.appColor,
