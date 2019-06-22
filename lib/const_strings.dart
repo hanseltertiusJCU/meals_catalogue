@@ -6,6 +6,7 @@ const String GRID_VIEW = "gridView";
 const String DETAILED_LIST_VIEW = "detailedListView";
 
 // Navigation section
+const String PAGE_VIEW = "pageView";
 const String BOTTOM_NAVIGATION_BAR = "bottomNavigationBar";
 
 // Menu in home section

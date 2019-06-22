@@ -8,6 +8,7 @@ SerializableFinder gridView = find.byValueKey(GRID_VIEW);
 SerializableFinder detailedListView = find.byValueKey(DETAILED_LIST_VIEW);
 
 SerializableFinder bottomNavigationBar = find.byValueKey(BOTTOM_NAVIGATION_BAR);
+SerializableFinder pageView = find.byValueKey(PAGE_VIEW);
 
 SerializableFinder dessert = find.byValueKey(DESSERT_ICON);
 SerializableFinder seafood = find.byValueKey(SEAFOOD_ICON);

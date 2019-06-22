@@ -9,20 +9,20 @@ import 'package:meals_catalogue/widgets/detailed_page.dart';
 import 'package:async_loader/async_loader.dart';
 
 class Home extends StatefulWidget {
-
   @override
   HomeScreen createState() => HomeScreen();
 }
 
-class HomeScreen extends State<Home> {
-
-  MealData mealData;
+class HomeScreen extends State<Home>{
 
   int currentIndex = 0;
-
   String mealCategory = "Dessert";
-
-  final GlobalKey<AsyncLoaderState> asyncLoaderState = GlobalKey<AsyncLoaderState>();
+  MealData mealData;
+  PageController pageController;
+  final GlobalKey<AsyncLoaderState> dessertAsyncLoaderState = GlobalKey<AsyncLoaderState>(debugLabel: '_dessertAsyncLoader');
+  final GlobalKey<AsyncLoaderState> seafoodAsyncLoaderState = GlobalKey<AsyncLoaderState>(debugLabel: '_seafoodAsyncLoader');
+  final GlobalKey<AsyncLoaderState> favoriteDessertAsyncLoaderState = GlobalKey<AsyncLoaderState>(debugLabel: '_favoriteDessertAsyncLoader');
+  final GlobalKey<AsyncLoaderState> favoriteSeafoodAsyncLoaderState = GlobalKey<AsyncLoaderState>(debugLabel: '_favoriteSeafoodAsyncLoader');
 
   // region Search meals
   String keyword = "";
@@ -39,19 +39,15 @@ class HomeScreen extends State<Home> {
     setState(() {
       this.keyword = keyword;
     });
-
     fetchMealData();
   }
 
   void _disableSearch(){
     setState(() {
       textEditingController.clear();
-
       _updateKeyword("");
-
       _isSearchingMeals = false;
     });
-
     fetchMealData();
   }
 
@@ -85,6 +81,11 @@ class HomeScreen extends State<Home> {
         });
       }
     });
+
+    pageController = PageController(
+      initialPage: 0,
+      keepPage: true,
+    );
   }
 
   fetchMealData() async {
@@ -210,6 +211,17 @@ class HomeScreen extends State<Home> {
       changeCategory(index);
       fetchMealData();
       _disableSearch();
+      pageController.animateToPage(index,
+          duration: Duration(milliseconds: 500), curve: Curves.ease);
+    });
+  }
+
+  changeSelectedPageViewItem(int index){
+    setState(() {
+      currentIndex = index;
+      changeCategory(index);
+      fetchMealData();
+      _disableSearch();
     });
   }
 
@@ -289,40 +301,60 @@ class HomeScreen extends State<Home> {
   // endregion
 
   // region Refresh
-  Future<Null> handleRefresh() async {
-    asyncLoaderState.currentState.reloadState();
+  Future<void> handleRefresh(int index) async {
+    switch (index){
+      case 1:
+        seafoodAsyncLoaderState.currentState.reloadState();
+        break;
+      case 2:
+        favoriteDessertAsyncLoaderState.currentState.reloadState();
+        break;
+      case 3:
+        favoriteSeafoodAsyncLoaderState.currentState.reloadState();
+        break;
+      default:
+        dessertAsyncLoaderState.currentState.reloadState();
+        break;
+    }
     return null;
   }
 
   // endregion
 
   // region Create Views
-  Scrollbar createBodyWidget(AppConfig appConfig) {
-    var asyncLoader = AsyncLoader(
+  Scrollbar createBodyWidget(AppConfig appConfig, Key asyncLoaderState, int currentIndex) {
+    // todo: bikin key trus bawa keynya gt
+    AsyncLoader asyncLoader = AsyncLoader(
       key: asyncLoaderState,
       initState: () async => await fetchMealData(),
       renderLoad: () => Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(appConfig.appColor))),
-      renderError: ([error]) => getNoConnectionWidget(appConfig),
+      renderError: ([error]) => getNoConnectionWidget(appConfig, currentIndex),
       renderSuccess: ({data}) => mealListWidget(appConfig),
     );
 
-    return Scrollbar(
-      child: RefreshIndicator(
-        child: asyncLoader,
-        onRefresh: handleRefresh,
-        color: appConfig.appColor
-      ),
-    );
-
+    return refreshIndicatorScrollbar(handleRefresh, currentIndex, asyncLoader, appConfig);
   }
 
-  getNoConnectionWidget(AppConfig appConfig) => Column(
+  // todo: make scrollbar
+  Scrollbar refreshIndicatorScrollbar(Function handleRefresh, int currentIndex, AsyncLoader asyncLoader, AppConfig appConfig) {
+    return Scrollbar(
+      child: RefreshIndicator(
+          child: asyncLoader,
+          onRefresh: () => handleRefresh(currentIndex),
+          color: appConfig.appColor,
+      ),
+    );
+  }
+
+  // todo: key
+  getNoConnectionWidget(AppConfig appConfig, int currentIndex) => Column(
     mainAxisSize: MainAxisSize.max,
     mainAxisAlignment: MainAxisAlignment.center,
-    children: getNoConnectionContent(appConfig),
+    children: getNoConnectionContent(appConfig, currentIndex),
   );
 
-  getNoConnectionContent(AppConfig appConfig) {
+  getNoConnectionContent(AppConfig appConfig, int currentIndex) {
+    // todo: key
     return [
       SizedBox(
         height: 60.0,
@@ -344,7 +376,8 @@ class HomeScreen extends State<Home> {
         child: FlatButton(
             color: appConfig.appColor,
             child: Text("Restart", style: TextStyle(color: Colors.white)),
-            onPressed: () => asyncLoaderState.currentState.reloadState()
+            // todo: handlerefresh
+            onPressed: () => handleRefresh(currentIndex)
         ),
       ),
     ];
@@ -393,6 +426,18 @@ class HomeScreen extends State<Home> {
     ),
   ];
 
+  createPageView(AppConfig appConfig) => PageView(
+    key: Key(PAGE_VIEW),
+    controller: pageController,
+    onPageChanged: changeSelectedPageViewItem,
+    children: <Widget>[
+      createBodyWidget(appConfig, dessertAsyncLoaderState, 0),
+      createBodyWidget(appConfig, seafoodAsyncLoaderState, 1),
+      createBodyWidget(appConfig, favoriteDessertAsyncLoaderState, 2),
+      createBodyWidget(appConfig, favoriteSeafoodAsyncLoaderState, 3)
+    ],
+  );
+
   createBottomNavigationBar(AppConfig appConfig) {
     return BottomNavigationBar(
       key: Key(BOTTOM_NAVIGATION_BAR),
@@ -421,13 +466,14 @@ class HomeScreen extends State<Home> {
               fontFamily: appConfig.appFont),
         ),
       ),
-      body: createBodyWidget(appConfig),
+      body: createPageView(appConfig),
       bottomNavigationBar: createBottomNavigationBar(appConfig),
     );
   }
 
   // endregion
 
+  // todo: bikin jadi will pop scope
   @override
   Widget build(BuildContext context) {
     var appConfig = AppConfig.of(context);
