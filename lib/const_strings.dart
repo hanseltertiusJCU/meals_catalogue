@@ -1,6 +1,10 @@
 // App bar section
 const String APP_BAR_TITLE = "appBarTitle";
 
+// Gridview/ListView section
+const String GRID_VIEW = "gridView";
+const String DETAILED_LIST_VIEW = "detailedListView";
+
 // Navigation section
 const String BOTTOM_NAVIGATION_BAR = "bottomNavigationBar";
 

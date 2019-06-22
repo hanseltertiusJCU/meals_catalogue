@@ -192,7 +192,6 @@ class HomeScreen extends State<Home> {
                         onPressed: (){
                           Navigator.push(context,
                               MaterialPageRoute(builder: (context) => DetailedPage(meal: meal, font: appConfig.appFont, homeScreen: this)));
-                          _disableSearch();
                         }),
                   );
                   Scaffold.of(context).showSnackBar(snackBar);
@@ -360,6 +359,7 @@ class HomeScreen extends State<Home> {
 
   getGridViewBuilder(AppConfig appConfig) {
     return Builder(builder: (context) => GridView.count(
+        key: Key(GRID_VIEW),
         crossAxisCount: MediaQuery.of(context).orientation == Orientation.portrait
             ? 2
             : 3,

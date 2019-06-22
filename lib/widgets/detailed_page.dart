@@ -215,6 +215,7 @@ class _DetailedPageState extends State<DetailedPage> {
   ];
 
   getListView(AppConfig appConfig) => ListView(
+        key: Key(DETAILED_LIST_VIEW),
         padding: EdgeInsets.all(16.0),
         children: getListViewContent(appConfig),
       );

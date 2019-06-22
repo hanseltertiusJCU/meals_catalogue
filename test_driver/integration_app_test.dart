@@ -18,24 +18,44 @@ void main(){
     });
 
     test('Verify default app bar title', () async {
-
       expect(await flutterDriver.getText(appBarTitle), 'Dessert');
     });
 
-    test('Click icon into detail item', () async{
+    test('Scroll gridview content in dessert', () async{
+      await flutterDriver.waitFor(bottomNavigationBar);
+      await flutterDriver.tap(dessert);
+      await flutterDriver.waitFor(gridView, timeout: Duration(seconds: 5));
+      await flutterDriver.scroll(gridView, 0, 200, Duration(milliseconds: 500));
+      await flutterDriver.scroll(gridView, 0, -4500, Duration(milliseconds: 1500));
+      await flutterDriver.scroll(gridView, 0, 4500, Duration(milliseconds: 1500));
+    });
+    
+    test('Scroll gridview content in seafood', () async{
+      await flutterDriver.waitFor(bottomNavigationBar);
+      await flutterDriver.tap(seafood);
+      await flutterDriver.waitFor(gridView, timeout: Duration(seconds: 5));
+      await flutterDriver.scroll(gridView, 0, 200, Duration(milliseconds: 500));
+      await flutterDriver.scroll(gridView, 0, -1500, Duration(milliseconds: 500));
+      await flutterDriver.scroll(gridView, 0, 1500, Duration(milliseconds: 500));
+    });
 
+    test('Click dessert item into detail', () async{
+      await flutterDriver.tap(dessert);
+      await flutterDriver.waitFor(gridView, timeout: Duration(seconds: 5));
       await flutterDriver.tap(firstDessertMeal);
-
       await flutterDriver.tap(snackBarDetail);
+    });
 
+    test('Scroll content in detailed item', () async {
+      await flutterDriver.waitFor(detailedListView, timeout: Duration(seconds: 5));
+      await flutterDriver.scroll(detailedListView, 0, 300, Duration(milliseconds: 500));
+      await flutterDriver.scroll(detailedListView, 0, -600, Duration(milliseconds: 500));
+      await flutterDriver.scroll(detailedListView, 0, 600, Duration(milliseconds: 500));
     });
 
     test('Pressed favorite icon in detail page', () async{
-
       await flutterDriver.tap(tooltipFavorite);
-
       await flutterDriver.tap(snackBarUndo);
-
       await flutterDriver.tap(tooltipFavorite);
     });
 
@@ -44,32 +64,32 @@ void main(){
       await flutterDriver.tap(find.byTooltip('Back'));
     });
 
-
     test('Click icon search and enter text', () async {
       await flutterDriver.tap(tooltipSearch);
-
       await flutterDriver.tap(tooltipClearSearch);
-
       await flutterDriver.tap(tooltipSearch);
-
       await flutterDriver.tap(textField);
-
       await flutterDriver.enterText("Pudding");
+      await flutterDriver.waitFor(gridView, timeout: Duration(seconds: 5));
+      await flutterDriver.tap(firstDessertSearchMeal);
+      await flutterDriver.tap(snackBarDetail);
+    });
 
-      await flutterDriver.waitFor(find.text("Pudding"));
+    test('Pressed favorite icon in detail page for the 2nd time', () async{
+      await flutterDriver.tap(tooltipFavorite);
+      await flutterDriver.tap(snackBarUndo);
+      await flutterDriver.tap(tooltipFavorite);
+    });
 
-      await flutterDriver.tap(tooltipClearSearch);
 
+    test('Pressed back button for the 2nd time', () async{
+      await flutterDriver.tap(find.byTooltip('Back'));
     });
 
     test('Bottom navigation bar test item', () async{
-
       await flutterDriver.waitFor(bottomNavigationBar);
-
       await flutterDriver.tap(favoriteDessert);
-
       await flutterDriver.tap(favoriteSeafood);
-
     });
   });
 }
