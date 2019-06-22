@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:meals_catalogue/config/app_config.dart';
 import 'package:meals_catalogue/const_strings.dart';
@@ -87,15 +86,12 @@ class _DetailedPageState extends State<DetailedPage> {
   // region Set data as favorite/unfavorite
   setFavorite() async {
 
-    var currentDateTime = DateTime.now();
-
     var mealsDatabaseHelper = MealsDBHelper();
 
     Meal meal = Meal(
       mealId: this.mealRecipe.mealRecipeId,
       mealTitle: this.mealRecipe.mealRecipeTitle,
       mealImageUrl: this.mealRecipe.mealRecipeImageUrl,
-      mealFavoriteCreateDate: currentDateTime.toString()
     );
 
     if(widget.homeScreen.mealCategory == "Dessert" ||
@@ -228,13 +224,17 @@ class _DetailedPageState extends State<DetailedPage> {
       Align(
         alignment: Alignment.center,
         child: ClipOval(
-          child: CachedNetworkImage(
-            imageUrl: mealRecipe.mealRecipeImageUrl,
-            placeholder: (context, url) => Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(config.appColor))),
-            errorWidget: (context, url, error) => Icon(Icons.error),
+          child: Container(
             width: 125.0,
             height: 125.0,
-            fit: BoxFit.fill,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                  fit: BoxFit.fill,
+                  image: NetworkImage(
+                      mealRecipe.mealRecipeImageUrl
+                  ),
+              ),
+            ),
           ),
         ),
       ),

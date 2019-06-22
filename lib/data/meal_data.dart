@@ -24,7 +24,6 @@ class MealData {
           mealId: mealRecipe[i].mealId,
           mealTitle: mealRecipe[i].mealTitle,
           mealImageUrl: mealRecipe[i].mealImageUrl,
-          mealFavoriteCreateDate: mealRecipe[i].mealFavoriteCreateDate
         );
         meals.add(meal);
       }

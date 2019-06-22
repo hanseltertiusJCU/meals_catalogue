@@ -5,13 +5,11 @@ class Meal {
   String mealId;
   String mealTitle;
   String mealImageUrl;
-  String mealFavoriteCreateDate;
 
   Meal({
     this.mealId,
     this.mealTitle,
     this.mealImageUrl,
-    this.mealFavoriteCreateDate = "",
   });
 
 
@@ -27,7 +25,6 @@ class Meal {
     mealMap['mealId'] = mealId;
     mealMap['mealTitle'] = mealTitle;
     mealMap['mealImageUrl'] = mealImageUrl;
-    mealMap['mealCreateDate'] = mealFavoriteCreateDate;
 
     return mealMap;
   }

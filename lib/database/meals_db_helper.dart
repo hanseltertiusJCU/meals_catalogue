@@ -35,11 +35,11 @@ class MealsDBHelper {
 
   // region Data Definition Language
   void _onCreate(Database db, int version) async {
-    // Create Desert table
-    await db.execute("CREATE TABLE desert(id INTEGER PRIMARY KEY, mealId TEXT, mealTitle TEXT, mealImageUrl TEXT, mealCreateDate TEXT)");
+    // Create Dessert table
+    await db.execute("CREATE TABLE dessert(id INTEGER PRIMARY KEY, mealId TEXT, mealTitle TEXT, mealImageUrl TEXT)");
 
     // Create Seafood table
-    await db.execute("CREATE TABLE seafood(id INTEGER PRIMARY KEY, mealId TEXT, mealTitle TEXT, mealImageUrl TEXT, mealCreateDate TEXT)");
+    await db.execute("CREATE TABLE seafood(id INTEGER PRIMARY KEY, mealId TEXT, mealTitle TEXT, mealImageUrl TEXT)");
   }
   // endregion
 
@@ -48,7 +48,7 @@ class MealsDBHelper {
   Future<int> saveDessertData(Meal meal) async {
     var databaseClient = await database;
 
-    int dessertId = await databaseClient.insert("desert", meal.toJson());
+    int dessertId = await databaseClient.insert("dessert", meal.toJson());
 
     return dessertId;
   }
@@ -56,7 +56,7 @@ class MealsDBHelper {
   Future<List<Meal>> getFavoriteDesserts() async {
     var databaseClient = await database;
 
-    List<Map> dessertListDb = await databaseClient.rawQuery("SELECT * FROM desert ORDER BY mealCreateDate DESC");
+    List<Map> dessertListDb = await databaseClient.rawQuery("SELECT * FROM dessert ORDER BY id DESC");
 
     List<Meal> favoriteDessertsMeal = new List();
 
@@ -65,7 +65,6 @@ class MealsDBHelper {
           mealId: dessertListDb[i]['mealId'],
           mealTitle: dessertListDb[i]['mealTitle'],
           mealImageUrl: dessertListDb[i]['mealImageUrl'],
-          mealFavoriteCreateDate: dessertListDb[i]['mealCreateDate']
       );
       dessertMeal.setFavoriteRecipeId(dessertListDb[i]["id"]);
       favoriteDessertsMeal.add(dessertMeal);
@@ -77,7 +76,7 @@ class MealsDBHelper {
   Future<List<Meal>> getFavoriteDessertsByKeyword(String keyword) async {
     var databaseClient = await database;
     
-    List<Map> dessertListDb = await databaseClient.rawQuery("SELECT * FROM desert WHERE mealTitle LIKE ? ORDER BY mealCreateDate DESC", ["%$keyword%"]);
+    List<Map> dessertListDb = await databaseClient.rawQuery("SELECT * FROM dessert WHERE mealTitle LIKE ? ORDER BY id DESC", ["%$keyword%"]);
 
     List<Meal> favoriteDessertsMeal = new List();
 
@@ -87,7 +86,6 @@ class MealsDBHelper {
         mealId: dessertListDb[i]['mealId'],
         mealTitle: dessertListDb[i]['mealTitle'],
         mealImageUrl: dessertListDb[i]['mealImageUrl'],
-        mealFavoriteCreateDate: dessertListDb[i]['mealCreateDate']
       );
       dessertMeal.setFavoriteRecipeId(dessertListDb[i]["id"]);
       favoriteDessertsMeal.add(dessertMeal);
@@ -99,9 +97,9 @@ class MealsDBHelper {
   Future<int> deleteDessertData(Meal meal) async {
     var databaseClient = await database;
 
-    int desertRowsDeleted = await databaseClient.rawDelete("DELETE FROM desert WHERE mealId = ?", [meal.mealId]);
+    int dessertRowsDeleted = await databaseClient.rawDelete("DELETE FROM dessert WHERE mealId = ?", [meal.mealId]);
 
-    return desertRowsDeleted;
+    return dessertRowsDeleted;
   }
 
   // endregion
@@ -120,7 +118,7 @@ class MealsDBHelper {
     var databaseClient = await database;
 
     List<Map> seafoodListDb = await databaseClient
-        .rawQuery("SELECT * FROM seafood ORDER BY mealCreateDate DESC");
+        .rawQuery("SELECT * FROM seafood ORDER BY id DESC");
 
     List<Meal> favoriteSeafoodMeal = new List();
 
@@ -130,7 +128,6 @@ class MealsDBHelper {
           mealId: seafoodListDb[i]['mealId'],
           mealTitle: seafoodListDb[i]['mealTitle'],
           mealImageUrl: seafoodListDb[i]['mealImageUrl'],
-          mealFavoriteCreateDate: seafoodListDb[i]['mealCreateDate']
       );
 
       seafoodMeal.setFavoriteRecipeId(seafoodListDb[i]["id"]);
@@ -143,7 +140,7 @@ class MealsDBHelper {
   Future<List<Meal>> getFavoriteSeafoodByKeyword(String keyword) async {
     var databaseClient = await database;
 
-    List<Map> seafoodListDb = await databaseClient.rawQuery("SELECT * FROM seafood WHERE mealTitle LIKE ? ORDER BY mealCreateDate DESC", ["%$keyword%"]);
+    List<Map> seafoodListDb = await databaseClient.rawQuery("SELECT * FROM seafood WHERE mealTitle LIKE ? ORDER BY id DESC", ["%$keyword%"]);
 
     List<Meal> favoriteSeafoodMeal = new List();
 
@@ -152,7 +149,6 @@ class MealsDBHelper {
           mealId: seafoodListDb[i]['mealId'],
           mealTitle: seafoodListDb[i]['mealTitle'],
           mealImageUrl: seafoodListDb[i]['mealImageUrl'],
-          mealFavoriteCreateDate: seafoodListDb[i]['mealCreateDate']
       );
 
       seafoodMeal.setFavoriteRecipeId(seafoodListDb[i]["id"]);

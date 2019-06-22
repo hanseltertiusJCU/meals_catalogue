@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:meals_catalogue/config/app_config.dart';
 import 'package:meals_catalogue/const_strings.dart';
@@ -113,22 +112,21 @@ class HomeScreen extends State<Home> {
     return heroTag;
   }
 
-  getCardHeroes(BuildContext context, MealData mealData) =>
+  getCardHeroes(BuildContext context, AppConfig appConfig, MealData mealData) =>
       mealData.meals.map((item) =>
           Hero(
             tag: getHeroTag(item),
             child: Stack(
               children: <Widget>[
-                getCard(context, item),
-                getInkwellCard(context, item)
+                getCard(item),
+                getInkwellCard(context, appConfig, item)
               ],
             ),
           )).toList();
   // endregion
 
   // region Card
-  getCard(BuildContext context, Meal meal) {
-    var appConfig = AppConfig.of(context);
+  getCard(Meal meal) {
     return Card(
       elevation: 2.0,
       child: Column(
@@ -140,13 +138,15 @@ class HomeScreen extends State<Home> {
                 topLeft: Radius.circular(5.0),
                 topRight: Radius.circular(5.0),
               ),
-              child: CachedNetworkImage(
-                imageUrl: meal.mealImageUrl,
-                placeholder: (context, url) => Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(appConfig.appColor))),
-                errorWidget: (context, url, error) => Icon(Icons.error),
+              child: Container(
                 width: double.infinity,
                 height: double.infinity,
-                fit: BoxFit.fill,
+                decoration: BoxDecoration(
+                    image: DecorationImage(
+                        fit: BoxFit.fill,
+                        image: NetworkImage(meal.mealImageUrl)
+                    ),
+                ),
               ),
             ),
           ),
@@ -171,8 +171,7 @@ class HomeScreen extends State<Home> {
   // endregion
 
   // region Inkwell
-  getInkwellCard(BuildContext context, Meal meal) {
-    var appConfig = AppConfig.of(context);
+  getInkwellCard(BuildContext context, AppConfig appConfig, Meal meal) {
     return Positioned.fill(
         child: ClipRRect(
           borderRadius: BorderRadius.all(Radius.circular(5.0)),
@@ -299,14 +298,13 @@ class HomeScreen extends State<Home> {
   // endregion
 
   // region Create Views
-  Scrollbar createBodyWidget(BuildContext context) {
-    var appConfig = AppConfig.of(context);
+  Scrollbar createBodyWidget(AppConfig appConfig) {
     var asyncLoader = AsyncLoader(
       key: asyncLoaderState,
       initState: () async => await fetchMealData(),
       renderLoad: () => Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(appConfig.appColor))),
-      renderError: ([error]) => getNoConnectionWidget(context),
-      renderSuccess: ({data}) => mealListWidget(context),
+      renderError: ([error]) => getNoConnectionWidget(appConfig),
+      renderSuccess: ({data}) => mealListWidget(appConfig),
     );
 
     return Scrollbar(
@@ -319,14 +317,13 @@ class HomeScreen extends State<Home> {
 
   }
 
-  getNoConnectionWidget(BuildContext context) => Column(
+  getNoConnectionWidget(AppConfig appConfig) => Column(
     mainAxisSize: MainAxisSize.max,
     mainAxisAlignment: MainAxisAlignment.center,
-    children: getNoConnectionContent(context),
+    children: getNoConnectionContent(appConfig),
   );
 
-  getNoConnectionContent(BuildContext context) {
-    var appConfig = AppConfig.of(context);
+  getNoConnectionContent(AppConfig appConfig) {
     return [
       SizedBox(
         height: 60.0,
@@ -354,14 +351,14 @@ class HomeScreen extends State<Home> {
     ];
   }
 
-  mealListWidget(BuildContext context) =>
+  mealListWidget(AppConfig appConfig) =>
       mealData.meals != null && mealData != null ?
       mealData.meals.length > 0
-          ? getGridViewBuilder(context)
+          ? getGridViewBuilder(appConfig)
           : getEmptyData()
           : getEmptyData();
 
-  getGridViewBuilder(BuildContext context) {
+  getGridViewBuilder(AppConfig appConfig) {
     return Builder(builder: (context) => GridView.count(
         crossAxisCount: MediaQuery.of(context).orientation == Orientation.portrait
             ? 2
@@ -369,7 +366,7 @@ class HomeScreen extends State<Home> {
         crossAxisSpacing: 16.0,
         mainAxisSpacing: 16.0,
         padding: EdgeInsets.all(16.0),
-        children: getCardHeroes(context, mealData)));
+        children: getCardHeroes(context, appConfig, mealData)));
   }
 
   getEmptyData() => Column(
@@ -396,8 +393,7 @@ class HomeScreen extends State<Home> {
     ),
   ];
 
-  createBottomNavigationBar(BuildContext context) {
-    var appConfig = AppConfig.of(context);
+  createBottomNavigationBar(AppConfig appConfig) {
     return BottomNavigationBar(
       key: Key(BOTTOM_NAVIGATION_BAR),
       items:[
@@ -413,8 +409,7 @@ class HomeScreen extends State<Home> {
     );
   }
 
-  homeContent(BuildContext context) {
-    var appConfig = AppConfig.of(context);
+  homeContent(AppConfig appConfig) {
     return Scaffold(
       appBar: AppBar(
         title: _isSearchingMeals ? _buildTextField() : Text(mealCategory, key: Key(APP_BAR_TITLE)),
@@ -426,8 +421,8 @@ class HomeScreen extends State<Home> {
               fontFamily: appConfig.appFont),
         ),
       ),
-      body: createBodyWidget(context),
-      bottomNavigationBar: createBottomNavigationBar(context),
+      body: createBodyWidget(appConfig),
+      bottomNavigationBar: createBottomNavigationBar(appConfig),
     );
   }
 
@@ -443,7 +438,7 @@ class HomeScreen extends State<Home> {
         accentColor: Colors.white,
         fontFamily: appConfig.appFont,
       ),
-      home: homeContent(context),
+      home: homeContent(appConfig),
     );
   }
 
