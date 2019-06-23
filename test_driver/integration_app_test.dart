@@ -85,6 +85,7 @@ void main(){
     });
 
     test('Bottom navigation bar navigate into favorite item', () async{
+      await flutterDriver.waitFor(gridView, timeout: Duration(seconds: 5));
       await flutterDriver.waitFor(bottomNavigationBar);
       await flutterDriver.tap(favoriteDessert);
       await flutterDriver.tap(favoriteSeafood);

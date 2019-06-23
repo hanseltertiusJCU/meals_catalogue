@@ -4,11 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:meals_catalogue/config/app_config.dart';
 import 'package:meals_catalogue/const_strings.dart';
 import 'package:meals_catalogue/data/meal_data.dart';
-import 'package:meals_catalogue/key_strings.dart';
-import 'package:meals_catalogue/model/meal.dart';
 import 'package:meals_catalogue/network/network_data.dart';
-import 'package:meals_catalogue/widgets/detailed_page.dart';
 import 'package:async_loader/async_loader.dart';
+import 'package:meals_catalogue/widgets/page_view_item.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -109,106 +107,6 @@ class HomeScreen extends State<Home>{
   }
   // endregion
 
-  // region Hero
-  String getHeroTag(Meal meal) {
-    String heroTag;
-
-    heroTag = "Meal ID : ${meal.mealId}\n" + "Index position: $currentIndex\n" + "Category: $mealCategory";
-
-    return heroTag;
-  }
-
-  getCardHeroes(BuildContext context, AppConfig appConfig, MealData mealData) =>
-      mealData.meals.map((item) =>
-          Hero(
-            tag: getHeroTag(item),
-            child: Stack(
-              children: <Widget>[
-                getCard(item),
-                getInkwellCard(context, appConfig, item)
-              ],
-            ),
-          )).toList();
-  // endregion
-
-  // region Card
-  getCard(Meal meal) {
-    return Card(
-      elevation: 2.0,
-      child: Column(
-        children: <Widget>[
-          Expanded(
-            flex: 1,
-            child: ClipRRect(
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(5.0),
-                topRight: Radius.circular(5.0),
-              ),
-              child: Container(
-                width: double.infinity,
-                height: double.infinity,
-                decoration: BoxDecoration(
-                    image: DecorationImage(
-                        fit: BoxFit.fill,
-                        image: NetworkImage(meal.mealImageUrl)
-                    ),
-                ),
-              ),
-            ),
-          ),
-          Expanded(
-            flex: 1,
-            child: Padding(
-              padding: EdgeInsets.all(4.0),
-              child: Align(
-                alignment: Alignment(0.0, 0.0),
-                child: Text(
-                  meal.mealTitle,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-  // endregion
-
-  // region Inkwell
-  getInkwellCard(BuildContext context, AppConfig appConfig, Meal meal) {
-    return Positioned.fill(
-        child: ClipRRect(
-          borderRadius: BorderRadius.all(Radius.circular(5.0)),
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-                key: Key(getStringKeyMealItem(meal.mealId)),
-                onTap: () {
-                  final snackBar = SnackBar(
-                    content: Text(
-                      "${meal.mealTitle} is selected!",
-                      style: TextStyle(fontFamily: appConfig.appFont),
-                    ),
-                    action: SnackBarAction(
-                        key: Key(GO_TO_DETAIL_SNACKBAR_ACTION),
-                        label: "Go to Detail",
-                        textColor: appConfig.appColor,
-                        onPressed: (){
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context) => DetailedPage(meal: meal, font: appConfig.appFont, homeScreen: this)));
-                        }),
-                  );
-                  Scaffold.of(context).showSnackBar(snackBar);
-                }
-            ),
-          ),
-        )
-    );
-  }
-  // endregion
-
   // region Set state method
   changeSelectedBottomNavigationBarItem(int index) {
     setState(() {
@@ -305,136 +203,17 @@ class HomeScreen extends State<Home>{
   }
   // endregion
 
-  // region Refresh
-  Future<void> handleRefresh(int index) async {
-    switch (index){
-      case 1:
-        seafoodAsyncLoaderState.currentState.reloadState();
-        break;
-      case 2:
-        favoriteDessertAsyncLoaderState.currentState.reloadState();
-        break;
-      case 3:
-        favoriteSeafoodAsyncLoaderState.currentState.reloadState();
-        break;
-      default:
-        dessertAsyncLoaderState.currentState.reloadState();
-        break;
-    }
-    return null;
-  }
-
-  // endregion
-
   // region Create Views
-  Scrollbar createBodyWidget(AppConfig appConfig, Key asyncLoaderState, int currentIndex) {
-    // todo: bikin key trus bawa keynya gt
-    AsyncLoader asyncLoader = AsyncLoader(
-      key: asyncLoaderState,
-      initState: () async => await fetchMealData(),
-      renderLoad: () => Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(appConfig.appColor))),
-      renderError: ([error]) => getNoConnectionWidget(appConfig, currentIndex),
-      renderSuccess: ({data}) => mealListWidget(appConfig),
-    );
-
-    return Scrollbar(
-      child: RefreshIndicator(
-        child: asyncLoader,
-        onRefresh: () => handleRefresh(currentIndex),
-        color: appConfig.appColor,
-      ),
-    );
-  }
-
-  // todo: key
-  getNoConnectionWidget(AppConfig appConfig, int currentIndex) => Column(
-    mainAxisSize: MainAxisSize.max,
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: getNoConnectionContent(appConfig, currentIndex),
-  );
-
-  getNoConnectionContent(AppConfig appConfig, int currentIndex) {
-    // todo: key
-    return [
-      SizedBox(
-        height: 60.0,
-        child: Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-                image: AssetImage('assets/no-wifi.png'),
-                fit: BoxFit.contain
-            ),
-          ),
-        ),
-      ),
-      Container(
-        padding: EdgeInsets.only(top: 4.0),
-        child: Text("No Internet Connection"),
-      ),
-      Container(
-        padding: EdgeInsets.only(top: 4.0),
-        child: FlatButton(
-            color: appConfig.appColor,
-            child: Text("Restart", style: TextStyle(color: Colors.white)),
-            // todo: handlerefresh
-            onPressed: () => handleRefresh(currentIndex)
-        ),
-      ),
-    ];
-  }
-
-  mealListWidget(AppConfig appConfig) =>
-      mealData.meals != null && mealData != null ?
-      mealData.meals.length > 0
-          ? getGridViewBuilder(appConfig)
-          : getEmptyData()
-          : getEmptyData();
-
-  getGridViewBuilder(AppConfig appConfig) {
-    return Builder(builder: (context) => GridView.count(
-        key: Key(GRID_VIEW),
-        crossAxisCount: MediaQuery.of(context).orientation == Orientation.portrait
-            ? 2
-            : 3,
-        crossAxisSpacing: 16.0,
-        mainAxisSpacing: 16.0,
-        padding: EdgeInsets.all(16.0),
-        children: getCardHeroes(context, appConfig, mealData)));
-  }
-
-  getEmptyData() => Column(
-    mainAxisSize: MainAxisSize.max,
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: getEmptyDataContent(),
-  );
-
-  getEmptyDataContent() => [
-    SizedBox(
-      height: 60.0,
-      child: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-              image: AssetImage('assets/empty-box.png'),
-              fit: BoxFit.contain
-          ),
-        ),
-      ),
-    ),
-    Container(
-      padding: EdgeInsets.only(top: 4.0),
-      child: Text('There is no data'),
-    ),
-  ];
 
   createPageView(AppConfig appConfig) => PageView(
     key: Key(PAGE_VIEW),
     controller: pageController,
     onPageChanged: changeSelectedPageViewItem,
     children: <Widget>[
-      createBodyWidget(appConfig, dessertAsyncLoaderState, 0),
-      createBodyWidget(appConfig, seafoodAsyncLoaderState, 1),
-      createBodyWidget(appConfig, favoriteDessertAsyncLoaderState, 2),
-      createBodyWidget(appConfig, favoriteSeafoodAsyncLoaderState, 3)
+      PageViewItem(appConfig: appConfig, asyncLoaderState: dessertAsyncLoaderState, index: 0, homeScreen: this),
+      PageViewItem(appConfig: appConfig, asyncLoaderState: seafoodAsyncLoaderState, index: 1, homeScreen: this),
+      PageViewItem(appConfig: appConfig, asyncLoaderState: favoriteDessertAsyncLoaderState, index: 2, homeScreen: this),
+      PageViewItem(appConfig: appConfig, asyncLoaderState: favoriteSeafoodAsyncLoaderState, index: 3, homeScreen: this)
     ],
   );
 
