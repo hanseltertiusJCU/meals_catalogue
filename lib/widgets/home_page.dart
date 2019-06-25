@@ -23,8 +23,8 @@ class HomeScreen extends State<Home>{
       controller: widget.mainScreen.pageController,
       onPageChanged: widget.mainScreen.changeSelectedPageViewItem,
       children: <Widget>[
-        PageViewItem(appConfig: appConfig, index: 0, mainScreen: widget.mainScreen, homeScreen: this),
-        PageViewItem(appConfig: appConfig, index: 1, mainScreen: widget.mainScreen, homeScreen: this),
+        PageViewItem(appConfig: appConfig, index: 0, mainScreen: widget.mainScreen),
+        PageViewItem(appConfig: appConfig, index: 1, mainScreen: widget.mainScreen),
       ],
     );
   }

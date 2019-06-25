@@ -6,16 +6,14 @@ import 'package:meals_catalogue/key_strings.dart';
 import 'package:async_loader/async_loader.dart';
 import 'package:meals_catalogue/model/meal.dart';
 import 'package:meals_catalogue/widgets/detailed_page.dart';
-import 'package:meals_catalogue/widgets/home_page.dart';
 import 'package:meals_catalogue/main_common.dart';
 
 class PageViewItem extends StatefulWidget {
-  PageViewItem({Key key, this.appConfig, this.index, this.mainScreen, this.homeScreen}) : super(key : key);
+  PageViewItem({Key key, this.appConfig, this.index, this.mainScreen}) : super(key : key);
 
   final AppConfig appConfig;
   final int index;
   final MainScreen mainScreen;
-  final HomeScreen homeScreen;
 
   @override
   State<StatefulWidget> createState() => PageViewItemScreen();
@@ -23,17 +21,8 @@ class PageViewItem extends StatefulWidget {
 
 class PageViewItemScreen extends State<PageViewItem> with AutomaticKeepAliveClientMixin<PageViewItem>{
 
-  var keepPageAlive = false;
-
-  // todo: seafood async loader state dessert loader state
   final GlobalKey<AsyncLoaderState> dessertAsyncLoaderState = GlobalKey<AsyncLoaderState>(debugLabel: '_dessertAsyncLoader');
   final GlobalKey<AsyncLoaderState> seafoodAsyncLoaderState = GlobalKey<AsyncLoaderState>(debugLabel: '_seafoodAsyncLoader');
-
-  @override
-  void initState() {
-    super.initState();
-    keepPageAlive = true;
-  }
   
   // region get global key
   GlobalKey getGlobalKey(int index){
@@ -102,6 +91,7 @@ class PageViewItemScreen extends State<PageViewItem> with AutomaticKeepAliveClie
   String getHeroTag(Meal meal) {
     String heroTag;
 
+    // todo: masalahnya ke load 2 kali gt intinya
     heroTag = "Meal ID : ${meal.mealId}\n" + "Bottom Navigation Index : ${widget.mainScreen.currentBottomNavigationIndex}\n" + "Category : ${widget.mainScreen.category}";
 
     return heroTag;
@@ -267,6 +257,6 @@ class PageViewItemScreen extends State<PageViewItem> with AutomaticKeepAliveClie
   }
 
   @override
-  bool get wantKeepAlive => keepPageAlive;
+  bool get wantKeepAlive => true;
 
 }

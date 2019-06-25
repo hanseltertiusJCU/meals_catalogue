@@ -257,13 +257,14 @@ class MainScreen extends State<Main> with TickerProviderStateMixin<Main> {
         UserAccountsDrawerHeader(accountName: Text(appConfig.appDisplayName), accountEmail: null),
         ListTile(
           leading: Icon(Icons.home),
+          // todo: key
           title: Text('Home'),
           selected: setSelectedDrawerItem(0),
-          // todo: tinggal implement function, pertama disable search trus ganti state dari bottom navigation dan page view boolean dan juga route
           onTap: () => changePage(context, 0),
         ),
         ListTile(
           leading: Icon(Icons.favorite),
+          // todo: key
           title: Text('Favorite'),
           selected: setSelectedDrawerItem(1),
           onTap: () => changePage(context, 1),
@@ -306,7 +307,6 @@ class MainScreen extends State<Main> with TickerProviderStateMixin<Main> {
       changeMealCategory(currentBottomNavigationIndex);
     }
     // Close drawer
-    // todo: error solve, mesti bikin contextnya di mana gt
     Navigator.of(context).pop();
   }
 
@@ -337,11 +337,13 @@ class MainScreen extends State<Main> with TickerProviderStateMixin<Main> {
       category: category
     );
 
+    // This is stated in order to prevent overwrite favorite data into home data
     if(currentDrawerIndex == 0){
       setState(() {
         this.mealData = mealData;
       });
     }
+
   }
 
   fetchFavoriteMealData() async {

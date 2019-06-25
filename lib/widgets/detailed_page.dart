@@ -161,10 +161,10 @@ class _DetailedPageState extends State<DetailedPage> {
     String heroTag;
 
     if(widget.mainScreen.currentDrawerIndex == 1) {
-      heroTag = "Meal ID : ${meal.mealId}\n" + "Tab Bar Index : ${widget.mainScreen.currentTabBarIndex}\m" + "Category : ${widget.mainScreen.category}";
+      heroTag = "Meal ID : ${meal.mealId}\n" + "Tab Bar Index : ${widget.mainScreen.currentTabBarIndex}" + "Category : ${widget.mainScreen.category}";
 
     } else {
-      heroTag = "Meal ID : ${meal.mealId}\n" + "Bottom Navigation Index : ${widget.mainScreen.currentBottomNavigationIndex}\n" + "Category : ${widget.mainScreen.category}";
+      heroTag = "Meal ID : ${meal.mealId}\n" + "Bottom Navigation Index : ${widget.mainScreen.currentBottomNavigationIndex}" + "Category : ${widget.mainScreen.category}";
 
     }
 
