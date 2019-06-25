@@ -3,98 +3,25 @@ import 'package:meals_catalogue/config/app_config.dart';
 import 'package:meals_catalogue/const_strings.dart';
 import 'package:meals_catalogue/data/meal_data.dart';
 import 'package:meals_catalogue/key_strings.dart';
-import 'package:async_loader/async_loader.dart';
+import 'package:meals_catalogue/main_common.dart';
 import 'package:meals_catalogue/model/meal.dart';
 import 'package:meals_catalogue/widgets/detailed_page.dart';
-import 'package:meals_catalogue/widgets/home_page.dart';
-import 'package:meals_catalogue/main_common.dart';
 
-class PageViewItem extends StatefulWidget {
-  PageViewItem({Key key, this.appConfig, this.index, this.mainScreen, this.homeScreen}) : super(key : key);
-
-  final AppConfig appConfig;
-  final int index;
+class Favorite extends StatefulWidget{
   final MainScreen mainScreen;
-  final HomeScreen homeScreen;
+
+  Favorite({Key key, this.mainScreen}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => PageViewItemScreen();
+  FavoriteScreen createState() => FavoriteScreen();
 }
 
-class PageViewItemScreen extends State<PageViewItem> with AutomaticKeepAliveClientMixin<PageViewItem>{
-
-  var keepPageAlive = false;
-
-  // todo: seafood async loader state dessert loader state
-  final GlobalKey<AsyncLoaderState> dessertAsyncLoaderState = GlobalKey<AsyncLoaderState>(debugLabel: '_dessertAsyncLoader');
-  final GlobalKey<AsyncLoaderState> seafoodAsyncLoaderState = GlobalKey<AsyncLoaderState>(debugLabel: '_seafoodAsyncLoader');
+class FavoriteScreen extends State<Favorite>{
 
   @override
   void initState() {
     super.initState();
-    keepPageAlive = true;
-  }
-  
-  // region get global key
-  GlobalKey getGlobalKey(int index){
-    GlobalKey asyncLoaderState;
-    if(index == 1){
-      asyncLoaderState = seafoodAsyncLoaderState;
-    } else {
-      asyncLoaderState = dessertAsyncLoaderState;
-    }
-    return asyncLoaderState;
-  }
-  // endregion
-
-  // region handle refresh
-  Future<void> handleRefresh(int index) async {
-    switch (index){
-      case 1:
-        seafoodAsyncLoaderState.currentState.reloadState();
-        break;
-      default:
-        dessertAsyncLoaderState.currentState.reloadState();
-        break;
-    }
-    return null;
-  }
-
-  // endregion
-
-  // region No connection
-  getNoConnectionWidget(AppConfig appConfig, int currentIndex) => Column(
-    mainAxisSize: MainAxisSize.max,
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: getNoConnectionContent(appConfig, currentIndex),
-  );
-
-  getNoConnectionContent(AppConfig appConfig, int currentIndex) {
-    return [
-      SizedBox(
-        height: 60.0,
-        child: Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-                image: AssetImage('assets/no-wifi.png'),
-                fit: BoxFit.contain
-            ),
-          ),
-        ),
-      ),
-      Container(
-        padding: EdgeInsets.only(top: 4.0),
-        child: Text("No Internet Connection"),
-      ),
-      Container(
-        padding: EdgeInsets.only(top: 4.0),
-        child: FlatButton(
-            color: appConfig.appColor,
-            child: Text("Restart", style: TextStyle(color: Colors.white)),
-            onPressed: () => handleRefresh(currentIndex)
-        ),
-      ),
-    ];
+    widget.mainScreen.fetchFavoriteMealData();
   }
   // endregion
 
@@ -102,7 +29,7 @@ class PageViewItemScreen extends State<PageViewItem> with AutomaticKeepAliveClie
   String getHeroTag(Meal meal) {
     String heroTag;
 
-    heroTag = "Meal ID : ${meal.mealId}\n" + "Bottom Navigation Index : ${widget.mainScreen.currentBottomNavigationIndex}\n" + "Category : ${widget.mainScreen.category}";
+    heroTag = "Meal ID : ${meal.mealId}\n" + "Tab Bar Index : ${widget.mainScreen.currentTabBarIndex}\n" + "Category : ${widget.mainScreen.category}";
 
     return heroTag;
   }
@@ -118,6 +45,7 @@ class PageViewItemScreen extends State<PageViewItem> with AutomaticKeepAliveClie
               ],
             ),
           )).toList();
+
 
   // endregion
 
@@ -200,8 +128,7 @@ class PageViewItemScreen extends State<PageViewItem> with AutomaticKeepAliveClie
   // endregion
 
   // region List Widget
-  mealListWidget(AppConfig appConfig) =>
-      widget.mainScreen.mealData.meals != null && widget.mainScreen.mealData != null ?
+  favoriteMealListWidget(AppConfig appConfig) => widget.mainScreen.mealData.meals != null && widget.mainScreen.mealData != null ?
       widget.mainScreen.mealData.meals.length > 0
           ? getGridViewBuilder(appConfig)
           : getEmptyData()
@@ -248,25 +175,14 @@ class PageViewItemScreen extends State<PageViewItem> with AutomaticKeepAliveClie
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
-    AsyncLoader asyncLoader = AsyncLoader(
-      key: getGlobalKey(widget.index),
-      initState: () async => await widget.mainScreen.fetchMealData(),
-      renderLoad: () => Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(widget.appConfig.appColor))),
-      renderError: ([error]) => getNoConnectionWidget(widget.appConfig, widget.index),
-      renderSuccess: ({data}) => mealListWidget(widget.appConfig),
-    );
-
-    return Scrollbar(
-      child: RefreshIndicator(
-          child: asyncLoader,
-          onRefresh: () => handleRefresh(widget.index),
-          color: widget.appConfig.appColor,
-      ),
+    var appConfig = AppConfig.of(context);
+    return TabBarView(
+      controller: widget.mainScreen.tabController,
+      children: <Widget>[
+        favoriteMealListWidget(appConfig),
+        favoriteMealListWidget(appConfig)
+      ],
     );
   }
-
-  @override
-  bool get wantKeepAlive => keepPageAlive;
 
 }

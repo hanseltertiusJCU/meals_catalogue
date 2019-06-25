@@ -10,7 +10,7 @@ void main() {
     appInternalId: 1,
     appColor: Colors.orange[800],
     appFont: 'Nunito',
-    child: Home(),
+    child: Main(),
   );
 
   runApp(configuredApp);

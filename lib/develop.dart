@@ -10,7 +10,7 @@ void main(){
     appInternalId: 1,
     appColor: Colors.green[600],
     appFont: 'Alegreya',
-    child: Home(),
+    child: Main(),
   );
 
   // This function is useful for widget to go onto the root of widget tree

@@ -5,18 +5,18 @@ import 'package:meals_catalogue/database/meals_db_helper.dart';
 import 'package:meals_catalogue/model/meal.dart';
 import 'package:meals_catalogue/model/meal_recipe.dart';
 import 'package:meals_catalogue/network/network_data.dart';
-import 'package:meals_catalogue/main_common.dart';
 import 'package:async_loader/async_loader.dart';
+import 'package:meals_catalogue/main_common.dart';
 
 class DetailedPage extends StatefulWidget {
 
   final Meal meal;
 
-  final HomeScreen homeScreen;
+  final MainScreen mainScreen;
 
   final String font;
 
-  DetailedPage({Key key, this.meal, this.homeScreen, this.font}) : super(key: key);
+  DetailedPage({Key key, this.meal, this.mainScreen, this.font}) : super(key: key);
 
   @override
   _DetailedPageState createState() => _DetailedPageState();
@@ -50,7 +50,7 @@ class _DetailedPageState extends State<DetailedPage> {
 
     setState(() {
       this.mealRecipe = mealRecipe;
-      if(widget.homeScreen.mealCategory == "Dessert" || widget.homeScreen.mealCategory == "Favorite Dessert"){
+      if(widget.mainScreen.category == "Dessert" || widget.mainScreen.category == "Favorite Dessert"){
         favoriteDessertCheck();
       } else {
         favoriteSeafoodCheck();
@@ -94,8 +94,8 @@ class _DetailedPageState extends State<DetailedPage> {
       mealImageUrl: this.mealRecipe.mealRecipeImageUrl,
     );
 
-    if(widget.homeScreen.mealCategory == "Dessert" ||
-        widget.homeScreen.mealCategory == "Favorite Dessert"){
+    if(widget.mainScreen.category == "Dessert" ||
+        widget.mainScreen.category == "Favorite Dessert"){
       if(_isFavorite){
         await mealsDatabaseHelper.deleteDessertData(meal);
       } else {
@@ -109,9 +109,9 @@ class _DetailedPageState extends State<DetailedPage> {
       }
     }
 
-    if(widget.homeScreen.mealCategory == "Favorite Dessert" ||
-        widget.homeScreen.mealCategory == "Favorite Seafood"){
-      widget.homeScreen.fetchMealData();
+    if(widget.mainScreen.category == "Favorite Dessert" ||
+        widget.mainScreen.category == "Favorite Seafood"){
+      widget.mainScreen.fetchFavoriteMealData();
     }
 
     setState(() {
@@ -160,7 +160,13 @@ class _DetailedPageState extends State<DetailedPage> {
   String getHeroTag(Meal meal) {
     String heroTag;
 
-    heroTag = "Meal ID : ${meal.mealId}\n" + "Index position: ${widget.homeScreen.currentIndex}\n" + "Category: ${widget.homeScreen.mealCategory}";
+    if(widget.mainScreen.currentDrawerIndex == 1) {
+      heroTag = "Meal ID : ${meal.mealId}\n" + "Tab Bar Index : ${widget.mainScreen.currentTabBarIndex}\m" + "Category : ${widget.mainScreen.category}";
+
+    } else {
+      heroTag = "Meal ID : ${meal.mealId}\n" + "Bottom Navigation Index : ${widget.mainScreen.currentBottomNavigationIndex}\n" + "Category : ${widget.mainScreen.category}";
+
+    }
 
     return heroTag;
   }

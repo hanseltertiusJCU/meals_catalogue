@@ -35,8 +35,6 @@ main(){
 
     test('display searched dessert meal', () async {
 
-      int bottomNavigationPos = 0;
-
       String keyword = "Apple";
 
       bool isSearchable = true;
@@ -45,7 +43,7 @@ main(){
 
       when(client.get('https://www.themealdb.com/api/json/v1/1/search.php?s=$keyword')).thenAnswer((_) async => http.Response(searchJson, 200));
 
-      final itemSearchList = await networkData.fetchMealData(bottomNavigationPosition: bottomNavigationPos, keyword: keyword, isSearchingMeals: isSearchable, category: category);
+      final itemSearchList = await networkData.fetchMealData(keyword: keyword, isSearchingMeals: isSearchable, category: category);
 
       expect(itemSearchList, TypeMatcher<MealData>());
 

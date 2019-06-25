@@ -8,6 +8,7 @@ const String DETAILED_LIST_VIEW = "detailedListView";
 // Navigation section
 const String PAGE_VIEW = "pageView";
 const String BOTTOM_NAVIGATION_BAR = "bottomNavigationBar";
+const String DRAWER = "drawer";
 
 // Menu in home section
 const String TEXT_FIELD = "textField";
