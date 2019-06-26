@@ -16,14 +16,14 @@ class PageViewItem extends StatefulWidget {
   final MainScreen mainScreen;
 
   @override
-  State<StatefulWidget> createState() => PageViewItemScreen();
+  _PageViewItemScreen createState() => _PageViewItemScreen();
 }
 
-class PageViewItemScreen extends State<PageViewItem> with AutomaticKeepAliveClientMixin<PageViewItem>{
+class _PageViewItemScreen extends State<PageViewItem> with AutomaticKeepAliveClientMixin<PageViewItem>{
 
   final GlobalKey<AsyncLoaderState> dessertAsyncLoaderState = GlobalKey<AsyncLoaderState>(debugLabel: '_dessertAsyncLoader');
   final GlobalKey<AsyncLoaderState> seafoodAsyncLoaderState = GlobalKey<AsyncLoaderState>(debugLabel: '_seafoodAsyncLoader');
-  
+
   // region get global key
   GlobalKey getGlobalKey(int index){
     GlobalKey asyncLoaderState;
@@ -91,8 +91,7 @@ class PageViewItemScreen extends State<PageViewItem> with AutomaticKeepAliveClie
   String getHeroTag(Meal meal) {
     String heroTag;
 
-    // todo: masalahnya ke load 2 kali gt intinya
-    heroTag = "Meal ID : ${meal.mealId}\n" + "Bottom Navigation Index : ${widget.mainScreen.currentBottomNavigationIndex}\n" + "Category : ${widget.mainScreen.category}";
+    heroTag = "Meal ID : ${meal.mealId}\n" + "Category : ${widget.mainScreen.category}";
 
     return heroTag;
   }
@@ -257,6 +256,6 @@ class PageViewItemScreen extends State<PageViewItem> with AutomaticKeepAliveClie
   }
 
   @override
-  bool get wantKeepAlive => true;
+  bool get wantKeepAlive => false;
 
 }

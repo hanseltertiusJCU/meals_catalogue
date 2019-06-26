@@ -10,10 +10,10 @@ class Home extends StatefulWidget {
   Home({Key key, this.mainScreen}) : super(key : key);
 
   @override
-  HomeScreen createState() => HomeScreen();
+  _HomeScreen createState() => _HomeScreen();
 }
 
-class HomeScreen extends State<Home>{
+class _HomeScreen extends State<Home>{
 
   @override
   Widget build(BuildContext context) {

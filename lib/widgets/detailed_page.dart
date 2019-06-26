@@ -160,13 +160,7 @@ class _DetailedPageState extends State<DetailedPage> {
   String getHeroTag(Meal meal) {
     String heroTag;
 
-    if(widget.mainScreen.currentDrawerIndex == 1) {
-      heroTag = "Meal ID : ${meal.mealId}\n" + "Tab Bar Index : ${widget.mainScreen.currentTabBarIndex}" + "Category : ${widget.mainScreen.category}";
-
-    } else {
-      heroTag = "Meal ID : ${meal.mealId}\n" + "Bottom Navigation Index : ${widget.mainScreen.currentBottomNavigationIndex}" + "Category : ${widget.mainScreen.category}";
-
-    }
+    heroTag = "Meal ID : ${meal.mealId}\n" + "Category : ${widget.mainScreen.category}";
 
     return heroTag;
   }

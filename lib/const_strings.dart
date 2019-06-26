@@ -1,14 +1,14 @@
 // App bar section
 const String APP_BAR_TITLE = "appBarTitle";
 
-// Gridview/ListView section
+// GridView/ListView section
 const String GRID_VIEW = "gridView";
 const String DETAILED_LIST_VIEW = "detailedListView";
 
 // Navigation section
 const String PAGE_VIEW = "pageView";
 const String BOTTOM_NAVIGATION_BAR = "bottomNavigationBar";
-const String DRAWER = "drawer";
+const String TAB_BAR = "tabBar";
 
 // Menu in home section
 const String TEXT_FIELD = "textField";
@@ -18,6 +18,10 @@ const String DESSERT_ICON = 'dessert';
 const String SEAFOOD_ICON = 'seafood';
 const String FAVORITE_DESSERT_ICON = "favoriteDessert";
 const String FAVORITE_SEAFOOD_ICON = "favoriteSeafood";
+
+// Drawer Navigation part section
+const String HOME_SCREEN = "homeScreen";
+const String FAVORITE_SCREEN = "favoriteScreen";
 
 // Toolbar constant
 const String TOOLTIP_SEARCH = "Search";

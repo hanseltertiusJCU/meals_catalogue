@@ -160,20 +160,22 @@ class MainScreen extends State<Main> with TickerProviderStateMixin<Main> {
     setState(() {
       currentBottomNavigationIndex = index;
       changeMealCategory(index);
-      fetchMealData();
       disableSearch();
       pageController.animateToPage(index,
           duration: Duration(milliseconds: 500), curve: Curves.ease);
     });
+
+    // Not calling fetchData method because it is called in PageViewItem
   }
 
   changeSelectedPageViewItem(int index){
     setState(() {
       currentBottomNavigationIndex = index;
       changeMealCategory(index);
-      fetchMealData();
       disableSearch();
     });
+
+    // Not calling fetchData method because it is called in PageViewItem
   }
 
   changeSelectedTabBarItem() {
@@ -244,7 +246,6 @@ class MainScreen extends State<Main> with TickerProviderStateMixin<Main> {
   // region Drawer
   createDrawer(BuildContext context, AppConfig appConfig){
     return Drawer(
-      key: Key(DRAWER),
       child: createDrawerContent(context, appConfig),
     );
   }
@@ -256,15 +257,13 @@ class MainScreen extends State<Main> with TickerProviderStateMixin<Main> {
         // todo: current account picture tinggal pake image asset thing (logo), mungkin pake app config
         UserAccountsDrawerHeader(accountName: Text(appConfig.appDisplayName), accountEmail: null),
         ListTile(
-          leading: Icon(Icons.home),
-          // todo: key
+          leading: Icon(Icons.home, key: Key(HOME_SCREEN)),
           title: Text('Home'),
           selected: setSelectedDrawerItem(0),
           onTap: () => changePage(context, 0),
         ),
         ListTile(
-          leading: Icon(Icons.favorite),
-          // todo: key
+          leading: Icon(Icons.favorite, key: Key(FAVORITE_SCREEN)),
           title: Text('Favorite'),
           selected: setSelectedDrawerItem(1),
           onTap: () => changePage(context, 1),
@@ -338,7 +337,7 @@ class MainScreen extends State<Main> with TickerProviderStateMixin<Main> {
     );
 
     // This is stated in order to prevent overwrite favorite data into home data
-    if(currentDrawerIndex == 0){
+    if(isCurrentPageBottomNavigation){
       setState(() {
         this.mealData = mealData;
       });
@@ -396,7 +395,7 @@ class MainScreen extends State<Main> with TickerProviderStateMixin<Main> {
       onWillPop: () => onBackPressed(appConfig),
       child: Scaffold(
         appBar: AppBar(
-          title: isSearchingMeals ? buildTextField() : Text(category),
+          title: isSearchingMeals ? buildTextField() : Text(category, key: Key(APP_BAR_TITLE)),
           actions: getMenuIcon(),
           textTheme: TextTheme(
             title: TextStyle(

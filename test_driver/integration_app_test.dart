@@ -26,8 +26,8 @@ void main(){
       await flutterDriver.tap(dessert);
       await flutterDriver.waitFor(gridView, timeout: Duration(seconds: 5));
       await flutterDriver.scroll(gridView, 0, 300, Duration(milliseconds: 500));
-      await flutterDriver.scroll(gridView, 0, -4500, Duration(milliseconds: 1500));
-      await flutterDriver.scroll(gridView, 0, 4500, Duration(milliseconds: 1500));
+      await flutterDriver.scroll(gridView, 0, -5000, Duration(milliseconds: 1500));
+      await flutterDriver.scroll(gridView, 0, 5000, Duration(milliseconds: 1500));
     });
 
     test('Scroll gridview content in seafood', () async{
@@ -37,6 +37,17 @@ void main(){
       await flutterDriver.scroll(gridView, 0, 300, Duration(milliseconds: 500));
       await flutterDriver.scroll(gridView, 0, -1500, Duration(milliseconds: 500));
       await flutterDriver.scroll(gridView, 0, 1500, Duration(milliseconds: 500));
+    });
+
+    test('Testing PageView navigation', () async {
+      await flutterDriver.scroll(pageView, 400, 0, Duration(milliseconds: 500));
+      expect(await flutterDriver.getText(appBarTitle), 'Dessert');
+      await flutterDriver.waitFor(gridView, timeout: Duration(seconds: 5));
+
+      await flutterDriver.scroll(pageView, -400, 0, Duration(milliseconds: 500));
+      expect(await flutterDriver.getText(appBarTitle), 'Seafood');
+      await flutterDriver.waitFor(gridView, timeout: Duration(seconds: 5));
+
     });
 
     test('Click dessert item into detail', () async{
@@ -84,24 +95,39 @@ void main(){
       await flutterDriver.tap(find.byTooltip('Back'));
     });
 
-    test('Bottom navigation bar navigate into favorite item', () async{
+    test("Open drawer and then go into favorite page", () async {
+      await flutterDriver.tap(find.byTooltip('Open navigation menu'));
+
+      await flutterDriver.tap(favoriteScreen);
+
       await flutterDriver.waitFor(gridView, timeout: Duration(seconds: 5));
-      await flutterDriver.waitFor(bottomNavigationBar);
-      await flutterDriver.tap(favoriteDessert);
-      await flutterDriver.tap(favoriteSeafood);
+
     });
 
-    test('Testing PageView navigation', () async {
-      await flutterDriver.scroll(pageView, 400, 0, Duration(milliseconds: 500));
+    test('TabBar navigation tap test', () async {
+      await flutterDriver.tap(favoriteSeafood);
+//      await flutterDriver.waitFor(gridView, timeout: Duration(seconds: 5));
+      await flutterDriver.tap(favoriteDessert);
+      await flutterDriver.waitFor(gridView, timeout: Duration(seconds: 5));
+    });
+
+    test('TabBar navigation swipe test', () async {
+      await flutterDriver.scroll(tabBarView, -400, 0, Duration(milliseconds: 500));
+      expect(await flutterDriver.getText(appBarTitle), 'Favorite Seafood');
+//      await flutterDriver.waitFor(gridView, timeout: Duration(seconds: 5));
+
+      await flutterDriver.scroll(tabBarView, 400, 0, Duration(milliseconds: 500));
       expect(await flutterDriver.getText(appBarTitle), 'Favorite Dessert');
       await flutterDriver.waitFor(gridView, timeout: Duration(seconds: 5));
 
-      await flutterDriver.scroll(pageView, 400, 0, Duration(milliseconds: 500));
-      expect(await flutterDriver.getText(appBarTitle), 'Seafood');
-      await flutterDriver.waitFor(gridView, timeout: Duration(seconds: 5));
+    });
 
-      await flutterDriver.scroll(pageView, 400, 0, Duration(milliseconds: 500));
-      expect(await flutterDriver.getText(appBarTitle), 'Dessert');
+    test('Favorite dessert search test', () async {
+      await flutterDriver.tap(tooltipSearch);
+      await flutterDriver.tap(tooltipClearSearch);
+      await flutterDriver.tap(tooltipSearch);
+      await flutterDriver.tap(textField);
+      await flutterDriver.enterText("Apple");
       await flutterDriver.waitFor(gridView, timeout: Duration(seconds: 5));
     });
 

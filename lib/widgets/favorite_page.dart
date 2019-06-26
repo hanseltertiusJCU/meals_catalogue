@@ -18,6 +18,7 @@ class Favorite extends StatefulWidget{
 
 class FavoriteScreen extends State<Favorite>{
 
+  // region Initialize state
   @override
   void initState() {
     super.initState();
@@ -29,7 +30,7 @@ class FavoriteScreen extends State<Favorite>{
   String getHeroTag(Meal meal) {
     String heroTag;
 
-    heroTag = "Meal ID : ${meal.mealId}\n" + "Tab Bar Index : ${widget.mainScreen.currentTabBarIndex}\n" + "Category : ${widget.mainScreen.category}";
+    heroTag = "Meal ID : ${meal.mealId}\n" + "Category : ${widget.mainScreen.category}";
 
     return heroTag;
   }
@@ -177,6 +178,7 @@ class FavoriteScreen extends State<Favorite>{
   Widget build(BuildContext context) {
     var appConfig = AppConfig.of(context);
     return TabBarView(
+      key: Key(TAB_BAR),
       controller: widget.mainScreen.tabController,
       children: <Widget>[
         favoriteMealListWidget(appConfig),

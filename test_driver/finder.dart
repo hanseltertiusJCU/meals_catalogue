@@ -9,7 +9,10 @@ SerializableFinder detailedListView = find.byValueKey(DETAILED_LIST_VIEW);
 
 SerializableFinder bottomNavigationBar = find.byValueKey(BOTTOM_NAVIGATION_BAR);
 SerializableFinder pageView = find.byValueKey(PAGE_VIEW);
-SerializableFinder drawer = find.byValueKey(DRAWER);
+SerializableFinder tabBarView = find.byValueKey(TAB_BAR);
+
+SerializableFinder homeScreen = find.byValueKey(HOME_SCREEN);
+SerializableFinder favoriteScreen = find.byValueKey(FAVORITE_SCREEN);
 
 SerializableFinder dessert = find.byValueKey(DESSERT_ICON);
 SerializableFinder seafood = find.byValueKey(SEAFOOD_ICON);
