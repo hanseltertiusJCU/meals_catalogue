@@ -1,5 +1,4 @@
 class MealRecipe {
-
   String mealRecipeId;
   String mealRecipeTitle;
   String mealRecipeCategory;
@@ -7,7 +6,8 @@ class MealRecipe {
   List<String> mealRecipeIngredients;
   List<String> mealRecipeInstructions;
 
-  MealRecipe({this.mealRecipeId,
+  MealRecipe({
+    this.mealRecipeId,
     this.mealRecipeTitle,
     this.mealRecipeCategory,
     this.mealRecipeImageUrl,
@@ -15,12 +15,12 @@ class MealRecipe {
     this.mealRecipeInstructions,
   });
 
-  MealRecipe.fromJson(Map<String, dynamic> json){
+  MealRecipe.fromJson(Map<String, dynamic> json) {
     List<String> recipeIngredients = List<String>();
 
-    for(int i = 1; i <= 20; i++) {
+    for (int i = 1; i <= 20; i++) {
       String recipeIngredient = json['strIngredient$i'] as String;
-      if(recipeIngredient == null){
+      if (recipeIngredient == null) {
         recipeIngredient = "";
       }
       recipeIngredients.add(recipeIngredient);
@@ -38,22 +38,19 @@ class MealRecipe {
     mealRecipeImageUrl = json['strMealThumb'];
     mealRecipeIngredients = recipeIngredients;
     mealRecipeInstructions = recipeInstructions;
-
   }
 
-  Map<String, dynamic> toJson(){
+  Map<String, dynamic> toJson() {
     final Map<String, dynamic> mealRecipeData = Map<String, dynamic>();
     mealRecipeData['idMeal'] = this.mealRecipeId;
     mealRecipeData['strMeal'] = this.mealRecipeTitle;
     mealRecipeData['strCategory'] = this.mealRecipeCategory;
     mealRecipeData['strMealThumb'] = this.mealRecipeImageUrl;
-    for(int i = 0; i < 20; i++){
+    for (int i = 0; i < 20; i++) {
       int item = i + 1;
       mealRecipeData['strIngredient$item'] = this.mealRecipeIngredients[i];
     }
     mealRecipeData['strInstructions'] = this.mealRecipeIngredients.join("\r\n");
     return mealRecipeData;
   }
-
-
 }

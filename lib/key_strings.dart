@@ -1,3 +1,3 @@
-String getStringKeyMealItem(String mealId){
+String getStringKeyMealItem(String mealId) {
   return 'Food : ' + mealId;
 }

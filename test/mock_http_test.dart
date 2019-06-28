@@ -3,13 +3,13 @@ import 'package:meals_catalogue/model/meal_recipe.dart';
 import 'package:mockito/mockito.dart';
 import 'package:http/http.dart' as http;
 import 'package:test/test.dart';
-import 'package:meals_catalogue/network/network_data.dart';
+import 'package:meals_catalogue/helper/data_helper.dart';
 
 class MockHttpTestClient extends Mock implements http.Client{}
 
 main(){
   group('Get Data from Internet', () {
-    final NetworkData networkData = NetworkData();
+    final DataHelper networkData = DataHelper();
 
     final client = MockHttpTestClient();
 

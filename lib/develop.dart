@@ -3,8 +3,7 @@ import 'package:meals_catalogue/config/app_config.dart';
 import 'package:meals_catalogue/main_common.dart';
 
 // Main function for develop
-void main(){
-
+void main() {
   var configuredApp = AppConfig(
     appDisplayName: "Developed Meals Catalogue",
     appInternalId: 1,

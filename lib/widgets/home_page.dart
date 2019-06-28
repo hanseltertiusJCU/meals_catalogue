@@ -7,13 +7,14 @@ import 'package:meals_catalogue/widgets/page_view_item.dart';
 class Home extends StatefulWidget {
   final MainScreen mainScreen;
 
-  Home({Key key, this.mainScreen}) : super(key : key);
+  Home({Key key, this.mainScreen}) : super(key: key);
 
   @override
   _HomeScreen createState() => _HomeScreen();
 }
 
-class _HomeScreen extends State<Home>{
+class _HomeScreen extends State<Home> {
+  final PageStorageBucket homePageBucket = PageStorageBucket();
 
   @override
   Widget build(BuildContext context) {
@@ -23,10 +24,25 @@ class _HomeScreen extends State<Home>{
       controller: widget.mainScreen.pageController,
       onPageChanged: widget.mainScreen.changeSelectedPageViewItem,
       children: <Widget>[
-        PageViewItem(appConfig: appConfig, index: 0, mainScreen: widget.mainScreen),
-        PageViewItem(appConfig: appConfig, index: 1, mainScreen: widget.mainScreen),
+        PageStorage(
+          child: PageViewItem(
+            key: PageStorageKey('dessert'),
+            appConfig: appConfig,
+            index: 0,
+            mainScreen: widget.mainScreen,
+          ),
+          bucket: homePageBucket,
+        ),
+        PageStorage(
+          child: PageViewItem(
+            key: PageStorageKey('seafood'),
+            appConfig: appConfig,
+            index: 1,
+            mainScreen: widget.mainScreen,
+          ),
+          bucket: homePageBucket,
+        ),
       ],
     );
   }
-
 }

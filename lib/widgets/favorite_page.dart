@@ -7,7 +7,7 @@ import 'package:meals_catalogue/main_common.dart';
 import 'package:meals_catalogue/model/meal.dart';
 import 'package:meals_catalogue/widgets/detailed_page.dart';
 
-class Favorite extends StatefulWidget{
+class Favorite extends StatefulWidget {
   final MainScreen mainScreen;
 
   Favorite({Key key, this.mainScreen}) : super(key: key);
@@ -16,37 +16,38 @@ class Favorite extends StatefulWidget{
   FavoriteScreen createState() => FavoriteScreen();
 }
 
-class FavoriteScreen extends State<Favorite>{
-
+class FavoriteScreen extends State<Favorite> {
   // region Initialize state
   @override
   void initState() {
     super.initState();
     widget.mainScreen.fetchFavoriteMealData();
   }
+
   // endregion
 
   // region Hero
   String getHeroTag(Meal meal) {
     String heroTag;
 
-    heroTag = "Meal ID : ${meal.mealId}\n" + "Category : ${widget.mainScreen.category}";
+    heroTag = "Meal ID : ${meal.mealId}\n" +
+        "Category : ${widget.mainScreen.category}";
 
     return heroTag;
   }
 
   getCardHeroes(BuildContext context, AppConfig appConfig, MealData mealData) =>
-      mealData.meals.map((item) =>
-          Hero(
-            tag: getHeroTag(item),
-            child: Stack(
-              children: <Widget>[
-                getCard(item),
-                getInkwellCard(context, appConfig, item)
-              ],
-            ),
-          )).toList();
-
+      mealData.meals
+          .map((item) => Hero(
+                tag: getHeroTag(item),
+                child: Stack(
+                  children: <Widget>[
+                    getCard(item),
+                    getInkwellCard(context, appConfig, item)
+                  ],
+                ),
+              ))
+          .toList();
 
   // endregion
 
@@ -68,9 +69,7 @@ class FavoriteScreen extends State<Favorite>{
                 height: double.infinity,
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                      fit: BoxFit.fill,
-                      image: NetworkImage(meal.mealImageUrl)
-                  ),
+                      fit: BoxFit.fill, image: NetworkImage(meal.mealImageUrl)),
                 ),
               ),
             ),
@@ -93,85 +92,94 @@ class FavoriteScreen extends State<Favorite>{
       ),
     );
   }
+
   // endregion
 
   // region Inkwell
   getInkwellCard(BuildContext context, AppConfig appConfig, Meal meal) {
     return Positioned.fill(
         child: ClipRRect(
-          borderRadius: BorderRadius.all(Radius.circular(5.0)),
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-                key: Key(getStringKeyMealItem(meal.mealId)),
-                onTap: () {
-                  final snackBar = SnackBar(
-                    content: Text(
-                      "${meal.mealTitle} is selected!",
-                      style: TextStyle(fontFamily: appConfig.appFont),
-                    ),
-                    action: SnackBarAction(
-                        key: Key(GO_TO_DETAIL_SNACKBAR_ACTION),
-                        label: "Go to Detail",
-                        textColor: appConfig.appColor,
-                        onPressed: (){
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context) => DetailedPage(meal: meal, font: appConfig.appFont, mainScreen: widget.mainScreen)));
-                        }),
-                  );
-                  Scaffold.of(context).showSnackBar(snackBar);
-                }
-            ),
-          ),
-        )
-    );
+      borderRadius: BorderRadius.all(Radius.circular(5.0)),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+            key: Key(getStringKeyMealItem(meal.mealId)),
+            onTap: () {
+              final snackBar = SnackBar(
+                content: Text(
+                  "${meal.mealTitle} is selected!",
+                  style: TextStyle(fontFamily: appConfig.appFont),
+                ),
+                action: SnackBarAction(
+                    key: Key(GO_TO_DETAIL_SNACKBAR_ACTION),
+                    label: "Go to Detail",
+                    textColor: appConfig.appColor,
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => DetailedPage(
+                                  meal: meal, mainScreen: widget.mainScreen)));
+                    }),
+              );
+              Scaffold.of(context).showSnackBar(snackBar);
+            }),
+      ),
+    ));
   }
+
   // endregion
 
   // region List Widget
-  favoriteMealListWidget(AppConfig appConfig) => widget.mainScreen.mealData.meals != null && widget.mainScreen.mealData != null ?
-      widget.mainScreen.mealData.meals.length > 0
-          ? getGridViewBuilder(appConfig)
-          : getEmptyData()
+  favoriteMealListWidget(AppConfig appConfig) =>
+      widget.mainScreen.mealData.meals != null &&
+              widget.mainScreen.mealData != null
+          ? widget.mainScreen.mealData.meals.length > 0
+              ? getGridViewBuilder(appConfig)
+              : getEmptyData()
           : getEmptyData();
 
   getGridViewBuilder(AppConfig appConfig) {
-    return Builder(builder: (context) => GridView.count(
-        key: Key(GRID_VIEW),
-        crossAxisCount: MediaQuery.of(context).orientation == Orientation.portrait
-            ? 2
-            : 3,
-        crossAxisSpacing: 16.0,
-        mainAxisSpacing: 16.0,
-        padding: EdgeInsets.all(16.0),
-        children: getCardHeroes(context, appConfig, widget.mainScreen.mealData)));
+    return Builder(
+        builder: (context) => GridView.count(
+            key: Key(GRID_VIEW),
+            crossAxisCount:
+                MediaQuery.of(context).orientation == Orientation.portrait
+                    ? 2
+                    : 3,
+            crossAxisSpacing: 16.0,
+            mainAxisSpacing: 16.0,
+            padding: EdgeInsets.all(16.0),
+            children:
+                getCardHeroes(context, appConfig, widget.mainScreen.mealData)));
   }
+
   // endregion
 
   // region Empty data content
   getEmptyData() => Column(
-    mainAxisSize: MainAxisSize.max,
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: getEmptyDataContent(),
-  );
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: getEmptyDataContent(),
+      );
 
   getEmptyDataContent() => [
-    SizedBox(
-      height: 60.0,
-      child: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-              image: AssetImage('assets/empty-box.png'),
-              fit: BoxFit.contain
+        SizedBox(
+          height: 60.0,
+          child: Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                  image: AssetImage('assets/empty-box.png'),
+                  fit: BoxFit.contain),
+            ),
           ),
         ),
-      ),
-    ),
-    Container(
-      padding: EdgeInsets.only(top: 4.0),
-      child: Text('There is no data'),
-    ),
-  ];
+        Container(
+          padding: EdgeInsets.only(top: 4.0),
+          child: Text('There is no data'),
+        ),
+      ];
+
   // endregion
 
   @override
@@ -186,5 +194,4 @@ class FavoriteScreen extends State<Favorite>{
       ],
     );
   }
-
 }

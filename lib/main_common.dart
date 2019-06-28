@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:meals_catalogue/config/app_config.dart';
 import 'package:meals_catalogue/const_strings.dart';
 import 'package:meals_catalogue/data/meal_data.dart';
-import 'package:meals_catalogue/network/network_data.dart';
+import 'package:meals_catalogue/helper/data_helper.dart';
 import 'package:meals_catalogue/widgets/favorite_page.dart';
 import 'package:meals_catalogue/widgets/home_page.dart';
 
@@ -14,7 +14,6 @@ class Main extends StatefulWidget {
 }
 
 class MainScreen extends State<Main> with TickerProviderStateMixin<Main> {
-
   String category = "Dessert";
 
   MealData mealData;
@@ -28,6 +27,9 @@ class MainScreen extends State<Main> with TickerProviderStateMixin<Main> {
 
   PageController pageController;
   TabController tabController;
+
+  bool isDessertDataLoaded = false;
+  bool isSeafoodDataLoaded = false;
 
   final mainNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -44,12 +46,12 @@ class MainScreen extends State<Main> with TickerProviderStateMixin<Main> {
 
     tabController = TabController(length: 2, vsync: this);
     tabController.addListener(changeSelectedTabBarItem);
-    
+
     textEditingController = TextEditingController();
 
     // The listener served the same functionality as onChanged in TextField
     textEditingController.addListener(() {
-      if(textEditingController.text.isNotEmpty){
+      if (textEditingController.text.isNotEmpty) {
         setState(() {
           keyword = textEditingController.text;
           updateKeyword(keyword);
@@ -61,39 +63,39 @@ class MainScreen extends State<Main> with TickerProviderStateMixin<Main> {
         });
       }
     });
-
   }
+
   // endregion
 
   // region Search meals
 
-  void enableSearch(){
+  void enableSearch() {
     setState(() {
       isSearchingMeals = true;
     });
   }
 
-  void updateKeyword(String keyword){
+  void updateKeyword(String keyword) {
     setState(() {
       this.keyword = keyword;
     });
-    if(isCurrentPageBottomNavigation) {
+    if (isCurrentPageBottomNavigation) {
       fetchMealData();
-    } else if(isCurrentPageTabBar) {
+    } else if (isCurrentPageTabBar) {
       fetchFavoriteMealData();
     }
   }
 
-  void disableSearch(){
+  void disableSearch() {
     setState(() {
       textEditingController.clear();
       updateKeyword("");
       isSearchingMeals = false;
     });
 
-    if(isCurrentPageBottomNavigation) {
+    if (isCurrentPageBottomNavigation) {
       fetchMealData();
-    } else if(isCurrentPageTabBar) {
+    } else if (isCurrentPageTabBar) {
       fetchFavoriteMealData();
     }
   }
@@ -110,49 +112,49 @@ class MainScreen extends State<Main> with TickerProviderStateMixin<Main> {
       ),
       autofocus: true,
       decoration: InputDecoration(
-        prefixIcon: Icon(Icons.search, color: Colors.white),
-        hintText: "Search meals",
-        enabledBorder: UnderlineInputBorder(
-          borderSide: BorderSide(
-            color: Colors.white,
+          prefixIcon: Icon(Icons.search, color: Colors.white),
+          hintText: "Search meals",
+          enabledBorder: UnderlineInputBorder(
+            borderSide: BorderSide(
+              color: Colors.white,
+            ),
           ),
-        ),
-        focusedBorder: UnderlineInputBorder(
-          borderSide: BorderSide(
-            color: Colors.white,
+          focusedBorder: UnderlineInputBorder(
+            borderSide: BorderSide(
+              color: Colors.white,
+            ),
           ),
-        ),
-        hintStyle: TextStyle(
-          color: Colors.white30,
-        )
-      ),
+          hintStyle: TextStyle(
+            color: Colors.white30,
+          )),
     );
   }
 
   List<Widget> getMenuIcon() {
     List<Widget> menuIcons;
-    if(isSearchingMeals) {
+    if (isSearchingMeals) {
       menuIcons = List<Widget>();
       menuIcons.add(
-          IconButton(
-              icon: Icon(Icons.clear, color: Colors.white),
-              onPressed: disableSearch,
-              tooltip: TOOLTIP_CLEAR_SEARCH,
-          ),
+        IconButton(
+          icon: Icon(Icons.clear, color: Colors.white),
+          onPressed: disableSearch,
+          tooltip: TOOLTIP_CLEAR_SEARCH,
+        ),
       );
     } else {
       menuIcons = List<Widget>();
       menuIcons.add(
-          IconButton(
-            icon: Icon(Icons.search, color: Colors.white),
-            onPressed: enableSearch,
-            tooltip: TOOLTIP_SEARCH,
-          ),
+        IconButton(
+          icon: Icon(Icons.search, color: Colors.white),
+          onPressed: enableSearch,
+          tooltip: TOOLTIP_SEARCH,
+        ),
       );
     }
 
     return menuIcons;
   }
+
   // endregion
 
   // region Change BottomNavigationBar, TabBar and PageView
@@ -165,17 +167,17 @@ class MainScreen extends State<Main> with TickerProviderStateMixin<Main> {
           duration: Duration(milliseconds: 500), curve: Curves.ease);
     });
 
-    // Not calling fetchData method because it is called in PageViewItem
+    // Not calling fetchMealData method because it is called in PageViewItem (asyncLoader)
   }
 
-  changeSelectedPageViewItem(int index){
+  changeSelectedPageViewItem(int index) {
     setState(() {
       currentBottomNavigationIndex = index;
       changeMealCategory(index);
       disableSearch();
     });
 
-    // Not calling fetchData method because it is called in PageViewItem
+    // Not calling fetchMealData method because it is called in PageViewItem (asyncLoader)
   }
 
   changeSelectedTabBarItem() {
@@ -186,12 +188,13 @@ class MainScreen extends State<Main> with TickerProviderStateMixin<Main> {
       disableSearch();
     });
   }
+
   // endregion
 
   // region Change meal category and favorite meal category
   changeMealCategory(int index) {
     setState(() {
-      switch(index){
+      switch (index) {
         case 1:
           category = "Seafood";
           break;
@@ -202,9 +205,9 @@ class MainScreen extends State<Main> with TickerProviderStateMixin<Main> {
     });
   }
 
-  changeFavoriteMealCategory(int index){
+  changeFavoriteMealCategory(int index) {
     setState(() {
-      switch(index){
+      switch (index) {
         case 1:
           category = "Favorite Seafood";
           break;
@@ -214,16 +217,20 @@ class MainScreen extends State<Main> with TickerProviderStateMixin<Main> {
       }
     });
   }
-  // endregion
 
+  // endregion
 
   // region BottomNavigationBar and TabBar
   createBottomNavigationBar(AppConfig appConfig) {
     return BottomNavigationBar(
       key: Key(BOTTOM_NAVIGATION_BAR),
       items: [
-        BottomNavigationBarItem(icon: Icon(Icons.cake, key: Key(DESSERT_ICON)), title: Text("Dessert")),
-        BottomNavigationBarItem(icon: Icon(Icons.restaurant, key: Key(SEAFOOD_ICON)), title: Text("Seafood")),
+        BottomNavigationBarItem(
+            icon: Icon(Icons.cake, key: Key(DESSERT_ICON)),
+            title: Text("Dessert")),
+        BottomNavigationBarItem(
+            icon: Icon(Icons.restaurant, key: Key(SEAFOOD_ICON)),
+            title: Text("Seafood")),
       ],
       currentIndex: currentBottomNavigationIndex,
       onTap: changeSelectedBottomNavigationBarItem,
@@ -232,19 +239,24 @@ class MainScreen extends State<Main> with TickerProviderStateMixin<Main> {
     );
   }
 
-  createTabBar(){
+  createTabBar() {
     return TabBar(
       controller: tabController,
       tabs: <Widget>[
-        Tab(icon: Icon(Icons.cake, key: Key(FAVORITE_DESSERT_ICON)), text: "Favorite Dessert"),
-        Tab(icon: Icon(Icons.restaurant, key: Key(FAVORITE_SEAFOOD_ICON)), text: "Favorite Seafood"),
+        Tab(
+            icon: Icon(Icons.cake, key: Key(FAVORITE_DESSERT_ICON)),
+            text: "Favorite Dessert"),
+        Tab(
+            icon: Icon(Icons.restaurant, key: Key(FAVORITE_SEAFOOD_ICON)),
+            text: "Favorite Seafood"),
       ],
     );
   }
+
   // endregion
 
   // region Drawer
-  createDrawer(BuildContext context, AppConfig appConfig){
+  createDrawer(BuildContext context, AppConfig appConfig) {
     return Drawer(
       child: createDrawerContent(context, appConfig),
     );
@@ -254,19 +266,27 @@ class MainScreen extends State<Main> with TickerProviderStateMixin<Main> {
     return ListView(
       padding: EdgeInsets.zero,
       children: <Widget>[
-        // todo: current account picture tinggal pake image asset thing (logo), mungkin pake app config
-        UserAccountsDrawerHeader(accountName: Text(appConfig.appDisplayName), accountEmail: null),
+        UserAccountsDrawerHeader(
+            currentAccountPicture: CircleAvatar(
+              backgroundColor: Colors.white,
+              child: Text(appConfig.appDisplayName[0],
+                  style: TextStyle(color: appConfig.appColor)),
+            ),
+            accountName: Text(appConfig.appDisplayName),
+            accountEmail: null),
         ListTile(
           leading: Icon(Icons.home, key: Key(HOME_SCREEN)),
           title: Text('Home'),
           selected: setSelectedDrawerItem(0),
-          onTap: () => changePage(context, 0),
+          onTap: () => changeDisplayPageItem(context, 0),
+          trailing: Icon(Icons.play_arrow),
         ),
         ListTile(
           leading: Icon(Icons.favorite, key: Key(FAVORITE_SCREEN)),
           title: Text('Favorite'),
           selected: setSelectedDrawerItem(1),
-          onTap: () => changePage(context, 1),
+          onTap: () => changeDisplayPageItem(context, 1),
+          trailing: Icon(Icons.play_arrow),
         ),
       ],
     );
@@ -296,11 +316,15 @@ class MainScreen extends State<Main> with TickerProviderStateMixin<Main> {
     });
   }
 
-  changePage(BuildContext context, int index){
+  changeDisplayPageItem(BuildContext context, int index) {
     disableSearch();
     changeSelectedIndex(index);
     changeSelectedMode(index);
-    if(index == 1){
+    if (index == 1) {
+      setState(() {
+        isDessertDataLoaded = false;
+        isSeafoodDataLoaded = false;
+      });
       changeFavoriteMealCategory(currentTabBarIndex);
     } else {
       changeMealCategory(currentBottomNavigationIndex);
@@ -312,90 +336,110 @@ class MainScreen extends State<Main> with TickerProviderStateMixin<Main> {
   // endregion
 
   // region Set selected drawer item
-  bool setSelectedDrawerItem(int index) => index == currentDrawerIndex ? true : false;
+  bool setSelectedDrawerItem(int index) =>
+      index == currentDrawerIndex ? true : false;
+
   // endregion
 
   // region Get Drawer item
   getDrawerItemWidget(int index) {
-    switch(index){
+    switch (index) {
       case 1:
         return Favorite(mainScreen: this);
       default:
         return Home(mainScreen: this);
     }
   }
+
   // endregion
 
   // region Retrieve data (data from internet and from favorite)
   fetchMealData() async {
-    NetworkData networkData = NetworkData();
+    DataHelper networkData = DataHelper();
 
     MealData mealData = await networkData.fetchMealData(
-      isSearchingMeals: isSearchingMeals,
-      keyword: keyword,
-      category: category
-    );
+        isSearchingMeals: isSearchingMeals,
+        keyword: keyword,
+        category: category);
 
     // This is stated in order to prevent overwrite favorite data into home data
-    if(isCurrentPageBottomNavigation){
+    if (isCurrentPageBottomNavigation) {
       setState(() {
+        if(currentBottomNavigationIndex == 1){
+          isSeafoodDataLoaded = true;
+        } else {
+          isDessertDataLoaded = true;
+        }
         this.mealData = mealData;
       });
     }
-
   }
 
   fetchFavoriteMealData() async {
-    NetworkData networkData = NetworkData();
+    DataHelper networkData = DataHelper();
 
     MealData mealData = await networkData.fetchFavoriteMealData(
-      isSearchingMeals: isSearchingMeals,
-      keyword: keyword,
-      category: category
-    );
+        isSearchingMeals: isSearchingMeals,
+        keyword: keyword,
+        category: category);
 
     setState(() {
       this.mealData = mealData;
     });
   }
+
   // endregion
 
-
   // region back pressed
-  Future<bool> onBackPressed(AppConfig appConfig){
-    if(isSearchingMeals){
+  Future<bool> onBackPressed(AppConfig appConfig) {
+    if (isSearchingMeals) {
       disableSearch();
       return Future.value(false);
     } else {
       final rootContext = mainNavigatorKey.currentState.overlay.context;
       return showDialog(
-        context: rootContext,
-        builder: (context) => AlertDialog(
-          title: Text('Exit Meals Catalogue App', style: TextStyle(fontWeight: FontWeight.bold),),
-          content: Text('Are you sure you want to quit the app?'),
-          actions: <Widget>[
-            FlatButton(
-              onPressed: () => Navigator.of(context).pop(false), // return Future.value(false);
-              child: Text('Return to App', style: TextStyle(color: appConfig.appColor),),
+            context: rootContext,
+            builder: (context) => AlertDialog(
+              title: Text(
+                'Exit Meals Catalogue App',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              content: Text('Are you sure you want to quit the app?'),
+              actions: <Widget>[
+                FlatButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  // return Future.value(false);
+                  child: Text(
+                    'Return to App',
+                    style: TextStyle(color: appConfig.appColor),
+                  ),
+                ),
+                FlatButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  // return Future.value(true);
+                  child: Text(
+                    'Quit',
+                    style: TextStyle(color: appConfig.appColor),
+                  ),
+                ),
+              ],
             ),
-            FlatButton(
-              onPressed: () => Navigator.of(context).pop(true), // return Future.value(true);
-              child: Text('Quit', style: TextStyle(color: appConfig.appColor),),
-            ),
-          ],
-        ),
-      ) ?? false; // return Future.value(false); if there is no dialog
+          ) ??
+          false; // return Future.value(false); if there is no dialog
     }
   }
+
   // endregion
 
   // region Get content view
-  mainContent(AppConfig appConfig, BuildContext context){
+  mainContent(AppConfig appConfig, BuildContext context) {
     return WillPopScope(
       onWillPop: () => onBackPressed(appConfig),
       child: Scaffold(
         appBar: AppBar(
-          title: isSearchingMeals ? buildTextField() : Text(category, key: Key(APP_BAR_TITLE)),
+          title: isSearchingMeals
+              ? buildTextField()
+              : Text(category, key: Key(APP_BAR_TITLE)),
           actions: getMenuIcon(),
           textTheme: TextTheme(
             title: TextStyle(
@@ -408,25 +452,26 @@ class MainScreen extends State<Main> with TickerProviderStateMixin<Main> {
         ),
         drawer: createDrawer(context, appConfig),
         body: getDrawerItemWidget(currentDrawerIndex),
-        bottomNavigationBar: isCurrentPageBottomNavigation ? createBottomNavigationBar(appConfig) : null,
+        bottomNavigationBar: isCurrentPageBottomNavigation
+            ? createBottomNavigationBar(appConfig)
+            : null,
       ),
     );
   }
+
   // endregion
 
   @override
   Widget build(BuildContext context) {
     var appConfig = AppConfig.of(context);
     return MaterialApp(
-      navigatorKey: mainNavigatorKey,
-      title: appConfig.appDisplayName,
-      theme: ThemeData(
-        primaryColor: appConfig.appColor,
-        accentColor: Colors.white,
-        fontFamily: appConfig.appFont,
-      ),
-      home: Builder(builder: (context) => mainContent(appConfig, context))
-    );
+        navigatorKey: mainNavigatorKey,
+        title: appConfig.appDisplayName,
+        theme: ThemeData(
+          primaryColor: appConfig.appColor,
+          accentColor: Colors.white,
+          fontFamily: appConfig.appFont,
+        ),
+        home: Builder(builder: (context) => mainContent(appConfig, context)));
   }
-
 }

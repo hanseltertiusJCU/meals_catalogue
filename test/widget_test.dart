@@ -17,6 +17,27 @@ main() {
         appBar: AppBar(
           title: Text("Meals Catalogue"),
         ),
+        body: Column(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              height: 60.0,
+              child: Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                      image: AssetImage('assets/empty-box.png'),
+                      fit: BoxFit.contain
+                  ),
+                ),
+              ),
+            ),
+            Container(
+              padding: EdgeInsets.only(top: 4.0),
+              child: Text('There is no data'),
+            ),
+          ],
+        ),
       ),
     ));
 

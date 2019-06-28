@@ -1,5 +1,4 @@
 class Meal {
-
   int id;
 
   String mealId;
@@ -12,14 +11,13 @@ class Meal {
     this.mealImageUrl,
   });
 
-
-  Meal.fromJson(Map<String, dynamic> json){
+  Meal.fromJson(Map<String, dynamic> json) {
     mealId = json['idMeal'];
     mealTitle = json['strMeal'];
     mealImageUrl = json['strMealThumb'];
   }
 
-  Map<String, dynamic> toJson(){
+  Map<String, dynamic> toJson() {
     var mealMap = Map<String, dynamic>();
 
     mealMap['mealId'] = mealId;
@@ -29,10 +27,7 @@ class Meal {
     return mealMap;
   }
 
-  void setFavoriteRecipeId(int id){
+  void setFavoriteRecipeId(int id) {
     this.id = id;
   }
-
-
-
 }

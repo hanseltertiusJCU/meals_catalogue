@@ -8,7 +8,6 @@ class AppConfig extends InheritedWidget {
   final int appInternalId;
   final Color appColor;
   final String appFont;
-  // todo: tinggal pake image thing
 
   static AppConfig of(BuildContext buildContext) {
     return buildContext.inheritFromWidgetOfExactType(AppConfig);

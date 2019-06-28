@@ -26,15 +26,15 @@ void main(){
       await flutterDriver.tap(dessert);
       await flutterDriver.waitFor(gridView, timeout: Duration(seconds: 5));
       await flutterDriver.scroll(gridView, 0, 300, Duration(milliseconds: 500));
-      await flutterDriver.scroll(gridView, 0, -5000, Duration(milliseconds: 1500));
-      await flutterDriver.scroll(gridView, 0, 5000, Duration(milliseconds: 1500));
+      await flutterDriver.scroll(gridView, 0, -4600, Duration(milliseconds: 1500));
+      await flutterDriver.scroll(gridView, 0, 4600, Duration(milliseconds: 1500));
     });
 
     test('Scroll gridview content in seafood', () async{
       await flutterDriver.waitFor(bottomNavigationBar);
       await flutterDriver.tap(seafood);
       await flutterDriver.waitFor(gridView, timeout: Duration(seconds: 5));
-      await flutterDriver.scroll(gridView, 0, 300, Duration(milliseconds: 500));
+      await flutterDriver.scroll(gridView, 0, 350, Duration(milliseconds: 500));
       await flutterDriver.scroll(gridView, 0, -1500, Duration(milliseconds: 500));
       await flutterDriver.scroll(gridView, 0, 1500, Duration(milliseconds: 500));
     });
