@@ -28,9 +28,6 @@ class MainScreen extends State<Main> with TickerProviderStateMixin<Main> {
   PageController pageController;
   TabController tabController;
 
-  bool isDessertDataLoaded = false;
-  bool isSeafoodDataLoaded = false;
-
   final mainNavigatorKey = GlobalKey<NavigatorState>();
 
   String keyword = "";
@@ -321,10 +318,6 @@ class MainScreen extends State<Main> with TickerProviderStateMixin<Main> {
     changeSelectedIndex(index);
     changeSelectedMode(index);
     if (index == 1) {
-      setState(() {
-        isDessertDataLoaded = false;
-        isSeafoodDataLoaded = false;
-      });
       changeFavoriteMealCategory(currentTabBarIndex);
     } else {
       changeMealCategory(currentBottomNavigationIndex);
@@ -365,11 +358,6 @@ class MainScreen extends State<Main> with TickerProviderStateMixin<Main> {
     // This is stated in order to prevent overwrite favorite data into home data
     if (isCurrentPageBottomNavigation) {
       setState(() {
-        if(currentBottomNavigationIndex == 1){
-          isSeafoodDataLoaded = true;
-        } else {
-          isDessertDataLoaded = true;
-        }
         this.mealData = mealData;
       });
     }

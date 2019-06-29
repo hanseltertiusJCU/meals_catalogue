@@ -244,33 +244,15 @@ class _PageViewItemScreen extends State<PageViewItem> {
 
   // endregion
 
-  // region Get render loading widget
-  getWidgetRenderLoading() {
-    if (!widget.mainScreen.isDessertDataLoaded) {
-      return Center(
-          child: CircularProgressIndicator(
-              valueColor:
-                  AlwaysStoppedAnimation<Color>(widget.appConfig.appColor)));
-    }
-
-    if (!widget.mainScreen.isSeafoodDataLoaded) {
-      return Center(
-          child: CircularProgressIndicator(
-              valueColor:
-                  AlwaysStoppedAnimation<Color>(widget.appConfig.appColor)));
-    }
-
-    return mealListWidget(widget.appConfig);
-  }
-
-  // endregion
-
   @override
   Widget build(BuildContext context) {
     AsyncLoader asyncLoader = AsyncLoader(
       key: getGlobalKey(widget.index),
       initState: () async => await widget.mainScreen.fetchMealData(),
-      renderLoad: () => getWidgetRenderLoading(),
+      renderLoad: () => Center(
+          child: CircularProgressIndicator(
+              valueColor:
+              AlwaysStoppedAnimation<Color>(widget.appConfig.appColor))),
       renderError: ([error]) =>
           getNoConnectionWidget(widget.appConfig, widget.index),
       renderSuccess: ({data}) => mealListWidget(widget.appConfig),
