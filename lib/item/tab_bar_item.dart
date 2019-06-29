@@ -18,13 +18,17 @@ class TabBarItem extends StatefulWidget {
 class _TabBarItemScreen extends State<TabBarItem> {
 
   // region List Widget
-  Widget favoriteMealListWidget() =>
-      widget.mainScreen.mealData.meals != null &&
-          widget.mainScreen.mealData != null
-          ? widget.mainScreen.mealData.meals.length > 0
-          ? GridViewWidget(mainScreen: widget.mainScreen)
-          : EmptyDataWidget()
-          : EmptyDataWidget();
+  Widget favoriteMealListWidget() {
+    if(widget.mainScreen.mealData.meals != null && widget.mainScreen.mealData != null){
+      if(widget.mainScreen.mealData.meals.length > 0){
+        return GridViewWidget(mainScreen: widget.mainScreen);
+      } else {
+        return EmptyDataWidget();
+      }
+    } else {
+      return EmptyDataWidget();
+    }
+  }
 
   // endregion
 

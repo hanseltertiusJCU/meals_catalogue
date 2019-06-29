@@ -113,13 +113,17 @@ class _PageViewItemScreen extends State<PageViewItem> {
   // endregion
 
   // region List Widget
-  mealListWidget() =>
-      widget.mainScreen.mealData.meals != null &&
-              widget.mainScreen.mealData != null
-          ? widget.mainScreen.mealData.meals.length > 0
-              ? GridViewWidget(mainScreen: widget.mainScreen)
-              : EmptyDataWidget()
-          : EmptyDataWidget();
+  mealListWidget() {
+    if(widget.mainScreen.mealData.meals != null && widget.mainScreen.mealData != null){
+      if(widget.mainScreen.mealData.meals.length > 0){
+        return GridViewWidget(mainScreen: widget.mainScreen);
+      } else {
+        return EmptyDataWidget();
+      }
+    } else {
+      return EmptyDataWidget();
+    }
+  }
   // endregion
 
   @override
