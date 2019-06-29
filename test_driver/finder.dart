@@ -5,7 +5,7 @@ import 'package:meals_catalogue/key_strings.dart';
 SerializableFinder appBarTitle = find.byValueKey(APP_BAR_TITLE);
 
 SerializableFinder gridView = find.byValueKey(GRID_VIEW);
-SerializableFinder detailedListView = find.byValueKey(DETAILED_LIST_VIEW);
+SerializableFinder detailedScrollView = find.byValueKey(DETAILED_SCROLL_VIEW);
 
 SerializableFinder bottomNavigationBar = find.byValueKey(BOTTOM_NAVIGATION_BAR);
 SerializableFinder pageView = find.byValueKey(PAGE_VIEW);

@@ -5,8 +5,8 @@ import 'package:meals_catalogue/config/app_config.dart';
 import 'package:meals_catalogue/const_strings.dart';
 import 'package:meals_catalogue/data/meal_data.dart';
 import 'package:meals_catalogue/helper/data_helper.dart';
-import 'package:meals_catalogue/widgets/favorite_page.dart';
-import 'package:meals_catalogue/widgets/home_page.dart';
+import 'package:meals_catalogue/page/favorite_page.dart';
+import 'package:meals_catalogue/page/home_page.dart';
 
 class Main extends StatefulWidget {
   @override
@@ -33,6 +33,9 @@ class MainScreen extends State<Main> with TickerProviderStateMixin<Main> {
   String keyword = "";
   TextEditingController textEditingController;
   bool isSearchingMeals = false;
+
+  bool isDessertLoadFirstTime;
+  bool isSeafoodLoadFirstTime;
 
   // region Init State
   @override
@@ -346,6 +349,20 @@ class MainScreen extends State<Main> with TickerProviderStateMixin<Main> {
 
   // endregion
 
+  // region Change data loaded state
+  changeDataToLoadedState(int index) {
+    if(index == 1){
+      setState(() {
+        isSeafoodLoadFirstTime = false;
+      });
+    } else {
+      setState(() {
+        isDessertLoadFirstTime = false;
+      });
+    }
+  }
+  // endregion
+
   // region Retrieve data (data from internet and from favorite)
   fetchMealData() async {
     DataHelper networkData = DataHelper();
@@ -357,6 +374,7 @@ class MainScreen extends State<Main> with TickerProviderStateMixin<Main> {
 
     // This is stated in order to prevent overwrite favorite data into home data
     if (isCurrentPageBottomNavigation) {
+      changeDataToLoadedState(currentBottomNavigationIndex);
       setState(() {
         this.mealData = mealData;
       });

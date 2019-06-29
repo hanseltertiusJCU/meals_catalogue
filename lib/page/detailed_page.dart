@@ -176,7 +176,7 @@ class _DetailedPageState extends State<DetailedPage> {
           child: CircularProgressIndicator(
               valueColor: AlwaysStoppedAnimation<Color>(appConfig.appColor))),
       renderError: ([error]) => getNoConnectionWidget(appConfig),
-      renderSuccess: ({data}) => getListView(appConfig),
+      renderSuccess: ({data}) => getScrollView(appConfig),
     );
 
     return Hero(
@@ -190,7 +190,7 @@ class _DetailedPageState extends State<DetailedPage> {
 
   // endregion
 
-  // region Get Views
+  // region Get no connection content
   getNoConnectionWidget(AppConfig appConfig) => Column(
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -219,14 +219,18 @@ class _DetailedPageState extends State<DetailedPage> {
               onPressed: () => asyncLoaderState.currentState.reloadState()),
         ),
       ];
+  // endregion
 
-  getListView(AppConfig appConfig) => ListView(
-        key: Key(DETAILED_LIST_VIEW),
+  // region ScrollView
+  getScrollView(AppConfig appConfig) => SingleChildScrollView(
+        key: Key(DETAILED_SCROLL_VIEW),
         padding: EdgeInsets.all(16.0),
-        children: getListViewContent(appConfig),
+        child: Column(
+          children: getScrollViewContent(appConfig)
+        ),
       );
 
-  getListViewContent(AppConfig config) {
+  getScrollViewContent(AppConfig config) {
     return [
       Align(
         alignment: Alignment.center,
@@ -305,7 +309,9 @@ class _DetailedPageState extends State<DetailedPage> {
       ),
     ];
   }
+  // endregion
 
+  // region Get ingredients and instructions text list
   List<Padding> getIngredientsTextList(List<String> stringList) {
     List<Padding> ingredientTexts = List<Padding>();
 
@@ -347,10 +353,9 @@ class _DetailedPageState extends State<DetailedPage> {
 
     return instructionTexts;
   }
-
   // endregion
 
-  // region snackbar
+  // region SnackBar
   _displaySnackbar(BuildContext context, bool isFavorite) {
     var appConfig = AppConfig.of(context);
 
@@ -380,7 +385,6 @@ class _DetailedPageState extends State<DetailedPage> {
 
     _scaffoldKey.currentState.showSnackBar(snackBar);
   }
-
   // endregion
 
   @override

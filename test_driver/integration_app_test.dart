@@ -58,10 +58,10 @@ void main(){
     });
 
     test('Scroll content in detailed item', () async {
-      await flutterDriver.waitFor(detailedListView, timeout: Duration(seconds: 5));
-      await flutterDriver.scroll(detailedListView, 0, 300, Duration(milliseconds: 500));
-      await flutterDriver.scroll(detailedListView, 0, -600, Duration(milliseconds: 500));
-      await flutterDriver.scroll(detailedListView, 0, 600, Duration(milliseconds: 500));
+      await flutterDriver.waitFor(detailedScrollView, timeout: Duration(seconds: 5));
+      await flutterDriver.scroll(detailedScrollView, 0, 300, Duration(milliseconds: 500));
+      await flutterDriver.scroll(detailedScrollView, 0, -600, Duration(milliseconds: 500));
+      await flutterDriver.scroll(detailedScrollView, 0, 600, Duration(milliseconds: 500));
     });
 
     test('Pressed favorite icon in detail page', () async{
