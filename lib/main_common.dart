@@ -42,8 +42,6 @@ class MainScreen extends State<Main> with TickerProviderStateMixin<Main> {
   void initState() {
     super.initState();
 
-    pageController = PageController(initialPage: 0, keepPage: true);
-
     tabController = TabController(length: 2, vsync: this);
     tabController.addListener(changeSelectedTabBarItem);
 

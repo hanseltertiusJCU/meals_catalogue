@@ -19,6 +19,9 @@ class _HomeScreen extends State<Home> {
     super.initState();
     widget.mainScreen.isDessertLoadFirstTime = true;
     widget.mainScreen.isSeafoodLoadFirstTime = true;
+
+    widget.mainScreen.pageController = PageController(initialPage: widget.mainScreen.currentBottomNavigationIndex, keepPage: true);
+
   }
 
   final PageStorageBucket homePageBucket = PageStorageBucket();
